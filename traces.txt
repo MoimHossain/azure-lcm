@@ -1,0 +1,2204 @@
+==============================================================
+Title: Azure IoT Edge supports Ubuntu Core Snaps  
+
+AzureServiceName: Azure IoT Edge
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Now available: Free data transfer out to internet when leaving Azure
+
+AzureServiceName: Azure Data Transfer
+Update Kind: GenerallyAvailable
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: JVM memory fit in Azure Container Apps
+
+AzureServiceName: Azure Container Apps
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Managed Java components in Azure Container Apps
+
+AzureServiceName: Azure Container Apps
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Tomcat support in Azure Container Apps 
+
+AzureServiceName: Azure Container Apps
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Modernizing Azure Resource Manager Throttling
+
+AzureServiceName: Azure Resource Manager
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Azure Defender for Microsoft Azure Database for PostgreSQL - Flexible Server
+
+AzureServiceName: Azure Defender for Microsoft Azure Database for PostgreSQL - Flexible Server
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Azure SQL updates for mid-March 2024
+
+AzureServiceName: Azure SQL
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Private Link in Azure Cosmos DB for MongoDB vCore  
+
+AzureServiceName: Azure Cosmos DB for MongoDB vCore
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Major version upgrade logs for Azure Database for PostgreSQL - Flexible Server
+
+AzureServiceName: Azure Database for PostgreSQL - Flexible Server
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Additional cache size for Azure Cache for Redis Enterprise
+
+AzureServiceName: Azure Cache for Redis
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Microsoft Entra ID integration with Azure Cosmos DB for PostgreSQL
+
+AzureServiceName: Azure Cosmos DB for PostgreSQL
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Announcing Try Azure Cosmos DB support in Vercel Integration
+
+AzureServiceName: Azure Cosmos DB integration with Vercel
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: WhatsApp Business Platform now available for applications built on Azure 
+
+AzureServiceName: Azure Communication Services Advanced Messaging
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Azure Chaos Studio supports new fault for Azure Event Hubs
+
+AzureServiceName: Azure Chaos Studio
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure API Center Updates
+
+AzureServiceName: Azure API Center extension for Visual Studio Code
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Azure Blob Storage Cold Tier in Poland Central, Qatar Central and Azure China
+
+AzureServiceName: Azure Blob Storage Cold Tier
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: App Service Backup and Restore over Azure Virtual Network
+
+AzureServiceName: App Service Backup and Restore
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Service Level Agreements on Azure Blob Storage Cold Tier
+
+AzureServiceName: Azure Blob Storage Cold Tier
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Azure Virtual Network encryption now in additional regions
+
+AzureServiceName: Azure Virtual Network encryption
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Change Actor
+
+AzureServiceName: Azure Active Directory
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Azure Functions Support for Node.js 20
+
+AzureServiceName: Azure Functions
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Azure NetApp Files volume enhancement – allow the same file path for volumes in different availability zones
+
+AzureServiceName: Azure NetApp Files
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: New Generation AMD VMs - Dasv6/Easv6/Fasv6
+
+AzureServiceName: Azure VMs
+Update Kind: Preview
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Sphere OS version 24.03 is now available for evaluation 
+
+AzureServiceName: Azure Sphere OS
+Update Kind: Preview
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: Participate in the retail evaluation to ensure full compatibility. Follow the testing guidelines provided by Azure Sphere OS for backward compatibility testing.
+
+
+==============================================================
+Title: Public Preview: Well-Architected Framework assessment on Azure Advisor 
+
+AzureServiceName: Azure Advisor
+Update Kind: Preview
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Cloud Services (classic) deployment model is retiring on 31 August 2024
+
+AzureServiceName: Cloud Services (classic)
+Update Kind: Retired
+Actionable: True
+ActionableViaAzurePolicy: True
+AnnouncementRequired: True
+MitigationInstructionMarkdown: To mitigate the impact of the retirement, consider migrating your Cloud Services (classic) deployments to Azure Resource Manager. You can use Azure Site Recovery to replicate your virtual machines, and then deploy your app to an Azure Virtual Machine Scale Set using Azure DevOps or another CI/CD tool. For more information, please refer to the Microsoft documentation on [Migrating Cloud Services to Azure Resource Manager](https://docs.microsoft.com/en-us/azure/cloud-services/classic/migrate-to-resource-manager-overview#plan-your-migration)
+
+
+==============================================================
+Title: General Availability: Encryption at host for Premium SSD v2 and Ultra Disks is now available in more regions.
+
+AzureServiceName: Premium SSD v2 and Ultra Disks
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Internet inbound for Network Virtual Appliances in Virtual WAN Hubs
+
+AzureServiceName: Virtual WAN
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Azure Functions Support for HTTP Streams in Node.js 
+
+AzureServiceName: Azure Functions
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Kubernetes 1.29 support in AKS 
+
+AzureServiceName: AKS
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: OS SKU in-place migration for Linux nodes 
+
+AzureServiceName: Azure Kubernetes Service
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Node Soak Duration for Upgrades 
+
+AzureServiceName: Azure Kubernetes Service
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Capacity Reservations support in AKS 
+
+AzureServiceName: Azure Kubernetes Service (AKS)
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: GA: Istio-based service mesh add-on for Azure Kubernetes Service
+
+AzureServiceName: Azure Kubernetes Service with Istio add-on
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Disable network policy in AKS for migration
+
+AzureServiceName: Azure Kubernetes Service (AKS)
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: AKS support for node soak duration for upgrades 
+
+AzureServiceName: AKS
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Azure SQL updates for late-February 2024 
+
+AzureServiceName: Azure SQL
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Latest PostgreSQL minor versions supported by Azure Database for PostgreSQL - Flexible Server 
+
+AzureServiceName: Azure Database for PostgreSQL - Flexible Server
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Azure SDKs support for Azure Cosmos DB for PostgreSQL
+
+AzureServiceName: Azure Cosmos DB for PostgreSQL
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Azure CLI support for Azure Cosmos DB for PostgreSQL
+
+AzureServiceName: Azure Cosmos DB for PostgreSQL
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Application Gateway for Containers
+
+AzureServiceName: Application Gateway for Containers
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Enable replication for added VMware VM data disks
+
+AzureServiceName: Azure Site Recovery
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Azure Application Gateway introduces support for TLS and TCP protocols
+
+AzureServiceName: Azure Application Gateway
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Announcing NBCROW Compression in Kusto's TDS Implementation
+
+AzureServiceName: Kusto
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Sending a log search alert with cross tenant target resource will no longer be supported
+
+AzureServiceName: Azure Monitor
+Update Kind: Unsupported
+Actionable: True
+ActionableViaAzurePolicy: True
+AnnouncementRequired: True
+MitigationInstructionMarkdown: Starting March 15, 2024, sending a log search alert with a cross tenant target resource (except for the lighthouse case) will no longer be supported. To continue receiving log search alert notifications for authorized target resources, ensure that the target resource is within the same tenant as the alert rule resource, or is authorized through lighthouse. Review and update any alert rules with cross tenant target resources before March 15, 2024.
+
+
+==============================================================
+Title: Update records in a Kusto Database (public preview)
+
+AzureServiceName: Kusto Database
+Update Kind: Preview
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: Consider testing the new .update command in your Kusto Database and provide your feedback to the Azure team.
+
+
+==============================================================
+Title: Public Preview: Regional Disaster Recovery by Azure Backup for AKS
+
+AzureServiceName: Azure Backup for AKS
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Azure NetApp Files Standard Network Features - Edit Volumes
+
+AzureServiceName: Azure NetApp Files
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Configuration-as-code customizations in Microsoft Dev Box 
+
+AzureServiceName: Microsoft Dev Box
+Update Kind: Preview
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: Microsoft has released a public preview of Configuration-as-code customizations in Microsoft Dev Box. This enables developers to efficiently configure workstations to their exact project requirements, within guardrails set by admins that enforce governance and security policies.
+
+
+==============================================================
+Title: Public Preview: Azure Storage Actions — Serverless storage data management
+
+AzureServiceName: Azure Storage Actions
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Support for Azure VMs using Ultra disks in Azure Backup
+
+AzureServiceName: Azure Backup
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Support for Azure VMs using Premium SSD v2 in Azure Backup
+
+AzureServiceName: Azure Backup
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Execute Azure Monitor Logs connector on exact time range provided dynamically (preview)
+
+AzureServiceName: Azure Monitor Logs Connector
+Update Kind: Preview
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: For the Azure Monitor Logs connector that executes on an exact time range provided dynamically, test your queries using the Preview version to ensure compatibility with your data. Update your Logic App triggers and schedules based on the new connector syntax available in Preview.
+
+
+==============================================================
+Title: General Availability: Trusted launch for Azure VMs in China regions
+
+AzureServiceName: Azure Virtual Machines
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Azure Blob Storage Cold Tier support on Change Feed and Object Replication
+
+AzureServiceName: Azure Blob Storage
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Azure SQL updates for mid-February 2024 
+
+AzureServiceName: Azure SQL
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Customer managed key encryption for Enterprise tier caches 
+
+AzureServiceName: Azure Cache for Redis
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Migration service in Azure Database for PostgreSQL
+
+AzureServiceName: Azure Database for PostgreSQL - Migration Service
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Azure SQL migration assessment enabled by Azure Arc
+
+AzureServiceName: Azure Arc
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Firewall: Flow Trace Logs and Autoscaling based on number of connections are now generally available
+
+AzureServiceName: Azure Firewall
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Firewall: Parallel IP Group update support is now in public preview
+
+AzureServiceName: Azure Firewall
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Elastic SAN is now generally available
+
+AzureServiceName: Azure Elastic SAN
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: AKS cluster control plane metrics in managed Prometheus
+
+AzureServiceName: Azure Kubernetes Service (AKS)
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Zone Redundant Storage for Azure Disks is now available in Canada Central
+
+AzureServiceName: Zone Redundant Storage for Azure Disks
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Improvements in Azure Key Vault
+
+AzureServiceName: Azure Key Vault
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Azure NetApp Files Standard Network Features - Edit Volumes in US Gov Regions
+
+AzureServiceName: Azure NetApp Files
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Support for up to 100 TB of storage for the FHIR service
+
+AzureServiceName: Azure Health Data Services - FHIR service
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Ultra Disk Storage is now available in Canada East
+
+AzureServiceName: Azure Ultra Disk Storage
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Mount Azure Storage as a local share in App Service Linux Now supports NFS
+
+AzureServiceName: Azure App Service Linux
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Announcing General Availability to migrate Virtual Network injected Azure Data Explorer Cluster to Private Endpoints
+
+AzureServiceName: Azure Data Explorer
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Support for log alert rules that use cross-workspace queries with resource names or qualified name identifiers will be retired on 31 May 2024
+
+AzureServiceName: Azure Monitor
+Update Kind: Retired
+Actionable: True
+ActionableViaAzurePolicy: True
+AnnouncementRequired: True
+MitigationInstructionMarkdown: To mitigate the impact, customers who currently use cross-workspace queries with resource names or qualified name identifiers in their log alert rules should use the resource ID in their queries instead. The resource ID can be found in the Overview blade of the resource in the Azure portal. Customers can also consider consolidating all the relevant resources within a single workspace.
+
+
+==============================================================
+Title: Azure Virtual Network Manager security admin rule generally available in 30 regions
+
+AzureServiceName: Azure Virtual Network Manager
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Virtual Network Manager topology view now generally available
+
+AzureServiceName: Azure Virtual Network Manager
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Private Preview: Azure Site Recovery support for Azure Trusted Launch VMs (Windows OS) 
+
+AzureServiceName: Azure Site Recovery
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Azure Stack HCI latest feature release 
+
+AzureServiceName: Azure Stack HCI
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Continuous model monitoring in Azure Machine Learning
+
+AzureServiceName: Azure Machine Learning
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Announcing General Availability of Azure Monitor Metrics Data Plane API 
+
+AzureServiceName: Azure Monitor Metrics Data Plane API
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview:  Azure API Center – January Updates
+
+AzureServiceName: Azure API Center
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Istio add-on for AKS now supports plug-in certificate authority (CA) 
+
+AzureServiceName: AKS Istio add-on
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Support for Cross Region Restore for PostgreSQL backups
+
+AzureServiceName: Azure Backup
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Upgrade support in Istio add-on for AKS 
+
+AzureServiceName: AKS Istio add-on
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: New major version of durable Functions extension
+
+AzureServiceName: Durable Functions extension
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Azure Functions Support for Java 21 on Linux 
+
+AzureServiceName: Azure Functions
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Azure Container Apps supports additional TCP ports 
+
+AzureServiceName: Azure Container Apps
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Distributed tracing v2 for durable Functions 
+
+AzureServiceName: Azure Durable Functions
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Visual Studio Code extension update for Azure Kubernetes Service (AKS)
+
+AzureServiceName: Visual Studio Code Extension for Azure Kubernetes Service (AKS)
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: False
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Node OS API options feature for AKS
+
+AzureServiceName: Azure Kubernetes Service
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Disable Secure Shell (SSH) support in AKS
+
+AzureServiceName: Azure Kubernetes Service (AKS)
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Outbound type migration in AKS
+
+AzureServiceName: Azure Kubernetes Service
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Kube-reserved resource optimization in Azure Kubernetes Service (AKS) 
+
+AzureServiceName: Azure Kubernetes Service (AKS)
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: PgAudit in Azure Cosmos DB for PostgreSQL
+
+AzureServiceName: Azure Cosmos DB for PostgreSQL
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Read replica in special regions with Azure Database for PostgreSQL - Flexible Server
+
+AzureServiceName: Azure Database for PostgreSQL - Flexible Server
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Azure SQL updates for late-January 2024
+
+AzureServiceName: Azure SQL
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Server logs for Azure Database for PostgreSQL - Flexible Server 
+
+AzureServiceName: Azure Database for PostgreSQL - Flexible Server
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Azure SQL updates for late-January 2024
+
+AzureServiceName: Azure SQL
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Azure Cosmos DB for PostgreSQL Customer-managed keys (CMK)
+
+AzureServiceName: Azure Cosmos DB for PostgreSQL
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Israel Central region added to Azure HDInsight
+
+AzureServiceName: Azure HDInsight
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Italy North region added to Azure HDInsight
+
+AzureServiceName: Azure HDInsight
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: ExpressRoute guided portal experience for multi-site resiliency
+
+AzureServiceName: ExpressRoute
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Azure Business Continuity Center is now available in all regions
+
+AzureServiceName: Azure Business Continuity Center
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Improved exports experience
+
+AzureServiceName: Cost Management + Billing
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Up to 50 test fail criteria in Azure Load Testing
+
+AzureServiceName: Azure Load Testing
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Red Hat OpenShift January 2024 updates
+
+AzureServiceName: Azure Red Hat OpenShift
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Preview: Selectable search parameter capability for the FHIR service in Azure Health Data Services
+
+AzureServiceName: Azure Health Data Services - FHIR
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Cloud Services (classic) deployment model is retiring on 31 August 2024
+
+AzureServiceName: Cloud Services (classic)
+Update Kind: Retired
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: Migrate your cloud services to a new deployment model before 31 August 2024.
+
+
+==============================================================
+Title: Dedicated clusters in Azure Monitor logs now support any commitment tier
+
+AzureServiceName: Azure Monitor Logs
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Azure Automation Runtime environment & support for Azure CLI commands in runbooks 
+
+AzureServiceName: Azure Automation
+Update Kind: Preview
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: New Features for graph-match KQL Operator: Enhanced Pattern Matching and Cycle Control
+
+AzureServiceName: Kusto Query Language
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Automatic Image Creation using Azure VM Image Builder is now generally available
+
+AzureServiceName: Azure VM Image Builder
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Azure Data Explorer adds new geospatial capabilities
+
+AzureServiceName: Azure Data Explorer
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Azure Monitor VM Insights Dependency Agent support for RHEL 8.6 Linux VMs
+
+AzureServiceName: Azure Monitor VM Insights
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: FHIR service integration with Azure Active Directory B2C
+
+AzureServiceName: FHIR service in Azure Health Data Services
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Advisor integration with Azure Monitor Log Analytics Workspace
+
+AzureServiceName: Azure Advisor
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Circuit Breaker in Azure API Management 
+
+AzureServiceName: Azure API Management
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Load Balancer in Azure API Management  
+
+AzureServiceName: Azure API Management
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Spring Apps Feature Update Q4 2024: Spring Cloud Gateway supports a response cache and more
+
+AzureServiceName: Azure Spring Apps
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Private Preview: Support for Azure VMs using Premium SSD v2 in Azure Site Recovery
+
+AzureServiceName: Azure Site Recovery
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Private Preview: Upgrade existing Azure Gen1 VMs to Gen2-Trusted launch
+
+AzureServiceName: Azure Virtual Machines
+Update Kind: Preview
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Azure MySQL Import feature for Azure Database for MySQL Single to Flexible Server migrations
+
+AzureServiceName: Azure Database for MySQL
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Partition merge now supports shared throughput databases
+
+AzureServiceName: Azure Cosmos DB
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Azure Virtual Network encryption 
+
+AzureServiceName: Azure Virtual Network Encryption
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Customer-managed keys for Azure NetApp Files volume encryption 
+
+AzureServiceName: Azure NetApp Files
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Announcing Public Preview of the Azure Arc Visual Studio Code Extension 
+
+AzureServiceName: Azure Arc Visual Studio Code Extension
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Create tests by adding HTTP requests in Azure Load Testing
+
+AzureServiceName: Azure Load Testing
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: False
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Premium SSD v2 and Ultra disks support with Trusted launch
+
+AzureServiceName: Trusted launch
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Load Testing supports Web Driver Sampler plugin for Apache JMeter
+
+AzureServiceName: Azure Load Testing
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Load Testing supports fetching secrets from Azure Key Vault with access restrictions (private AKV)
+
+AzureServiceName: Azure Load Testing
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: False
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Azure Data Explorer connector for Apache Flink
+
+AzureServiceName: Azure Data Explorer
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Ultra Disk Storage is now available in UK West and Poland Central
+
+AzureServiceName: Azure Ultra Disk Storage
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Zone Redundant Storage for Azure Disks is now available in more regions
+
+AzureServiceName: Azure Disks
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Stream Analytics No-code Editor: new features and improvements in Jan 2024
+
+AzureServiceName: Azure Stream Analytics
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Spring Apps Enterprise is now eligible for Azure savings plan for compute 
+
+AzureServiceName: Azure Spring Apps Enterprise
+Update Kind: GenerallyAvailable
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Security Update for Azure Front Door WAF CVE-2023-50164
+
+AzureServiceName: Azure Front Door WAF
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Azure Site Recovery update rollup 70 - December 2023
+
+AzureServiceName: Azure Site Recovery
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Security Update for Application Gateway WAF CVE-2023-50164
+
+AzureServiceName: Application Gateway WAF
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: On 31 August 2024, both the update management feature of Azure Automation and the Log Analytics agent it uses will be retired
+
+AzureServiceName: Azure Automation
+Update Kind: Retired
+Actionable: True
+ActionableViaAzurePolicy: True
+AnnouncementRequired: True
+MitigationInstructionMarkdown: The update management feature of Azure Automation along with the Log Analytics agent will be retired on August 31, 2024. To mitigate the impact, we recommend that you migrate to Azure Automation State Configuration and Azure Monitor for VMs. These services provide similar functionality for managing updates and monitoring VMs. Additionally, you can use Azure Policy to enforce compliance with your update management policies.
+
+
+==============================================================
+Title: Change tracking and inventory with Log Analytics agent in Azure Automation will be retired on 31 August 2024
+
+AzureServiceName: Azure Automation
+Update Kind: Retired
+Actionable: True
+ActionableViaAzurePolicy: True
+AnnouncementRequired: True
+MitigationInstructionMarkdown: Update any scripts or processes that rely on change tracking and inventory with Log Analytics agent before 31 August 2024. Consider migrating to Azure Arc for Server management and Azure Monitor for Windows and Linux VMs for continued change tracking and inventory capabilities. Refer to the following documentation for more information and guidance:
+- [Retirement of change tracking and inventory with the Log Analytics agent in Azure Automation](https://docs.microsoft.com/en-us/azure/automation/change-tracking-inventory-retirement?WT.mc_id=AZ-MVP-5004139)
+- [Migrate servers to Azure Arc](https://docs.microsoft.com/en-us/azure/azure-arc/servers/servers-azure-arc?WT.mc_id=AZ-MVP-5004139)
+- [Azure Monitor for Windows Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-monitoring?WT.mc_id=AZ-MVP-5004139)
+- [Azure Monitor for Linux Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-linux?WT.mc_id=AZ-MVP-5004139)
+
+
+==============================================================
+Title: Generally available: Azure Stream Analytics in seven more regions
+
+AzureServiceName: Azure Stream Analytics
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: “As on-premises” sizing in Azure Migrate SQL Discovery and Assessment 
+
+AzureServiceName: Azure Migrate SQL Assessments
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Free SQL Managed Instance
+
+AzureServiceName: SQL Managed Instance
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Azure Red Hat OpenShift v4.13 at install time
+
+AzureServiceName: Azure Red Hat OpenShift
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Multi-line Logging Feature in Azure Monitor - Container Insights
+
+AzureServiceName: Azure Monitor - Container Insights
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Azure Chaos Studio supports new faults for Service Bus
+
+AzureServiceName: Azure Chaos Studio
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Red Hat Enterprise Linux 8.9 now supported on Azure Virtual Machines
+
+AzureServiceName: Red Hat Enterprise Linux
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Crash Consistent VM Restore points
+
+AzureServiceName: Azure VM Backup
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Store and manage medical imaging data with Azure Data Lake Storage (Preview)
+
+AzureServiceName: Azure Data Lake Storage
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Container insights recommended alerts (custom metrics) (preview) retirement moving up to 31 May 2024 
+
+AzureServiceName: Container Insights
+Update Kind: Deprecated
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: To mitigate this, transition to Prometheus recommended alert rules before 31 May 2024.
+
+
+==============================================================
+Title: Public preview: Intel TDX based confidential VMs now available in the Azure portal, Azure CLI and ARM templates
+
+AzureServiceName: Confidential VMs
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Delaying Domain Front Block on Azure Front Door and CDN services
+
+AzureServiceName: Azure Front Door and Azure CDN Standard (classic)
+Update Kind: Unknown
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability - Snapshots feature of Azure App Configuration
+
+AzureServiceName: Azure App Configuration
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Event Grid releases public preview support for events from services like Microsoft Entra ID, Microsoft Outlook, and Microsoft Teams.
+
+AzureServiceName: Azure Event Grid
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: IT Service Management Connector (ITSMC)  is now certified with ServiceNow Vancouver version
+
+AzureServiceName: IT Service Management Connector
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Retirement: Azure Container Apps preview API versions 2023-04-01-preview 
+
+AzureServiceName: Azure Container Apps
+Update Kind: Retired
+Actionable: True
+ActionableViaAzurePolicy: True
+AnnouncementRequired: True
+MitigationInstructionMarkdown: The Azure Resource Manager API version 2023-04-01-preview for Azure Container Apps is being retired in March 2024. Please upgrade to a newer version of the API before then to ensure uninterrupted service. To mitigate the impact, you can create an Azure policy to enforce the usage of recommended API versions.
+
+
+==============================================================
+Title: Public Preview: New AKS cost views for standard and premium tier clusters 
+
+AzureServiceName: AKS (Azure Kubernetes Service)
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: AKS support for API breaking change detection 
+
+AzureServiceName: Azure Kubernetes Service (AKS)
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Node autoprovision support in AKS 
+
+AzureServiceName: Azure Kubernetes Service (AKS)
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Azure Functions support on Apple Silicon Macs 
+
+AzureServiceName: Azure Functions
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Connection audit logs for Enterprise tier caches for Azure Cache for Redis
+
+AzureServiceName: Azure Cache for Redis Enterprise tier
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Accelerated logs in Azure Database for MySQL - Flexible Server
+
+AzureServiceName: Azure Database for MySQL - Flexible Server
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: PostgreSQL 16 support in Azure Database for PostgreSQL – Flexible Server
+
+AzureServiceName: Azure Database for PostgreSQL - Flexible Server
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Azure Database for PostgreSQL - Flexible Server, enhanced disaster recovery features
+
+AzureServiceName: Azure Database for PostgreSQL - Flexible Server
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Encryption with customer-managed keys in Azure Health Data Services
+
+AzureServiceName: Azure Health Data Services
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Azure Site Recovery update rollup 69 - November 2023
+
+AzureServiceName: Azure Site Recovery
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Event Grid system topics support for resource management and health resources now in Public Preview
+
+AzureServiceName: Azure Event Grid
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Migration of Azure Virtual Network injected Azure Data Explorer cluster to Private Endpoints
+
+AzureServiceName: Azure Data Explorer
+Update Kind: Preview
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: If you are using VNet injection to secure your Azure Data Explorer (ADX) cluster, consider switching to Azure Private Endpoints for easier management, scalability, and increased security. Use the preview feature to migrate to Private Endpoints easily and quickly. For more information, refer to Azure documentation on Private Endpoints for Azure Data Explorer.
+
+
+==============================================================
+Title: Azure support plan offer extended to June 30, 2024
+
+AzureServiceName: Azure Support
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Standard and High-Performance VPN Gateway SKUs will be retired on 30 September 2025 
+
+AzureServiceName: VPN Gateway SKUs
+Update Kind: Retired
+Actionable: True
+ActionableViaAzurePolicy: True
+AnnouncementRequired: True
+MitigationInstructionMarkdown: To mitigate the impact of this retirement, we recommend upgrading your VPN Gateway SKUs to one of the newer options before September 30th, 2025. Additionally, you can use Azure policies to enforce the use of the new VPN Gateway SKUs in your environment.
+
+
+==============================================================
+Title: Pod Security Policy is being deprecated with AKS 1.25 and 2023-06-01 API version 
+
+AzureServiceName: AKS
+Update Kind: Deprecated
+Actionable: True
+ActionableViaAzurePolicy: True
+AnnouncementRequired: True
+MitigationInstructionMarkdown: AKS has deprecated Pod Security Policy and is moving to Pod Security Admission with AKS 1.25 and 2023-06-01 API version. Users are requested to migrate from Pod Security Policy to Pod Security Admission. To migrate, you can refer to the official AKS documentation that provides a detailed guide on how to migrate to the new mechanism. Once the migration is complete, you can then remove the Pods Security Policy objects from the Kubernetes API server. To get more information on migration and support, refer to the AKS documentation. You can also use Azure Policy to enforce the use of Pod Security Admission and ensure that no new workloads are created using Pod Security Policy.
+
+
+==============================================================
+Title: Azure Object Anchors Retirement
+
+AzureServiceName: Azure Object Anchors
+Update Kind: Retired
+Actionable: True
+ActionableViaAzurePolicy: True
+AnnouncementRequired: True
+MitigationInstructionMarkdown: As Azure Object Anchors (AOA) is going to be retired, it is suggested to consider migrating to Dynamics 365 Guides. Otherwise, it is suggested to move to another alternative service if Dynamics 365 Guides does not fit the requirements. Please plan and execute the migration accordingly.
+
+
+==============================================================
+Title: Azure Spatial Anchors Retirement  
+
+AzureServiceName: Azure Spatial Anchors
+Update Kind: Retired
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Application Insights Availability Tests TLS 1.3 Enablement
+
+AzureServiceName: Application Insights
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Azure Monitor OpenTelemetry-based Distro for ASP.NET Core Applications
+
+AzureServiceName: Azure Monitor
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Azure NetApp Files support for 1 TiB capacity pools
+
+AzureServiceName: Azure NetApp Files
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Azure NetApp Files support for 2 TiB capacity pools 
+
+AzureServiceName: Azure NetApp Files
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Azure Automation supports PowerShell 7.2 runbooks
+
+AzureServiceName: Azure Automation
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Announcing General Availability of Microsoft Defender for APIs
+
+AzureServiceName: Microsoft Defender for APIs
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Create and manage Azure Monitor managed Prometheus rules in Azure portal
+
+AzureServiceName: Azure Monitor
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Extended support for .NET 6 (LTS) ends on 12 November 2024
+
+AzureServiceName: .NET
+Update Kind: Unsupported
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: Upgrade your apps to .NET 8 (LTS)
+
+
+==============================================================
+Title: Extended support for .NET 7 (STS) ends on 14 May 2024
+
+AzureServiceName: .NET
+Update Kind: Unsupported
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: Extended support for .NET 7 (STS) ends on 14 May 2024. It is recommended to upgrade your apps to .NET 8 (LTS) to continue receiving support. Please refer to the Microsoft documentation for guidance on how to upgrade and migrate your apps.
+
+
+==============================================================
+Title: General Availability - Azure Backup for AKS
+
+AzureServiceName: Azure Backup for AKS
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Kafka Input and Output with Azure Stream Analytics
+
+AzureServiceName: Azure Stream Analytics
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public preview: Schema migration for target Azure SQL DB
+
+AzureServiceName: Azure Database Migration Service
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview Preview: Protocol Buffers (Protobuf) with Azure Stream Analytics
+
+AzureServiceName: Azure Stream Analytics
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Azure Portal experience for Azure Database Migration Service
+
+AzureServiceName: Azure Database Migration Service
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: SKU recommendation in Azure SQL Migration extension - Azure Data Studio
+
+AzureServiceName: Azure SQL Migration extension for Azure Data Studio
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: pgvector 0.5.1 extension
+
+AzureServiceName: Pgvector
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Server logs for Azure Database for PostgreSQL - Flexible Server 
+
+AzureServiceName: Azure Database for PostgreSQL - Flexible Server
+Update Kind: Preview
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Time travel in Azure Synapse Link for Azure Cosmos DB  
+
+AzureServiceName: Azure Synapse Link for Azure Cosmos DB
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Change data capture in Azure Cosmos DB analytical store 
+
+AzureServiceName: Azure Cosmos DB
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability of Azure App Configuration Kubernetes Provider
+
+AzureServiceName: Azure App Configuration Kubernetes Provider
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: User and group quota management in Azure NetApp Files 
+
+AzureServiceName: Azure NetApp Files
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title:  General Availability: Standard network features support in US Gov regions
+
+AzureServiceName: Azure NetApp Files
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally available: Azure Static Web Apps now supports .NET 8
+
+AzureServiceName: Azure Static Web Apps
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Public Preview: Encryption using Customer Managed Keys for Backup Vaults
+
+AzureServiceName: Azure Backup
+Update Kind: Preview
+Actionable: True
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Azure Red Hat OpenShift in Italy North
+
+AzureServiceName: Azure Red Hat OpenShift
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General availability: Azure Monitor Application Insights Browser SDK Loader for Node.js 
+
+AzureServiceName: Azure Monitor Application Insights
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: General Availability: Encryption at host for Premium SSD v2 and Ultra Disks
+
+AzureServiceName: Premium SSD v2 and Ultra Disks
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Azure Web PubSub support for Socket.IO now generally available
+
+AzureServiceName: Azure Web PubSub
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
+==============================================================
+Title: Generally Available: Collect Syslog from AKS nodes using Azure Monitor Container Insights
+
+AzureServiceName: Azure Monitor - Container Insights
+Update Kind: GenerallyAvailable
+Actionable: False
+ActionableViaAzurePolicy: False
+AnnouncementRequired: True
+MitigationInstructionMarkdown: 
+
+
