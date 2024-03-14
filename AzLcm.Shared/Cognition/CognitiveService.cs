@@ -25,7 +25,7 @@ namespace AzLcm.Shared.Cognition
             Temperature = (float)1
         };
 
-        public async Task AnalyzeAsync(SyndicationItem feed)
+        public async Task<Verdict?> AnalyzeAsync(SyndicationItem feed)
         {
             ArgumentNullException.ThrowIfNull(nameof(feed));
 
@@ -77,10 +77,6 @@ namespace AzLcm.Shared.Cognition
             }
             thread.Messages.Add(new ChatRequestUserMessage(feedDetails.ToString()));
 
-            
-            
-            
-
             try
             {
                 var response = await openAIClient.GetChatCompletionsAsync(thread);
@@ -110,13 +106,13 @@ namespace AzLcm.Shared.Cognition
 
                     //File.AppendAllText(@"C:\\GitHub\\moimhossain\\azure-lcm\\traces.txt", message.ToString());
                 }
-
+                return verdict;
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, message: "");
             }
-
+            return null;
         }
     }
 }

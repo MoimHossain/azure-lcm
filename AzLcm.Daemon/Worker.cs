@@ -1,19 +1,32 @@
 
 
 using AzLcm.Shared;
+using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.Cognition;
 using AzLcm.Shared.Storage;
 
 namespace AzLcm.Daemon
 {
     public class Worker(
-        AzUpdateSyndicationFeed azUpdateSyndicationFeed,
-        CognitiveService cognitiveService,
+        DaemonConfig config,
         FeedStorage feedStorage,
+        DevOpsClient devOpsClient,
+        CognitiveService cognitiveService,        
+        AzUpdateSyndicationFeed azUpdateSyndicationFeed,
         ILogger<Worker> logger) : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            var azdoConfig = config.GetAzureDevOpsClientConfig();
+            var connectionData = await devOpsClient.GetConnectionDataAsync(azdoConfig.orgName);
+
+            if(connectionData.AuthenticatedUser == null || 
+                string.IsNullOrWhiteSpace(connectionData.AuthenticatedUser.SubjectDescriptor))
+            {
+                logger.LogError("Failed to connect to Azure DevOps.");
+                return;
+            }
+
             await feedStorage.EnsureTableExistsAsync();
 
             while (!stoppingToken.IsCancellationRequested)
@@ -32,7 +45,7 @@ namespace AzLcm.Daemon
                     {
                         ++processedCount;
 
-                        await cognitiveService.AnalyzeAsync(feed);
+                        var verdict = await cognitiveService.AnalyzeAsync(feed);
 
                         await feedStorage.MarkAsSeenAsync(feed);
                     }
