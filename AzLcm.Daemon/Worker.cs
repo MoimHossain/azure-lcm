@@ -1,12 +1,14 @@
 
 
 using AzLcm.Shared;
+using AzLcm.Shared.Cognition;
 using AzLcm.Shared.Storage;
 
 namespace AzLcm.Daemon
 {
     public class Worker(
         AzUpdateSyndicationFeed azUpdateSyndicationFeed,
+        CognitiveService cognitiveService,
         FeedStorage feedStorage,
         ILogger<Worker> logger) : BackgroundService
     {
@@ -20,8 +22,7 @@ namespace AzLcm.Daemon
                 {
                     logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
-                
-                
+
                 var feeds = await azUpdateSyndicationFeed.ReadAsync();
                 var processedCount = 0;
                 foreach (var feed in feeds)
@@ -30,9 +31,8 @@ namespace AzLcm.Daemon
                     if(!seen)
                     {
                         ++processedCount;
-                        
-                        // process  the feed
-                        Console.WriteLine($"Processing feed {feed.Id}");
+
+                        await cognitiveService.AnalyzeAsync(feed);
 
                         await feedStorage.MarkAsSeenAsync(feed);
                     }

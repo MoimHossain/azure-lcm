@@ -6,12 +6,12 @@ namespace AzLcm.Shared
     {
         public string StorageConnectionString => ReadEnvironmentKey("AZURE_STORAGE_CONNECTION");
         public string StorageTableName => ReadEnvironmentKey("AZURE_STORAGE_TABLE_NAME");
-
-        public string AzureOpenAIUrl => ReadEnvironmentKey("AZURE_OPENAI_API_URI");
+        public string AzureOpenAIUrl => ReadEnvironmentKey("AZURE_OPENAI_ENDPOINT");
         public string AzureOpenAIKey => ReadEnvironmentKey("AZURE_OPENAI_API_KEY");
+        public string AzureOpenAIGPTDeploymentId => ReadEnvironmentKey("AZURE_OPENAI_GPT_DEPLOYMENT_ID");
+        public string AzureOpenAIDavinciDeploymentId => ReadEnvironmentKey("AZURE_OPENAI_DAVINCI_DEPLOYMENT_ID");
 
-
-        private string ReadEnvironmentKey(string key)
+        private static string ReadEnvironmentKey(string key)
         {
             var value = Environment.GetEnvironmentVariable(key);
             if (string.IsNullOrEmpty(value))

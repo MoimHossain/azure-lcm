@@ -5,6 +5,7 @@ using AzLcm.Shared.Storage;
 using Azure.AI.OpenAI;
 using Azure;
 using Microsoft.Extensions.DependencyInjection;
+using AzLcm.Shared.Cognition;
 
 namespace AzLcm.Shared
 {
@@ -20,7 +21,7 @@ namespace AzLcm.Shared
                 var config = services.GetRequiredService<DaemonConfig>();
                 return new OpenAIClient(new Uri(config.AzureOpenAIUrl), new AzureKeyCredential(config.AzureOpenAIKey));
             });
-
+            services.AddSingleton<CognitiveService>();
             return services;
         }
     }
