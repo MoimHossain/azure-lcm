@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34607.79
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzLcm.Daemon", "AzLcm.Daemon.csproj", "{3AC43305-9A8B-48F8-9C72-09DE203AC23C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzLcm.Shared", "..\AzLcm.Shared\AzLcm.Shared.csproj", "{459C0FC1-8CE1-4669-8FA9-81EAA0C31549}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3AC43305-9A8B-48F8-9C72-09DE203AC23C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AC43305-9A8B-48F8-9C72-09DE203AC23C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AC43305-9A8B-48F8-9C72-09DE203AC23C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AC43305-9A8B-48F8-9C72-09DE203AC23C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{459C0FC1-8CE1-4669-8FA9-81EAA0C31549}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{459C0FC1-8CE1-4669-8FA9-81EAA0C31549}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{459C0FC1-8CE1-4669-8FA9-81EAA0C31549}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{459C0FC1-8CE1-4669-8FA9-81EAA0C31549}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EB870B52-9069-4FEB-A762-B2EF63D18C61}
+	EndGlobalSection
+EndGlobal

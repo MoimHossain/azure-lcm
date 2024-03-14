@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "AzLcm.Daemon": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "AZURE_STORAGE_CONNECTION": "DefaultEndpointsProtocol=https;AccountName=genpurposemh;AccountKey=bLSjVcby7bsQH5BFypgSIdNxp89OQqk6TTB9gV5ZkzlL9LOG+qTu/4Wd5bS1MMrU/EdbasTc0yb1+AStBRD0sQ==;EndpointSuffix=core.windows.net",
+        "AZURE_STORAGE_TABLE_NAME": "azupdatefeed"
+      },
+      "dotnetRunMessages": true
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json"
+}
