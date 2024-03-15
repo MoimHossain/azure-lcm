@@ -1,16 +1,15 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/runtime:8.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["AzLcm.Daemon.csproj", "."]
-RUN dotnet restore "./AzLcm.Daemon.csproj"
+COPY ["AzLcm.Daemon/AzLcm.Daemon.csproj", "AzLcm.Daemon/"]
+COPY ["AzLcm.Shared/AzLcm.Shared.csproj", "AzLcm.Shared/"]
+RUN dotnet restore "./AzLcm.Daemon/./AzLcm.Daemon.csproj"
 COPY . .
-WORKDIR "/src/."
+WORKDIR "/src/AzLcm.Daemon"
 RUN dotnet build "./AzLcm.Daemon.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

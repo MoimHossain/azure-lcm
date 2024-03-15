@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34607.79
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzLcm.Shared", "AzLcm.Shared\AzLcm.Shared.csproj", "{A48D81EB-D649-4BCD-BA42-43A3A31C2789}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzLcm.Daemon", "AzLcm.Daemon\AzLcm.Daemon.csproj", "{BB26B7D6-89F3-4634-BD1A-5F83F8CCF882}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A48D81EB-D649-4BCD-BA42-43A3A31C2789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A48D81EB-D649-4BCD-BA42-43A3A31C2789}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A48D81EB-D649-4BCD-BA42-43A3A31C2789}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A48D81EB-D649-4BCD-BA42-43A3A31C2789}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB26B7D6-89F3-4634-BD1A-5F83F8CCF882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB26B7D6-89F3-4634-BD1A-5F83F8CCF882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB26B7D6-89F3-4634-BD1A-5F83F8CCF882}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB26B7D6-89F3-4634-BD1A-5F83F8CCF882}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EB870B52-9069-4FEB-A762-B2EF63D18C61}
+	EndGlobalSection
+EndGlobal
