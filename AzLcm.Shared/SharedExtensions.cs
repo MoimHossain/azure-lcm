@@ -38,6 +38,7 @@ namespace AzLcm.Shared
         public static IServiceCollection AddRequiredServices(this IServiceCollection services)
         {   
             services.AddSingleton<DaemonConfig>();
+            services.AddSingleton<WorkItemTemplateStorage>();
             services.AddSingleton<FeedStorage>();
             services.AddSingleton<AzUpdateSyndicationFeed>();
 

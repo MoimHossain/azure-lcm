@@ -28,11 +28,11 @@ namespace AzLcm.Shared.AzureDevOps.Abstracts
         }
 
         protected async virtual Task<TResponsePayload> PostAsync<TRequestPayload, TResponsePayload>(
-            string orgName, string apiPath, TRequestPayload payload, bool elevate = false)
+            string orgName, string apiPath, TRequestPayload payload, bool elevate = false, string contentType = "")
             where TRequestPayload : class
             where TResponsePayload : class
         {
-            return await SendRequestCoreAsync<TRequestPayload, TResponsePayload>(orgName, AzureDevOpsClientConstants.CoreAPI.NAME, apiPath, payload, HttpMethod.Post, elevate);
+            return await SendRequestCoreAsync<TRequestPayload, TResponsePayload>(orgName, AzureDevOpsClientConstants.CoreAPI.NAME, apiPath, payload, HttpMethod.Post, elevate, contentType);
         }
 
         protected async virtual Task<TResponsePayload> PutAsync<TRequestPayload, TResponsePayload>(
@@ -99,7 +99,11 @@ namespace AzLcm.Shared.AzureDevOps.Abstracts
         }
 
         private async Task<TResponsePayload> SendRequestCoreAsync<TRequestPayload, TResponsePayload>(
-            string orgName, string apiType, string apiPath, TRequestPayload payload, HttpMethod httpMethod, bool elevate = false)
+            string orgName, string apiType, string apiPath, 
+            TRequestPayload payload, 
+            HttpMethod httpMethod, 
+            bool elevate = false, 
+            string contentType = "application/json")
             where TRequestPayload : class
             where TResponsePayload : class
         {
@@ -111,7 +115,7 @@ namespace AzLcm.Shared.AzureDevOps.Abstracts
             using var memoryStream = new MemoryStream();
             await JsonSerializer.SerializeAsync<TRequestPayload>(memoryStream, payload, this.jsonSerializerOptions);
 
-            var jsonContent = new StringContent(Encoding.UTF8.GetString(memoryStream.ToArray()), Encoding.UTF8, "application/json");
+            var jsonContent = new StringContent(Encoding.UTF8.GetString(memoryStream.ToArray()), Encoding.UTF8, contentType);
             var request = new HttpRequestMessage(httpMethod, path)
             {
                 Content = jsonContent

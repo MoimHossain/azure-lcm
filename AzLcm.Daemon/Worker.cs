@@ -10,9 +10,10 @@ namespace AzLcm.Daemon
     public class Worker(
         DaemonConfig config,
         FeedStorage feedStorage,
-        DevOpsClient devOpsClient,
+        DevOpsClient devOpsClient,        
         CognitiveService cognitiveService,        
         AzUpdateSyndicationFeed azUpdateSyndicationFeed,
+        WorkItemTemplateStorage workItemTemplateStorage,
         ILogger<Worker> logger) : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -28,6 +29,7 @@ namespace AzLcm.Daemon
             }
 
             await feedStorage.EnsureTableExistsAsync();
+            var template = await workItemTemplateStorage.GetWorkItemTemplateAsync();
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -41,11 +43,12 @@ namespace AzLcm.Daemon
                 foreach (var feed in feeds)
                 {
                     var seen = await feedStorage.HasSeenAsync(feed);
-                    if(!seen)
+                    //if(!seen)
                     {
                         ++processedCount;
 
                         var verdict = await cognitiveService.AnalyzeAsync(feed);
+                        await devOpsClient.CreateWorkItemAsync(azdoConfig.orgName, template, feed, verdict);
 
                         await feedStorage.MarkAsSeenAsync(feed);
                     }
