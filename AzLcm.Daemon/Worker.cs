@@ -43,7 +43,7 @@ namespace AzLcm.Daemon
                 foreach (var feed in feeds)
                 {
                     var seen = await feedStorage.HasSeenAsync(feed);
-                    //if(!seen)
+                    if(!seen)
                     {
                         ++processedCount;
 
