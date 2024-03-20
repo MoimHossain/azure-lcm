@@ -17,7 +17,7 @@ namespace AzLcm.Shared.Cognition.Models
 
     public class Verdict
     {
-        public string? AzureServiceName { get; set; }
+        public List<string>? AzureServiceNames { get; set; }
         public UpdateKind UpdateKind { get; set; }
         public bool Actionable { get; set; }
         public bool AnnouncementRequired { get; set; }

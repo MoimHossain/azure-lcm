@@ -44,7 +44,7 @@ namespace AzLcm.Shared.Cognition
                 You MUST Produce response in JSON that follows the schema below:                
                 ```
                 type {
-                    azureServiceName: string,
+                    azureServiceNames: string[]
                     updateKind: 'Retired' | 'Deprecated' | 'Unsupported' | 'GenerallyAvailable' | 'Preview' | 'Unknown',
                     actionable: boolean
                     announcementRequired: boolean
@@ -55,12 +55,12 @@ namespace AzLcm.Shared.Cognition
                 Example response:
                 ```
                 {
-                    "azureServiceName": "Azure Service",
+                    "azureServiceNames": ["Log Analytics", "Azure Monitor"],
                     "updateKind": "Retired",
                     "actionable": true,
                     "announcementRequired": true,
                     "actionableViaAzurePolicy": true,
-                    "mitigationInstructionMarkdown": "Some markdown instructions possibly including policy snippets that shows how to mitigate this"
+                    "mitigationInstructionMarkdown": "You can mitigate further consuming the service with following policy: { ...policy code snippet } "
                 }
                 ```
                 """));
@@ -92,7 +92,10 @@ namespace AzLcm.Shared.Cognition
                     message.AppendLine($"==============================================================");
                     message.AppendLine($"Title: {feed.Title.Text}");
                     message.AppendLine($"");
-                    message.AppendLine($"AzureServiceName: {verdict.AzureServiceName}");
+                    if(verdict.AzureServiceNames != null )
+                    {
+                        message.AppendLine($"AzureServiceNames: {string.Join(", ", verdict.AzureServiceNames)}");
+                    }                    
                     message.AppendLine($"Update Kind: {verdict.UpdateKind}");
                     message.AppendLine($"Actionable: {verdict.Actionable}");
                     message.AppendLine($"ActionableViaAzurePolicy: {verdict.ActionableViaAzurePolicy}");

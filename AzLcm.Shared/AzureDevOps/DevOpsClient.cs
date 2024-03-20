@@ -75,7 +75,10 @@ namespace AzLcm.Shared.AzureDevOps
                     if(verdict != null)
                     {
                         tplValue = tplValue.Replace("{Classification.Kind}", verdict.UpdateKind.ToString());
-                        tplValue = tplValue.Replace("{Classification.ServiceName}", verdict.AzureServiceName);
+                        if(verdict.AzureServiceNames != null)
+                        {
+                            tplValue = tplValue.Replace("{Classification.ServiceName}", string.Join(", ", verdict.AzureServiceNames));
+                        }                        
                         tplValue = tplValue.Replace("{Classification.AiSuggestion}", $"{verdict.MitigationInstructionMarkdown}");
                         tplValue = tplValue.Replace("{Classification.Tags}", workItemTags);
                     }

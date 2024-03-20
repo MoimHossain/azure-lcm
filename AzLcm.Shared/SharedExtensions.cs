@@ -5,6 +5,7 @@ using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.AzureDevOps.Authorizations;
 using AzLcm.Shared.AzureDevOps.Authorizations.AuthSchemes;
 using AzLcm.Shared.Cognition;
+using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Storage;
 using Azure;
 using Azure.AI.OpenAI;
@@ -41,6 +42,7 @@ namespace AzLcm.Shared
             services.AddSingleton<WorkItemTemplateStorage>();
             services.AddSingleton<FeedStorage>();
             services.AddSingleton<AzUpdateSyndicationFeed>();
+            services.AddSingleton<HtmlExtractor>();
 
             services.AddSingleton((services) => {
                 var config = services.GetRequiredService<DaemonConfig>();

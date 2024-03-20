@@ -3,6 +3,7 @@
 using AzLcm.Shared;
 using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.Cognition;
+using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Storage;
 
 namespace AzLcm.Daemon
@@ -11,7 +12,8 @@ namespace AzLcm.Daemon
         DaemonConfig config,
         FeedStorage feedStorage,
         DevOpsClient devOpsClient,        
-        CognitiveService cognitiveService,        
+        CognitiveService cognitiveService,
+        HtmlExtractor htmlExtractor,
         AzUpdateSyndicationFeed azUpdateSyndicationFeed,
         WorkItemTemplateStorage workItemTemplateStorage,
         ILogger<Worker> logger) : BackgroundService
@@ -28,6 +30,8 @@ namespace AzLcm.Daemon
                 return;
             }
 
+            await htmlExtractor.PrepareAsync();
+
             await feedStorage.EnsureTableExistsAsync();
             var template = await workItemTemplateStorage.GetWorkItemTemplateAsync();
 
@@ -43,7 +47,18 @@ namespace AzLcm.Daemon
                 foreach (var feed in feeds)
                 {
                     var seen = await feedStorage.HasSeenAsync(feed);
-                    if(!seen)
+
+
+                    // ##########
+                    if(feed.Links != null && feed.Links.Any())
+                    {
+                        await htmlExtractor.ExtractAsync(feed.Links[0].Uri);
+                    }
+
+
+
+
+                    if (!seen)
                     {
                         ++processedCount;
 
