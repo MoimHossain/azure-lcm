@@ -11,6 +11,14 @@
       href="https://azure.microsoft.com/updates/feed/"
       rel="self"
       type="application/rss+xml" />
-    
+      <item>
+        <guid isPermaLink="false">updatemanagement-retired-31august2024</guid>
+        <link>https://azure.microsoft.com/en-us/updates/updatemanagement-retired-31august2024/</link>
+        <title>On 31 August 2024, both the update management feature of Azure Automation and the Log Analytics agent it uses will be retired</title>
+        <description>n 31 August 2024, both the update management feature of Azure Automation and the Log Analytics agent it uses will be retired</description>
+        <pubDate>Sat, 23 Dec 2023 00:00:11 Z</pubDate>
+        <atom:content type="text">n 31 August 2024, both the update management feature of Azure Automation and the Log Analytics agent it uses will be retired</atom:content>
+        <content:encoded/>
+      </item>    
   </channel>
 </rss>
