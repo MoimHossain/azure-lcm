@@ -1,6 +1,7 @@
 ﻿
 
 using AzLcm.Shared.Cognition.Models;
+using AzLcm.Shared.PageScrapping;
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.Logging;
 using System.ServiceModel.Syndication;
@@ -25,7 +26,8 @@ namespace AzLcm.Shared.Cognition
             Temperature = (float)1
         };
 
-        public async Task<Verdict?> AnalyzeAsync(SyndicationItem feed)
+        public async Task<Verdict?> AnalyzeAsync(
+            SyndicationItem feed, List<HtmlFragment> fragments)
         {
             ArgumentNullException.ThrowIfNull(nameof(feed));
 
@@ -34,10 +36,10 @@ namespace AzLcm.Shared.Cognition
             thread.Messages.Add(new ChatRequestSystemMessage(
                 """
                 You are Product Owner for the Life Cycle management team. 
-                You need to classify the Azure Updates:
-                    1. If some service is retired, unsupported or deprecated.
-                        a. If possible we should also come up with azure policy to mitigate the impact.
-                    2. If some service became GA or Preview, we must make announcement.
+                You need to classify the following Azure Update feed:
+                    1. If any service is retired, unsupported or deprecated.
+                        a. When possible you should come up with azure policy (code snippet) to mitigate the impact.
+                    2. If any service became GA or Preview, you must make announcement.
                     3. If you can't classify an update set updateKind to Unknown.
                     4. Only respond with JSON content - never respond with free texts.
                 
@@ -75,6 +77,19 @@ namespace AzLcm.Shared.Cognition
             {
                 feedDetails.AppendLine($"Content: {textContent.Text}");
             }
+
+            foreach (var fragment in fragments)
+            {
+                feedDetails.AppendLine($"{fragment.Content}");
+                if(fragment.Links != null)
+                {
+                    foreach(var link in fragment.Links)
+                    {
+                        feedDetails.AppendLine($"Ref: {link}");
+                    }
+                }
+            }
+
             thread.Messages.Add(new ChatRequestUserMessage(feedDetails.ToString()));
 
             try

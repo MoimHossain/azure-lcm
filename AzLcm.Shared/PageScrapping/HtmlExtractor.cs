@@ -1,49 +1,81 @@
 ﻿
 
+using Abot2.Crawler;
+using Abot2.Poco;
+using AngleSharp.Html.Dom;
 using Microsoft.Extensions.Logging;
-using Microsoft.Playwright;
+
 
 namespace AzLcm.Shared.PageScrapping
 {
     public class HtmlExtractor(ILogger<HtmlExtractor> logger)
     {
-        private IPlaywright? playwright;
 
-        public async Task PrepareAsync()
+        public async Task<List<HtmlFragment>> ExtractAsync(Uri hRef)
         {
-            //logger.Log(LogLevel.Information, "Creating playwright instances..");
+            var htmlFragments = new List<HtmlFragment>();
+            var config = new CrawlConfiguration
+            {
+                CrawlTimeoutSeconds = 100,
+                MaxConcurrentThreads = 10,
+                MaxPagesToCrawl = 4,
+                MinCrawlDelayPerDomainMilliSeconds = 3000
+            };
 
-            //try
-            //{
-            //    playwright = await Playwright.CreateAsync();
-            //    await playwright.Chromium.LaunchAsync();
-            //}
-            //catch (Exception ex)
-            //{
-            //    logger.LogError(ex, ex.Message);
-            //}
+
+            var crawler = new PoliteWebCrawler(config);
+
+            crawler.PageCrawlCompleted += (sender, pageCrawlEvent) =>
+            {
+                if (pageCrawlEvent.CrawledPage.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var fragments = ExtractElementsText(pageCrawlEvent.CrawledPage.AngleSharpHtmlDocument);
+                    htmlFragments.AddRange(fragments);
+                }
+            };
+            await crawler.CrawlAsync(hRef);            
+            return htmlFragments;
         }
 
-        public void TearDownAsync()
+        private static List<HtmlFragment> ExtractElementsText(IHtmlDocument htmlDocument)
         {
-            //playwright?.Dispose();
-        }
+            var fragments = new List<HtmlFragment>();
+            var mainTags = htmlDocument.All.Where(p => p.LocalName == "main" && p.ClassList.Contains("wa-container"));
 
-        public async Task ExtractAsync(Uri hRef)
-        {
-            //using var playwright = await Playwright.CreateAsync();
-            //var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-            //{
-            //    Headless = true
-            //});
-            //if(playwright != null )
-            //{
-            //    var browser = await playwright.Chromium.LaunchAsync();
-            //    var page = await browser.NewPageAsync();
-
-            //    await page.GotoAsync(hRef.ToString());
-            //    await page.CloseAsync();
-            //}
+            foreach (var mainTag in mainTags)
+            {
+                if (mainTag != null)
+                {
+                    var tags = mainTag.QuerySelectorAll("h1, h2, h3, h4, h5, h6, p");
+                    if (tags != null && tags.Length != 0)
+                    {
+                        foreach (var tag in tags)
+                        {
+                            var content = tag.TextContent.Trim();
+                            if(!string.IsNullOrWhiteSpace(content))
+                            {
+                                var links = new List<string>();                                
+                                var anchors = tag.QuerySelectorAll("a");
+                                if (anchors != null && anchors.Length != 0)
+                                {
+                                    foreach (var anchor in anchors)
+                                    {
+                                        if (anchor != null && anchor.HasAttribute("href"))
+                                        {
+                                            var href = anchor.GetAttribute("href");
+                                            links.Add(href);                                            
+                                        }
+                                    }
+                                }
+                                fragments.Add(new HtmlFragment(content, links));
+                            }
+                        }
+                    }
+                }
+            }
+            return fragments;
         }
     }
+
+    public record HtmlFragment(string Content, List<string> Links);
 }

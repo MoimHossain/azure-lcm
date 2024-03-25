@@ -5,6 +5,7 @@ using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.Cognition;
 using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Storage;
+using System.ServiceModel.Syndication;
 
 namespace AzLcm.Daemon
 {
@@ -30,8 +31,6 @@ namespace AzLcm.Daemon
                 return;
             }
 
-            await htmlExtractor.PrepareAsync();
-
             await feedStorage.EnsureTableExistsAsync();
             var template = await workItemTemplateStorage.GetWorkItemTemplateAsync();
 
@@ -48,21 +47,13 @@ namespace AzLcm.Daemon
                 {
                     var seen = await feedStorage.HasSeenAsync(feed);
 
-
-                    // ##########
-                    if(feed.Links != null && feed.Links.Any())
-                    {
-                        await htmlExtractor.ExtractAsync(feed.Links[0].Uri);
-                    }
-
-
-
-
                     if (!seen)
                     {
                         ++processedCount;
 
-                        var verdict = await cognitiveService.AnalyzeAsync(feed);
+                        var fragments = await GetHtmlExtractedFragmentsAsync(feed);
+
+                        var verdict = await cognitiveService.AnalyzeAsync(feed, fragments);
                         await devOpsClient.CreateWorkItemAsync(azdoConfig.orgName, template, feed, verdict);
 
                         await feedStorage.MarkAsSeenAsync(feed);
@@ -72,6 +63,17 @@ namespace AzLcm.Daemon
                 logger.Log(LogLevel.Information, $"Process {processedCount} items, out of {feeds.Count()} feeds.");
                 await Task.Delay(1000, stoppingToken);
             }
+        }
+
+        private async Task<List<HtmlFragment>> GetHtmlExtractedFragmentsAsync(SyndicationItem feed)
+        {
+            if (feed.Links != null && feed.Links.Count != 0)
+            {
+                var content = await htmlExtractor.ExtractAsync(feed.Links[0].Uri);
+
+                return content;
+            }
+            return new List<HtmlFragment>();
         }
     }
 }
