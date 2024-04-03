@@ -7,7 +7,7 @@ namespace AzLcm.Shared.Storage
 {
     public class FeedStorage(DaemonConfig daemonConfig)
     {   
-        private readonly TableClient tableClient = new(daemonConfig.StorageConnectionString, daemonConfig.StorageTableName);
+        private readonly TableClient tableClient = new(daemonConfig.StorageConnectionString, daemonConfig.FeedTableName);
 
         public async Task EnsureTableExistsAsync()
         {

@@ -4,6 +4,7 @@ using AzLcm.Shared;
 using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.Cognition;
 using AzLcm.Shared.PageScrapping;
+using AzLcm.Shared.Policy;
 using AzLcm.Shared.Storage;
 using System.ServiceModel.Syndication;
 
@@ -12,9 +13,11 @@ namespace AzLcm.Daemon
     public class Worker(
         DaemonConfig config,
         FeedStorage feedStorage,
+        PolicyStorage policyStorage,
         DevOpsClient devOpsClient,        
         CognitiveService cognitiveService,
         HtmlExtractor htmlExtractor,
+        PolicyReader policyReader,
         AzUpdateSyndicationFeed azUpdateSyndicationFeed,
         WorkItemTemplateStorage workItemTemplateStorage,
         ILogger<Worker> logger) : BackgroundService
@@ -32,6 +35,7 @@ namespace AzLcm.Daemon
             }
 
             await feedStorage.EnsureTableExistsAsync();
+            await policyStorage.EnsureTableExistsAsync();
             var template = await workItemTemplateStorage.GetWorkItemTemplateAsync();
 
             while (!stoppingToken.IsCancellationRequested)
@@ -41,26 +45,39 @@ namespace AzLcm.Daemon
                     logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
 
-                var feeds = await azUpdateSyndicationFeed.ReadAsync();
-                var processedCount = 0;
-                foreach (var feed in feeds)
+                await policyReader.ReadPoliciesAsync(async policy => 
                 {
-                    var seen = await feedStorage.HasSeenAsync(feed);
+                    var difference = await policyStorage.HasSeenAsync(policy);
 
-                    if (!seen)
+                    if (difference.ChangeKind == Shared.Policy.Models.ChangeKind.Add)
                     {
-                        ++processedCount;
-
-                        var fragments = await GetHtmlExtractedFragmentsAsync(feed);
-
-                        var verdict = await cognitiveService.AnalyzeAsync(feed, fragments);
-                        await devOpsClient.CreateWorkItemAsync(azdoConfig.orgName, template, feed, verdict);
-
-                        await feedStorage.MarkAsSeenAsync(feed);
+                        // new policy
                     }
-                }
 
-                logger.Log(LogLevel.Information, $"Process {processedCount} items, out of {feeds.Count()} feeds.");
+
+                }, stoppingToken);
+
+
+                //var feeds = await azUpdateSyndicationFeed.ReadAsync();
+                //var processedCount = 0;
+                //foreach (var feed in feeds)
+                //{
+                //    var seen = await feedStorage.HasSeenAsync(feed);
+
+                //    if (!seen)
+                //    {
+                //        ++processedCount;
+
+                //        var fragments = await GetHtmlExtractedFragmentsAsync(feed);
+
+                //        var verdict = await cognitiveService.AnalyzeAsync(feed, fragments);
+                //        await devOpsClient.CreateWorkItemAsync(azdoConfig.orgName, template, feed, verdict);
+
+                //        await feedStorage.MarkAsSeenAsync(feed);
+                //    }
+                //}
+
+                //logger.Log(LogLevel.Information, $"Process {processedCount} items, out of {feeds.Count()} feeds.");
                 await Task.Delay(1000, stoppingToken);
             }
         }

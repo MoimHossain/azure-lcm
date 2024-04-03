@@ -5,16 +5,15 @@ using System.Xml;
 
 namespace AzLcm.Shared
 {
-    public class AzUpdateSyndicationFeed(HttpClient httpClient)
+    public class AzUpdateSyndicationFeed(DaemonConfig daemonConfig, HttpClient httpClient)
     {
         public async Task<IEnumerable<SyndicationItem>> ReadAsync()
         {
             var url = "https://azurecomcdn.azureedge.net/en-us/updates/feed/";
 
-            var configuredUri = Environment.GetEnvironmentVariable("AZURE_UPDATE_FEED_URI");
-            if (!string.IsNullOrEmpty(configuredUri))
+            if (!string.IsNullOrWhiteSpace(daemonConfig.AzureUpdateFeedUri))
             {
-                url = configuredUri;
+                url = daemonConfig.AzureUpdateFeedUri;
             }
 
             var feedContent = await httpClient.GetStringAsync (url);
