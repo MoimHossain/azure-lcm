@@ -4,15 +4,29 @@ using Abot2.Crawler;
 using Abot2.Poco;
 using AngleSharp.Html.Dom;
 using Microsoft.Extensions.Logging;
+using Serilog.Core;
+using System.ServiceModel.Syndication;
 
 
 namespace AzLcm.Shared.PageScrapping
 {
     public class HtmlExtractor(ILogger<HtmlExtractor> logger)
     {
-
-        public async Task<List<HtmlFragment>> ExtractAsync(Uri hRef)
+        public async Task<List<HtmlFragment>> GetHtmlExtractedFragmentsAsync(SyndicationItem feed)
         {
+            if (feed.Links != null && feed.Links.Count != 0)
+            {
+                var content = await ExtractAsync(feed.Links[0].Uri);
+
+                return content;
+            }
+            return [];
+        }
+
+        private async Task<List<HtmlFragment>> ExtractAsync(Uri hRef)
+        {
+            logger.LogInformation("Page scrapping {hRef}", hRef);
+
             var htmlFragments = new List<HtmlFragment>();
             var config = new CrawlConfiguration
             {

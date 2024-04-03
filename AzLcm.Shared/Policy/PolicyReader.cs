@@ -12,12 +12,12 @@ namespace AzLcm.Shared.Policy
         ILogger<PolicyReader> logger,
         IHttpClientFactory httpClientFactory)
     {
-        public async Task ReadPoliciesAsync(Action<PolicyModel> work, CancellationToken stoppingToken)
+        public async Task ReadPoliciesAsync(Func<PolicyModel, Task> work, CancellationToken stoppingToken)
         {
             await ExploreDirectoryAsync($"{GetBaseURI()}{GetPath()}", work, stoppingToken);
         }
 
-        private async Task ExploreDirectoryAsync(string uri, Action<PolicyModel> work, CancellationToken stoppingToken)
+        private async Task ExploreDirectoryAsync(string uri, Func<PolicyModel, Task> work, CancellationToken stoppingToken)
         {
             var httpClient = httpClientFactory.CreateClient();
             var response = await httpClient.SendAsync(CreateRequestBody(uri), stoppingToken);
@@ -48,7 +48,7 @@ namespace AzLcm.Shared.Policy
             }
         }
 
-        private async Task ProcessPolicyFileAsync(Action<PolicyModel> work, GitHubItem item, CancellationToken stoppingToken)
+        private async Task ProcessPolicyFileAsync(Func<PolicyModel, Task> work, GitHubItem item, CancellationToken stoppingToken)
         {
             if (!string.IsNullOrWhiteSpace(item.DownloadUrl))
             {
@@ -58,7 +58,7 @@ namespace AzLcm.Shared.Policy
                     var policy = await httpClient.GetFromJsonAsync<PolicyModel>(item.DownloadUrl, stoppingToken);
                     if (work != null && policy != null)
                     {
-                        work(policy);
+                        await work(policy);
                     }
                 }
                 catch (Exception ex)
@@ -73,7 +73,10 @@ namespace AzLcm.Shared.Policy
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             request.Headers.Accept.ParseAdd("application/vnd.github+json");
             request.Headers.UserAgent.ParseAdd("policy-daemon");
-            request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {daemonConfig.GitHubPAT}");
+            if(!string.IsNullOrWhiteSpace(daemonConfig.GitHubPAT))
+            {
+                request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {daemonConfig.GitHubPAT}");
+            }
             return request;
         }
 

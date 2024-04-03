@@ -31,48 +31,25 @@ namespace AzLcm.Shared.Storage
             }
 
             if (existingEntity.Value != null && latestChanges != null)
-            {
-                var differences = new Dictionary<string, object>();
+            {   
                 var oldProperties = existingEntity.Value.ToImmutableDictionary();
-                // TODO : Optimize this following later
-                foreach (var oldKey in oldProperties.Keys)
-                {
-                    if (!latestChanges.ContainsKey(oldKey))
-                    {
-                        differences[oldKey] = oldProperties[oldKey];
-                    }
-                    else if (latestChanges[oldKey] != oldProperties[oldKey])
-                    {
-                        differences[oldKey] = oldProperties[oldKey];
-                    }
-                }
-                
-                foreach (var newKey in latestChanges.Keys)
-                {
-                    if (!oldProperties.ContainsKey(newKey))
-                    {
-                        differences[newKey] = latestChanges[newKey];
-                    }
-                    else if (latestChanges[newKey] != oldProperties[newKey])
-                    {
-                        differences[newKey] = oldProperties[newKey];
-                    }
-                }
 
-                if (differences.Count > 0)
+                (var hasChanges, var delta) = latestChanges.HasChanges(oldProperties);
+
+                if (hasChanges)
                 {
-                    return new PolicyModelChange(ChangeKind.Update, policy, differences);
+                    return new PolicyModelChange(ChangeKind.Update, policy, delta);
                 }
             }
 
             return new PolicyModelChange(ChangeKind.None, policy, null);
         }
 
-        public async Task MarkAsSeenAsync(PolicyModel policy)
+        public async Task MarkAsSeenAsync(PolicyModel policy, CancellationToken stoppingToken)
         {
             ArgumentNullException.ThrowIfNull(policy, nameof(policy));
 
-            await tableClient.UpsertEntityAsync(policy.ToTableEntity());
+            await tableClient.UpsertEntityAsync(policy.ToTableEntity(), TableUpdateMode.Merge, stoppingToken);
         }
     }
 }

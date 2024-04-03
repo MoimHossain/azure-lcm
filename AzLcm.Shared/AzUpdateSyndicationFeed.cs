@@ -7,7 +7,7 @@ namespace AzLcm.Shared
 {
     public class AzUpdateSyndicationFeed(DaemonConfig daemonConfig, HttpClient httpClient)
     {
-        public async Task<IEnumerable<SyndicationItem>> ReadAsync()
+        public async Task<IEnumerable<SyndicationItem>> ReadAsync(CancellationToken stoppingToken)
         {
             var url = "https://azurecomcdn.azureedge.net/en-us/updates/feed/";
 
@@ -16,7 +16,7 @@ namespace AzLcm.Shared
                 url = daemonConfig.AzureUpdateFeedUri;
             }
 
-            var feedContent = await httpClient.GetStringAsync (url);
+            var feedContent = await httpClient.GetStringAsync(url, stoppingToken);
             using var reader = XmlReader.Create(new StringReader(feedContent));
             var feed = SyndicationFeed.Load(reader);
 

@@ -27,7 +27,7 @@ namespace AzLcm.Shared.Cognition
         };
 
         public async Task<Verdict?> AnalyzeAsync(
-            SyndicationItem feed, List<HtmlFragment> fragments)
+            SyndicationItem feed, List<HtmlFragment> fragments, CancellationToken stoppingToken)
         {
             ArgumentNullException.ThrowIfNull(nameof(feed));
 
@@ -94,7 +94,7 @@ namespace AzLcm.Shared.Cognition
 
             try
             {
-                var response = await openAIClient.GetChatCompletionsAsync(thread);
+                var response = await openAIClient.GetChatCompletionsAsync(thread, stoppingToken);
                 var rawContent = response.Value.Choices[0].Message.Content;
 
                 logger.LogInformation($"ASK: {feed.Title.Text}");

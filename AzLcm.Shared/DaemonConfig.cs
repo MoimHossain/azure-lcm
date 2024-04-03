@@ -38,6 +38,9 @@ namespace AzLcm.Shared
         public string AzurePolicyPath => ReadEnvironmentKey("AZURE_POLICY_PATH");
         public string GitHubPAT => ReadEnvironmentKey("GITHUB_PAT");
 
+        public bool ProcessPolicy => GetEnvironmentVariableAsBool("PROCESS_AZURE_POLICY", false);
+        public bool ProcessFeed => GetEnvironmentVariableAsBool("PROCESS_AZURE_FEED", false);
+
         private static string GetEnvironmentVariableAsString(string name, string defaultValue)
         {
             var value = Environment.GetEnvironmentVariable(name);

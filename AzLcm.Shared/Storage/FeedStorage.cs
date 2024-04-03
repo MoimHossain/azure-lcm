@@ -6,7 +6,7 @@ using System.ServiceModel.Syndication;
 namespace AzLcm.Shared.Storage
 {
     public class FeedStorage(DaemonConfig daemonConfig)
-    {   
+    {
         private readonly TableClient tableClient = new(daemonConfig.StorageConnectionString, daemonConfig.FeedTableName);
 
         public async Task EnsureTableExistsAsync()
@@ -14,17 +14,17 @@ namespace AzLcm.Shared.Storage
             await tableClient.CreateIfNotExistsAsync();
         }
 
-        public async Task<bool> HasSeenAsync(SyndicationItem feed)
+        public async Task<bool> HasSeenAsync(SyndicationItem feed, CancellationToken stoppingToken)
         {
             ArgumentNullException.ThrowIfNull(feed, nameof(feed));
 
             var (partitionKey, rowKey) = feed.GetKeyPair();
-            
-            var existingEntity = await tableClient.GetEntityIfExistsAsync<TableEntity>(partitionKey, rowKey);
+
+            var existingEntity = await tableClient.GetEntityIfExistsAsync<TableEntity>(partitionKey, rowKey, null, stoppingToken);
             return existingEntity.HasValue;
         }
 
-        public async Task MarkAsSeenAsync(SyndicationItem feed)
+        public async Task MarkAsSeenAsync(SyndicationItem feed, CancellationToken stoppingToken)
         {
             ArgumentNullException.ThrowIfNull(feed, nameof(feed));
 
@@ -34,7 +34,7 @@ namespace AzLcm.Shared.Storage
                 {
                     { "FeedId", feed.Id },
                     { "Title", feed.Title.Text }
-                });
+                }, TableUpdateMode.Merge, stoppingToken);
         }
     }
 }

@@ -7,23 +7,22 @@ namespace AzLcm.Shared.Storage
 {
     public class WorkItemTemplateStorage(JsonSerializerOptions jsonSerializerOptions)
     {
-        private async Task<string> GetTemplateTextAsync()
+        private async Task<string> GetTemplateTextAsync(CancellationToken stoppingToken)
         {
             var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.WorkItemTemplate.json";
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
             if (stream != null)
             {
                 using var reader = new StreamReader(stream);                
-                string fileContents = await reader.ReadToEndAsync();
+                string fileContents = await reader.ReadToEndAsync(stoppingToken);
                 return fileContents;
             }
             throw new InvalidOperationException($"Resource {resourceName} not found");
         }
 
-        public async Task<WorkItemTemplate?> GetWorkItemTemplateAsync()
+        public async Task<WorkItemTemplate?> GetWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            var templateText = await GetTemplateTextAsync();
-
+            var templateText = await GetTemplateTextAsync(stoppingToken);
             var template = JsonSerializer.Deserialize<WorkItemTemplate>(templateText, jsonSerializerOptions);
             return template;
         }

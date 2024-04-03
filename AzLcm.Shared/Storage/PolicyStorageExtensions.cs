@@ -43,5 +43,28 @@ namespace AzLcm.Shared.Storage
                     { "MetadataVersion", policy.Properties.Metadata.Version }
                 };
         }
+
+        public static (bool hasChanges, Dictionary<string, object> delta) HasChanges(
+            this IDictionary<string, object> source, IDictionary<string, object> target)
+        {
+            var delta = new Dictionary<string, object>();
+            var keysToCompare = new List<string>() 
+            {
+                "Id", "Name", "PolicyType", "DisplayName", "Description", "Version","Mode","Category","Deprecated","Preview","MetadataVersion" 
+            };
+            
+
+            if (source != null && target != null)
+            {
+                foreach (var key in keysToCompare)
+                {
+                    if (source[key] != null && target[key] != null && !source[key].Equals(target[key]) )
+                    {
+                        delta[key] = source[key];
+                    }
+                }
+            }
+            return (delta.Keys.Count > 0, delta);
+        }
     }
 }
