@@ -41,6 +41,7 @@ namespace AzLcm.Shared
         {   
             services.AddSingleton<DaemonConfig>();
             services.AddSingleton<WorkItemTemplateStorage>();
+            services.AddSingleton<PromptTemplateStorage>();
             services.AddSingleton<FeedStorage>();
             services.AddSingleton<PolicyStorage>();
             services.AddSingleton<PolicyReader>();

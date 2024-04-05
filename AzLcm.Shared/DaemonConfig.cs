@@ -44,6 +44,8 @@ namespace AzLcm.Shared
         public string FeedTemplateUri => GetEnvironmentVariableAsString("FEED_WORKITEM_TEMPLATE_URI", string.Empty);
         public string PolicyTemplateUri => GetEnvironmentVariableAsString("POLICY_WORKITEM_TEMPLATE_URI", string.Empty);
 
+        public string FeedPromptTemplateUri => GetEnvironmentVariableAsString("FEED_PROMPT_TEMPLATE_URI", string.Empty);
+
         private static string GetEnvironmentVariableAsString(string name, string defaultValue)
         {
             var value = Environment.GetEnvironmentVariable(name);

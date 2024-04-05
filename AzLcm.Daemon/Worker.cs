@@ -3,7 +3,6 @@
 using AzLcm.Shared;
 using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.Cognition;
-using AzLcm.Shared.Cognition.Models;
 using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Policy;
 using AzLcm.Shared.Storage;
@@ -19,6 +18,7 @@ namespace AzLcm.Daemon
         HtmlExtractor htmlExtractor,
         PolicyReader policyReader,
         AzUpdateSyndicationFeed azUpdateSyndicationFeed,
+        PromptTemplateStorage promptTemplateStorage,
         WorkItemTemplateStorage workItemTemplateStorage,
         ILogger<Worker> logger) : BackgroundService
     {
@@ -81,6 +81,7 @@ namespace AzLcm.Daemon
             {
                 var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
                 var template = await workItemTemplateStorage.GetFeedWorkItemTemplateAsync(stoppingToken);
+                var promptTemplate = await promptTemplateStorage.GetFeedPromptAsync(stoppingToken);
                 var feeds = await azUpdateSyndicationFeed.ReadAsync(stoppingToken);
                 var processedCount = 0;
                 foreach (var feed in feeds)
@@ -93,7 +94,7 @@ namespace AzLcm.Daemon
 
                         var fragments = await htmlExtractor.GetHtmlExtractedFragmentsAsync(feed);
 
-                        var verdict = await cognitiveService.AnalyzeAsync(feed, fragments, stoppingToken);
+                        var verdict = await cognitiveService.AnalyzeAsync(feed, fragments, promptTemplate, stoppingToken);
                         await devOpsClient.CreateWorkItemFromFeedAsync(azDevOpsConfig.orgName, template, feed, verdict);
 
                         await feedStorage.MarkAsSeenAsync(feed, stoppingToken);

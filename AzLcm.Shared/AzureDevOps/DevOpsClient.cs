@@ -147,6 +147,12 @@ namespace AzLcm.Shared.AzureDevOps
                         tplValue = tplValue.Replace("{Policy.Deprecated}", policy.Properties.Metadata.Deprecated.ToString());
                         tplValue = tplValue.Replace("{Classification.Tags}", string.Join(", ", tags));
 
+                        if (versionChange != null)
+                        {
+                            tplValue = tplValue.Replace("{Policy.VersionChange}", versionChange.VersionChangeKind.ToString());
+                            tplValue = tplValue.Replace("{Policy.LatestVersion}", versionChange.NewVersion);
+                        }
+
                         fields.Add(new PatchFragment
                         {
                             Op = tplField.Op,
