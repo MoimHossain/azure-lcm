@@ -1,11 +1,15 @@
 ﻿
 
+using System.Net.Http.Json;
 using System.Reflection;
 using System.Text.Json;
 
 namespace AzLcm.Shared.Storage
 {
-    public class WorkItemTemplateStorage(JsonSerializerOptions jsonSerializerOptions)
+    public class WorkItemTemplateStorage(
+        DaemonConfig daemonConfig, 
+        IHttpClientFactory httpClientFactory,
+        JsonSerializerOptions jsonSerializerOptions)
     {
         private async Task<string> GetTemplateTextAsync(string resourceName, CancellationToken stoppingToken)
         {
@@ -19,20 +23,40 @@ namespace AzLcm.Shared.Storage
             throw new InvalidOperationException($"Resource {resourceName} not found");
         }
 
-        public async Task<WorkItemTemplate?> GetFeedWorkItemTemplateAsync(CancellationToken stoppingToken)
-        {
-            var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.FeedWorkItemTemplate.json";
+        private async Task<WorkItemTemplate?> GetWorkItemTemplateFromEmbeddedResourceAsync(string resourceName, CancellationToken stoppingToken)
+        {   
             var templateText = await GetTemplateTextAsync(resourceName, stoppingToken);
             var template = JsonSerializer.Deserialize<WorkItemTemplate>(templateText, jsonSerializerOptions);
             return template;
         }
 
+        private async Task<WorkItemTemplate?> GetWorkItemTemplateFromUriAsync(string uri, CancellationToken stoppingToken)
+        {
+            var httpClient = httpClientFactory.CreateClient();
+            var template = await httpClient.GetFromJsonAsync<WorkItemTemplate>(uri, stoppingToken);
+            return template;
+        }
+
+        public async Task<WorkItemTemplate?> GetFeedWorkItemTemplateAsync(CancellationToken stoppingToken)
+        {
+            if(!string.IsNullOrWhiteSpace(daemonConfig.FeedTemplateUri))
+            {
+                return await GetWorkItemTemplateFromUriAsync(daemonConfig.FeedTemplateUri, stoppingToken);
+            }
+
+            var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.FeedWorkItemTemplate.json";
+            return await GetWorkItemTemplateFromEmbeddedResourceAsync(resourceName, stoppingToken);
+        }
+
         public async Task<WorkItemTemplate?> GetPolicyWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
+            if (!string.IsNullOrWhiteSpace(daemonConfig.PolicyTemplateUri))
+            {
+                return await GetWorkItemTemplateFromUriAsync(daemonConfig.PolicyTemplateUri, stoppingToken);
+            }
+
             var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.PolicyWorkItemTemplate.json";
-            var templateText = await GetTemplateTextAsync(resourceName, stoppingToken);
-            var template = JsonSerializer.Deserialize<WorkItemTemplate>(templateText, jsonSerializerOptions);
-            return template;
+            return await GetWorkItemTemplateFromEmbeddedResourceAsync(resourceName, stoppingToken);
         }
     }
 

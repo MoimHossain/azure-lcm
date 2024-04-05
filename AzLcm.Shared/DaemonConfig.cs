@@ -41,6 +41,9 @@ namespace AzLcm.Shared
         public bool ProcessPolicy => GetEnvironmentVariableAsBool("PROCESS_AZURE_POLICY", false);
         public bool ProcessFeed => GetEnvironmentVariableAsBool("PROCESS_AZURE_FEED", false);
 
+        public string FeedTemplateUri => GetEnvironmentVariableAsString("FEED_WORKITEM_TEMPLATE_URI", string.Empty);
+        public string PolicyTemplateUri => GetEnvironmentVariableAsString("POLICY_WORKITEM_TEMPLATE_URI", string.Empty);
+
         private static string GetEnvironmentVariableAsString(string name, string defaultValue)
         {
             var value = Environment.GetEnvironmentVariable(name);
