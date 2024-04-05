@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Storage\WorkItemTemplate.json" />
+    <None Remove="Storage\FeedWorkItemTemplate.json" />
+    <None Remove="Storage\PolicyWorkItemTemplate.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Storage\WorkItemTemplate.json" />
+    <EmbeddedResource Include="Storage\PolicyWorkItemTemplate.json" />
+    <EmbeddedResource Include="Storage\FeedWorkItemTemplate.json" />
   </ItemGroup>
 
   <ItemGroup>

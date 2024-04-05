@@ -7,9 +7,8 @@ namespace AzLcm.Shared.Storage
 {
     public class WorkItemTemplateStorage(JsonSerializerOptions jsonSerializerOptions)
     {
-        private async Task<string> GetTemplateTextAsync(CancellationToken stoppingToken)
+        private async Task<string> GetTemplateTextAsync(string resourceName, CancellationToken stoppingToken)
         {
-            var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.WorkItemTemplate.json";
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
             if (stream != null)
             {
@@ -20,9 +19,18 @@ namespace AzLcm.Shared.Storage
             throw new InvalidOperationException($"Resource {resourceName} not found");
         }
 
-        public async Task<WorkItemTemplate?> GetWorkItemTemplateAsync(CancellationToken stoppingToken)
+        public async Task<WorkItemTemplate?> GetFeedWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            var templateText = await GetTemplateTextAsync(stoppingToken);
+            var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.FeedWorkItemTemplate.json";
+            var templateText = await GetTemplateTextAsync(resourceName, stoppingToken);
+            var template = JsonSerializer.Deserialize<WorkItemTemplate>(templateText, jsonSerializerOptions);
+            return template;
+        }
+
+        public async Task<WorkItemTemplate?> GetPolicyWorkItemTemplateAsync(CancellationToken stoppingToken)
+        {
+            var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.PolicyWorkItemTemplate.json";
+            var templateText = await GetTemplateTextAsync(resourceName, stoppingToken);
             var template = JsonSerializer.Deserialize<WorkItemTemplate>(templateText, jsonSerializerOptions);
             return template;
         }

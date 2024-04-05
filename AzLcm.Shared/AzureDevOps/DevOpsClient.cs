@@ -4,6 +4,7 @@
 using AzLcm.Shared.AzureDevOps.Abstracts;
 using AzLcm.Shared.AzureDevOps.Authorizations;
 using AzLcm.Shared.Cognition.Models;
+using AzLcm.Shared.Policy.Models;
 using AzLcm.Shared.Storage;
 using Microsoft.Extensions.Logging;
 using System.ServiceModel.Syndication;
@@ -27,7 +28,7 @@ namespace AzLcm.Shared.AzureDevOps
             return connectionData;
         }
 
-        public async Task CreateWorkItemAsync(
+        public async Task CreateWorkItemFromFeedAsync(
             string orgName, 
             WorkItemTemplate? template, 
             SyndicationItem feed,
@@ -91,6 +92,70 @@ namespace AzLcm.Shared.AzureDevOps
                     });
                 }
                 await this.PostAsync<object, string>(orgName, apiPath, fields, false, "application/json-patch+json");
+            }
+        }
+
+        public async Task CreateWorkItemFromPolicyAsync(
+            string orgName,
+            WorkItemTemplate? template,
+            PolicyModelChange policyUpdate)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
+            ArgumentNullException.ThrowIfNull(template, nameof(template));
+            ArgumentNullException.ThrowIfNull(policyUpdate, nameof(policyUpdate));
+            ArgumentNullException.ThrowIfNull(policyUpdate.Policy, nameof(policyUpdate.Policy));            
+
+            var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";
+            
+            var tags = new List<string>();
+            var workItemTags = string.Empty;
+            if (policyUpdate.Changes != null)
+            {
+                var versionChange = policyUpdate.Changes.VersionChange;
+                if (versionChange != null)
+                {
+                    tags.Add(versionChange.VersionChangeKind.ToString());
+                    tags.Add(versionChange.NewVersion);
+
+                    if(policyUpdate.Changes.WasGA)
+                    {
+                        tags.Add("Public");
+                    }
+                    if (policyUpdate.Changes.HasDeprecated)
+                    {
+                        tags.Add("Deprecated");
+                    }
+                }
+
+                if(policyUpdate.Policy != null && template.Fields != null)
+                {
+                    var policy = policyUpdate.Policy;
+                    var fields = new List<PatchFragment>();
+                    foreach (var tplField in template.Fields)
+                    {
+                        var tplValue = $"{tplField.Value}";
+
+                        tplValue = tplValue.Replace("{Policy.Id}", policy.Id);
+                        tplValue = tplValue.Replace("{Policy.Name}", policy.Name);
+                        tplValue = tplValue.Replace("{Policy.DisplayName}", policy.Properties.DisplayName);
+                        tplValue = tplValue.Replace("{Policy.Description}", policy.Properties.Description);
+                        tplValue = tplValue.Replace("{Policy.Version}", policy.Properties.Metadata.Version);
+                        tplValue = tplValue.Replace("{Policy.Mode}", policy.Properties.Mode);
+                        tplValue = tplValue.Replace("{Policy.PolicyType}", policy.Properties.PolicyType);
+                        tplValue = tplValue.Replace("{Policy.Category}", policy.Properties.Metadata.Category);
+                        tplValue = tplValue.Replace("{Policy.Preview}", policy.Properties.Metadata.Preview.ToString());
+                        tplValue = tplValue.Replace("{Policy.Deprecated}", policy.Properties.Metadata.Deprecated.ToString());
+                        tplValue = tplValue.Replace("{Classification.Tags}", string.Join(", ", tags));
+
+                        fields.Add(new PatchFragment
+                        {
+                            Op = tplField.Op,
+                            Path = tplField.Path,
+                            Value = tplValue
+                        });
+                    }
+                    await this.PostAsync<object, string>(orgName, apiPath, fields, false, "application/json-patch+json");
+                }
             }
         }
     }

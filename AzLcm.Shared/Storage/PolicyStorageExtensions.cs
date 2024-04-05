@@ -44,27 +44,28 @@ namespace AzLcm.Shared.Storage
                 };
         }
 
-        public static (bool hasChanges, Dictionary<string, object> delta) HasChanges(
-            this IDictionary<string, object> source, IDictionary<string, object> target)
+        public static PolicyChangeCollection HasChanges(
+            this IDictionary<string, object> latestProperties, 
+            IDictionary<string, object> oldProperties)
         {
-            var delta = new Dictionary<string, object>();
+            var delta = new PolicyChangeCollection();
             var keysToCompare = new List<string>() 
             {
                 "Id", "Name", "PolicyType", "DisplayName", "Description", "Version","Mode","Category","Deprecated","Preview","MetadataVersion" 
             };
             
 
-            if (source != null && target != null)
+            if (latestProperties != null && oldProperties != null)
             {
                 foreach (var key in keysToCompare)
                 {
-                    if (source[key] != null && target[key] != null && !source[key].Equals(target[key]) )
+                    if (latestProperties[key] != null && oldProperties[key] != null && !latestProperties[key].Equals(oldProperties[key]) )
                     {
-                        delta[key] = source[key];
+                        delta.AddChange(key, latestProperties[key], oldProperties[key]);
                     }
                 }
             }
-            return (delta.Keys.Count > 0, delta);
+            return delta;
         }
     }
 }

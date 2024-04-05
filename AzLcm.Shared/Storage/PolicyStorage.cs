@@ -27,16 +27,16 @@ namespace AzLcm.Shared.Storage
 
             if (!existingEntity.HasValue)
             {
-                return new PolicyModelChange(ChangeKind.Add, policy, latestChanges);
+                return new PolicyModelChange(ChangeKind.Add, policy, null);
             }
 
             if (existingEntity.Value != null && latestChanges != null)
             {   
                 var oldProperties = existingEntity.Value.ToImmutableDictionary();
 
-                (var hasChanges, var delta) = latestChanges.HasChanges(oldProperties);
+                var delta = latestChanges.HasChanges(oldProperties);
 
-                if (hasChanges)
+                if (delta.HasChanges)
                 {
                     return new PolicyModelChange(ChangeKind.Update, policy, delta);
                 }

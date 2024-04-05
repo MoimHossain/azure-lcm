@@ -39,6 +39,6 @@ namespace AzLcm.Shared.Policy.Models
     public record PolicyModelChange(
         [property: JsonPropertyName("changeKind")] ChangeKind ChangeKind,
         [property: JsonPropertyName("policy")] PolicyModel Policy,
-        [property: JsonPropertyName("changes")] IDictionary<string, object>? Changes
+        [property: JsonPropertyName("changes")] PolicyChangeCollection? Changes
     );
 }

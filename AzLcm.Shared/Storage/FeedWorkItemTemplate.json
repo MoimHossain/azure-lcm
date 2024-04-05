@@ -1,0 +1,26 @@
+﻿{
+  "ProjectId": "1853c648-0f7d-4f1e-80ab-fd1ecd333520",
+  "Type": "Product Backlog Item",
+  "Fields": [
+    {
+      "Op": "add",
+      "Path": "/fields/System.Title",
+      "Value": "{Feed.Title}"
+    },
+    {
+      "Op": "add",
+      "Path": "/fields/System.Description",
+      "Value": "<h4>Azure Service: {Classification.ServiceName}</h4><h4>Kind: {Classification.Kind}</h4><h4>Publish Date: {Feed.PublishDate}</h4><h4>Reference: <a href=\"{Feed.Link}\">{Feed.Id}</a></h4> <p>{Feed.Summary}</p><hr/><p>{Feed.Content.Text}</p>"
+    },
+    {
+      "Op": "add",
+      "Path": "/fields/System.Tags",
+      "Value": "{Classification.Tags}"
+    },
+    {
+      "Op": "add",
+      "Path": "/fields/System.AreaPath",
+      "Value": "Platform\\Engineering\\Cloud\\Azure-Updates"
+    }
+  ]
+}

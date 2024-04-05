@@ -3,6 +3,7 @@
 using AzLcm.Shared;
 using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.Cognition;
+using AzLcm.Shared.Cognition.Models;
 using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Policy;
 using AzLcm.Shared.Storage;
@@ -51,16 +52,26 @@ namespace AzLcm.Daemon
         {
             if (config.ProcessPolicy)
             {
+                var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
+                var template = await workItemTemplateStorage.GetPolicyWorkItemTemplateAsync(stoppingToken);
+
+                var processedCount = 0;
+                var totalPolicyCount = 0;
                 await policyReader.ReadPoliciesAsync(async policy =>
                 {
+                    ++totalPolicyCount;
+                    
                     var difference = await policyStorage.HasSeenAsync(policy);
+                    logger.LogInformation("Evaluated Policy changes, id={policyId}, change kind={changeKind}", policy.Id, difference.ChangeKind);
+
                     if (difference.ChangeKind != Shared.Policy.Models.ChangeKind.None)
                     {
-                        // New or updated policy
-
+                        ++processedCount;
+                        await devOpsClient.CreateWorkItemFromPolicyAsync(azDevOpsConfig.orgName, template, difference);
                         await policyStorage.MarkAsSeenAsync(policy, stoppingToken);
                     }
                 }, stoppingToken);
+                logger.LogInformation("Process {processedPolicyCount} items, out of {totalPolicyCount} feeds.", processedCount, totalPolicyCount);
             }
         }
 
@@ -69,7 +80,7 @@ namespace AzLcm.Daemon
             if (config.ProcessFeed)
             {
                 var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
-                var template = await workItemTemplateStorage.GetWorkItemTemplateAsync(stoppingToken);
+                var template = await workItemTemplateStorage.GetFeedWorkItemTemplateAsync(stoppingToken);
                 var feeds = await azUpdateSyndicationFeed.ReadAsync(stoppingToken);
                 var processedCount = 0;
                 foreach (var feed in feeds)
@@ -83,13 +94,13 @@ namespace AzLcm.Daemon
                         var fragments = await htmlExtractor.GetHtmlExtractedFragmentsAsync(feed);
 
                         var verdict = await cognitiveService.AnalyzeAsync(feed, fragments, stoppingToken);
-                        await devOpsClient.CreateWorkItemAsync(azDevOpsConfig.orgName, template, feed, verdict);
+                        await devOpsClient.CreateWorkItemFromFeedAsync(azDevOpsConfig.orgName, template, feed, verdict);
 
                         await feedStorage.MarkAsSeenAsync(feed, stoppingToken);
                     }
                 }
 
-                logger.LogInformation("Process {count} items, out of {total} feeds.", processedCount, feeds.Count());
+                logger.LogInformation("Process {processedFeedCount} items, out of {totalFeedCount} feeds.", processedCount, feeds.Count());
             }
         }
     }

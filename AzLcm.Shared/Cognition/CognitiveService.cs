@@ -96,34 +96,7 @@ namespace AzLcm.Shared.Cognition
             {
                 var response = await openAIClient.GetChatCompletionsAsync(thread, stoppingToken);
                 var rawContent = response.Value.Choices[0].Message.Content;
-
-                logger.LogInformation($"ASK: {feed.Title.Text}");
-                logger.LogInformation($"Response: {rawContent}");
-
                 var verdict = Verdict.FromJson(rawContent, jsonSerializerOptions);
-                if (verdict != null)
-                {
-                    var message = new StringBuilder();
-                    message.AppendLine($"==============================================================");
-                    message.AppendLine($"Title: {feed.Title.Text}");
-                    message.AppendLine($"");
-                    if(verdict.AzureServiceNames != null )
-                    {
-                        message.AppendLine($"AzureServiceNames: {string.Join(", ", verdict.AzureServiceNames)}");
-                    }                    
-                    message.AppendLine($"Update Kind: {verdict.UpdateKind}");
-                    message.AppendLine($"Actionable: {verdict.Actionable}");
-                    message.AppendLine($"ActionableViaAzurePolicy: {verdict.ActionableViaAzurePolicy}");
-                    message.AppendLine($"AnnouncementRequired: {verdict.AnnouncementRequired}");
-                    message.AppendLine($"MitigationInstructionMarkdown: {verdict.MitigationInstructionMarkdown}");
-                    message.AppendLine($"");
-                    message.AppendLine($"");
-
-
-                    logger.LogInformation(message.ToString());
-
-                    //File.AppendAllText(@"C:\\GitHub\\moimhossain\\azure-lcm\\traces.txt", message.ToString());
-                }
                 return verdict;
             }
             catch (Exception ex)

@@ -29,6 +29,11 @@ namespace AzLcm.Shared.Policy
                 {
                     foreach (var item in items)
                     {
+                        if(item.Path.Contains("Azure Government", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
                         if (item.IsFile())
                         {
                             await ProcessPolicyFileAsync(work, item, stoppingToken);
