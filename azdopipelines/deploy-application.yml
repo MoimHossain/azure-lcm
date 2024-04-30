@@ -1,0 +1,62 @@
+trigger: none
+#- master
+
+pool:
+  vmImage: ubuntu-latest
+variables:
+ resourceGroupName: "azurelcm-rg"
+ location: "westeurope"
+ APP_NAME: "azurelcm"
+ APP_ENV: "dev"
+ acaEnvName: "$(APP_NAME)-appenv-$(APP_ENV)" 
+ imageName: "azurelcm"
+ tag: "$(Build.BuildId)"
+ containerRegistryName: "$(APP_NAME)contregistry$(APP_ENV)"
+ registryURI: "$(containerRegistryName).azurecr.io" 
+ 
+
+stages:
+  - stage: Build_application
+    displayName: 'Build Container and pushes to registry'
+    jobs:
+    - job: Build
+      displayName: 'Build application Job'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: Build docker image for ComplianceWebApi and push to Azure container registry 
+        inputs:
+          azureSubscription: 'masterconnection'
+          scriptType: 'bash'
+          scriptLocation: 'scriptPath'
+          scriptPath: 'Infrastructure/scripts/build-container-image.sh'
+        env:
+            imageName: $(imageName)
+            tag: $(tag)
+            registryURI: $(registryURI)
+            
+
+  - stage: DeployContainerappJob
+    jobs:
+      - deployment: DeployContainerappJob
+        displayName: Deploys to Azure container app job
+        environment: Azurelcm-DEV
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - task: AzureCLI@2
+                  displayName: Deploy containerapp job
+                  inputs:
+                    azureSubscription: 'masterconnection'
+                    scriptType: 'bash'
+                    scriptLocation: 'scriptPath'
+                    scriptPath: 'Infrastructure/scripts/deploy-containerapp-job.sh'
+                  env:
+                    APP_NAME: $(APP_NAME)
+                    APP_ENV: $(APP_ENV)
+                    imageName: $(imageName)
+                    tag: $(tag)                    
+                    resourceGroupName: $(resourceGroupName)               
+                

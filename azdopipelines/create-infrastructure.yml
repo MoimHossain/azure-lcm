@@ -1,0 +1,34 @@
+trigger: none
+#- master
+
+pool:
+  vmImage: ubuntu-latest
+variables:
+ resourceGroupName: "azurelcm-rg"
+ testresourceGroupName: "CONTAPP-APIM-TEST12"
+ location: "westeurope"
+ APP_NAME: "azurelcm"
+ APP_ENV: "dev"
+
+stages:
+  - stage: Dev
+    jobs:
+      - deployment: Dev
+        displayName: Create_Infra_Dev
+        environment: dev
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - task: AzureCLI@2
+                  inputs:
+                    azureSubscription: 'masterconnection'
+                    scriptType: 'bash'
+                    scriptLocation: 'scriptPath'
+                    scriptPath: 'Infrastructure/scripts/create-infra.sh'
+                  env:
+                    appname: $(APP_NAME)
+                    appEnv: $(APP_ENV)
+                    resourceGroupName: $(resourceGroupName)
+                    location: $(location) 
