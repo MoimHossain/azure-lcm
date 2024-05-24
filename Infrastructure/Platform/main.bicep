@@ -10,6 +10,13 @@ param appInsightName string
 param acaEnvName string
 param publicIpAddressName string
 
+param storageAccountName string 
+param storageContainerName string 
+param storageQueueName string 
+param storageSecKeyName string 
+param storageSecAccountName string 
+param storageSecContainerName string 
+
 module virtualNetwork 'modules/virtual-network.bicep' = {
   name: vnetName
   params: {
@@ -75,7 +82,6 @@ module appInsights 'modules/app-insights.bicep' = {
   }
 }
 
-
 module acaEnvironment 'modules/environment.bicep' = {
   name: acaEnvName
   params: {
@@ -87,5 +93,19 @@ module acaEnvironment 'modules/environment.bicep' = {
   }
 }
 
+module storageAccount 'modules/storageAccount.bicep' = {
+  name: storageAccountName
+  params: {
+    accountName: storageAccountName
+    containerName: storageContainerName
+    queueName: storageQueueName
+    location: location
+    identityPrincipalId: uami.outputs.principalId
+    keyVaultName: keyvault.name
+    storageSecKeyName: storageSecKeyName
+    storageSecAccountName: storageSecAccountName
+    storageSecContainerName: storageSecContainerName
+  }
+}
 
 
