@@ -26,7 +26,7 @@ param secrets	array = []
   'Schedule'
 ])
 param triggerType string = 'Schedule'
-param cronExpression	string = '*/5 * * * *'
+param cronExpression	string = '0 7 * * *'
 param parallelism	int = 1
 param replicaCompletionCount	int = 1
 
