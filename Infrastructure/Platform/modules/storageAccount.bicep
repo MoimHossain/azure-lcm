@@ -89,10 +89,6 @@ resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/container
   parent: defaultBlobService
   name: containerName
 }
-resource storageTable 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
-  parent: defaultTableService
-  name: containerName
-}
 
 resource storageQueue 'Microsoft.Storage/storageAccounts/queueServices/queues@2022-05-01' = {
   parent: defaultQueueService
