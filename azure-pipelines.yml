@@ -4,47 +4,47 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 stages:
-  # - stage: CreateInfrastructure
-  #   displayName: 'Create Infrastructure'
-  #   jobs:
-  #   - job: CreateInfra
-  #     displayName: 'Create infrastructure'
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Deploy infrastructure'
-  #       inputs:
-  #         azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
-  #         scriptType: bash
-  #         scriptPath: 'infra/build-infra.sh'
-  #         workingDirectory: infra
-  #       env:
-  #         resourceGroupName: azure-lcm-poc
-  #         location: westeurope
-  #         workloadName: azlcm
-  #         workloadEnv: poc
+  - stage: CreateInfrastructure
+    displayName: 'Create Infrastructure'
+    jobs:
+    - job: CreateInfra
+      displayName: 'Create infrastructure'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Deploy infrastructure'
+        inputs:
+          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
+          scriptType: bash
+          scriptPath: 'infra/build-infra.sh'
+          workingDirectory: infra
+        env:
+          resourceGroupName: azure-lcm-poc
+          location: westeurope
+          workloadName: azlcm
+          workloadEnv: poc
 
-  # - stage: BuildContainerImage
-  #   displayName: 'Build Container image'
-  #   jobs:
-  #   - job: BuildContainer
-  #     displayName: 'Build Container image'
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Build-Container-Image'
-  #       inputs:
-  #         azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
-  #         scriptType: bash
-  #         scriptPath: 'infra/build-container.sh'
-  #       env:
-  #         resourceGroupName: azure-lcm-poc
-  #         location: westeurope
-  #         workloadName: azlcm
-  #         workloadEnv: poc
-  #         registryURI: azlcmazcontregpoc.azurecr.io
-  #         imageName: azure-lcm-poc
-  #         imageTag: $(Build.BuildId)
+  - stage: BuildContainerImage
+    displayName: 'Build Container image'
+    jobs:
+    - job: BuildContainer
+      displayName: 'Build Container image'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Build-Container-Image'
+        inputs:
+          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
+          scriptType: bash
+          scriptPath: 'infra/build-container.sh'
+        env:
+          resourceGroupName: azure-lcm-poc
+          location: westeurope
+          workloadName: azlcm
+          workloadEnv: poc
+          registryURI: azlcmazcontregpoc.azurecr.io
+          imageName: azure-lcm-poc
+          imageTag: $(Build.BuildId)
 
   - stage: ExecuteJob
     displayName: 'Execute container'
