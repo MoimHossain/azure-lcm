@@ -1,0 +1,25 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+stages:
+  - stage: CreateInfrastructure
+    displayName: 'Create Infrastructure'
+    jobs:
+    - job: CreateInfra
+      displayName: 'Create infrastructure'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Deploy infrastructure'
+        inputs:
+          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
+          scriptType: bash
+          scriptPath: 'infra/build-infra.sh'
+          workingDirectory: infra
+        env:
+          resourceGroupName: azure-lcm-poc
+          location: westeurope
+          workloadName: azlcm
+          workloadEnv: poc
