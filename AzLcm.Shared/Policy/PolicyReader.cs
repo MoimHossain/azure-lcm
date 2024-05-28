@@ -20,7 +20,7 @@ namespace AzLcm.Shared.Policy
         private async Task ExploreDirectoryAsync(string uri, Func<PolicyModel, Task> work, CancellationToken stoppingToken)
         {
             var httpClient = httpClientFactory.CreateClient();
-            var response = await httpClient.SendAsync(CreateRequestBody(uri), stoppingToken);
+            var response = await httpClient.SendAsync(await CreateRequestBody(uri), stoppingToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -73,14 +73,18 @@ namespace AzLcm.Shared.Policy
             }
         }
 
-        private HttpRequestMessage CreateRequestBody(string uri)
+        private async Task<HttpRequestMessage> CreateRequestBody(string uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             request.Headers.Accept.ParseAdd("application/vnd.github+json");
             request.Headers.UserAgent.ParseAdd("policy-daemon");
-            if(!string.IsNullOrWhiteSpace(daemonConfig.GitHubPAT))
+            if (!string.IsNullOrWhiteSpace(daemonConfig.GitHubPAT))
             {
                 request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {daemonConfig.GitHubPAT}");
+            }
+            else
+            {
+                await Task.Delay(2000); // Avoid throttling by GitHub
             }
             return request;
         }

@@ -42,8 +42,8 @@ namespace AzLcm.Daemon
             {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-                await ProcessFeedAsync(stoppingToken);
-                await ProcessPolicyAsync(stoppingToken);                
+                await ProcessPolicyAsync(stoppingToken);
+                await ProcessFeedAsync(stoppingToken);                
                 await Task.Delay(1000, stoppingToken);
             }
         }
