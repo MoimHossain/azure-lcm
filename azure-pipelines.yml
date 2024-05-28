@@ -66,7 +66,7 @@ stages:
           workloadEnv: poc
           registryURI: azlcmazcontregpoc.azurecr.io
           imageName: azure-lcm-poc
-          imageTag: 1456
+          imageTag: $(Build.BuildId)
           GTIHUB_PAT: $(GTIHUB_PAT)
           STORAGE_ACCOUNT: azlcmstorageaccpoc
           AZURE_DEVOPS_ORGNAME: moim
