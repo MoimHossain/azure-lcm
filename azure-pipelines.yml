@@ -3,6 +3,14 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
+variables:
+  resourceGroupName: "azlcm-poc"
+  location: "westeurope"
+  workloadName: "azlcm"
+  workloadEnv: "dev" 
+  registryURI: $(workloadName)azcontreg$(workloadEnv).azurecr.io 
+  imageName: "azure-lcm-poc"
+
 stages:
   - stage: CreateInfrastructure
     displayName: 'Create Infrastructure'
@@ -14,15 +22,15 @@ stages:
       - task: AzureCLI@2
         displayName: 'Deploy infrastructure'
         inputs:
-          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
+          azureSubscription: 'masterconnection'
           scriptType: bash
           scriptPath: 'infra/build-infra.sh'
           workingDirectory: infra
         env:
-          resourceGroupName: azure-lcm-poc
-          location: westeurope
-          workloadName: azlcm
-          workloadEnv: poc
+          resourceGroupName: $(resourceGroupName)
+          location: $(location)
+          workloadName: $(workloadName)
+          workloadEnv: $(workloadEnv)
 
   - stage: BuildContainerImage
     displayName: 'Build Container image'
@@ -34,42 +42,42 @@ stages:
       - task: AzureCLI@2
         displayName: 'Build-Container-Image'
         inputs:
-          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
+          azureSubscription: 'masterconnection'
           scriptType: bash
           scriptPath: 'infra/build-container.sh'
         env:
-          resourceGroupName: azure-lcm-poc
-          location: westeurope
-          workloadName: azlcm
-          workloadEnv: poc
-          registryURI: azlcmazcontregpoc.azurecr.io
-          imageName: azure-lcm-poc
+          resourceGroupName: $(resourceGroupName)
+          location: $(location)
+          workloadName: $(workloadName)
+          workloadEnv: $(workloadEnv)
+          registryURI: $(registryURI)
+          imageName: $(imageName)
           imageTag: $(Build.BuildId)
 
   - stage: ExecuteJob
     displayName: 'Execute container'
     jobs:
     - job: ExecuteJob
-      displayName: 'Execute containe'
+      displayName: 'Execute container'
       steps:
       - checkout: self
       - task: AzureCLI@2
         displayName: 'Run-Job'
         inputs:
-          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
+          azureSubscription: 'masterconnection'
           scriptType: bash
           scriptPath: 'infra/execute-job.sh'
         env:
-          resourceGroupName: azure-lcm-poc
-          location: westeurope
-          workloadName: azlcm
-          workloadEnv: poc
-          registryURI: azlcmazcontregpoc.azurecr.io
-          imageName: azure-lcm-poc
+          resourceGroupName: $(resourceGroupName)
+          location: $(location)
+          workloadName: $(workloadName)
+          workloadEnv: $(workloadEnv)
+          registryURI: $(registryURI)
+          imageName: $(imageName)
           imageTag: $(Build.BuildId)
           GTIHUB_PAT: $(GTIHUB_PAT)
-          STORAGE_ACCOUNT: azlcmstorageaccpoc
-          AZURE_DEVOPS_ORGNAME: moim
+          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
+          AZURE_DEVOPS_ORGNAME: damayantibhuyan
           AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
-          AZURE_OPENAI_ENDPOINT: https://venusopenai.openai.azure.com/
+          AZURE_OPENAI_ENDPOINT: https://azopenai-lcm.openai.azure.com/
           AZURE_OPENAI_API_KEY: $(AZURE_OPENAI_API_KEY)      
