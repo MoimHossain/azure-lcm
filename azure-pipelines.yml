@@ -24,19 +24,41 @@ stages:
   #         workloadName: azlcm
   #         workloadEnv: poc
 
-  - stage: BuildContainerImage
-    displayName: 'Build Container image'
+  # - stage: BuildContainerImage
+  #   displayName: 'Build Container image'
+  #   jobs:
+  #   - job: BuildContainer
+  #     displayName: 'Build Container image'
+  #     steps:
+  #     - checkout: self
+  #     - task: AzureCLI@2
+  #       displayName: 'Build-Container-Image'
+  #       inputs:
+  #         azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
+  #         scriptType: bash
+  #         scriptPath: 'infra/build-container.sh'
+  #       env:
+  #         resourceGroupName: azure-lcm-poc
+  #         location: westeurope
+  #         workloadName: azlcm
+  #         workloadEnv: poc
+  #         registryURI: azlcmazcontregpoc.azurecr.io
+  #         imageName: azure-lcm-poc
+  #         imageTag: $(Build.BuildId)
+
+  - stage: ExecuteJob
+    displayName: 'Execute container'
     jobs:
-    - job: BuildContainer
-      displayName: 'Build Container image'
+    - job: ExecuteJob
+      displayName: 'Execute containe'
       steps:
       - checkout: self
       - task: AzureCLI@2
-        displayName: 'Build-Container-Image'
+        displayName: 'Run-Job'
         inputs:
           azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
           scriptType: bash
-          scriptPath: 'infra/build-container.sh'
+          scriptPath: 'infra/execute-job.sh'
         env:
           resourceGroupName: azure-lcm-poc
           location: westeurope
@@ -44,4 +66,10 @@ stages:
           workloadEnv: poc
           registryURI: azlcmazcontregpoc.azurecr.io
           imageName: azure-lcm-poc
-          imageTag: $(Build.BuildId)
+          imageTag: 1456
+          GTIHUB_PAT: $(GTIHUB_PAT)
+          STORAGE_ACCOUNT: azlcmstorageaccpoc
+          AZURE_DEVOPS_ORGNAME: moim
+          AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
+          AZURE_OPENAI_ENDPOINT: https://venusopenai.openai.azure.com/
+          AZURE_OPENAI_API_KEY: $(AZURE_OPENAI_API_KEY)      
