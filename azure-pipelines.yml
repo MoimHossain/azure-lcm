@@ -54,6 +54,22 @@ stages:
           imageName: $(imageName)
           imageTag: $(Build.BuildId)
 
+  - stage: DeleteOldContainers
+    displayName: 'Delete old containers'
+    jobs:
+    - job: DeleteOldContainers
+      displayName: 'Delete old containers'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Delete-Old-Job'
+        inputs:
+          azureSubscription: 'masterconnection'
+          scriptType: bash
+          scriptPath: 'infra/delete-old-containers.sh'
+        env:
+          resourceGroupName: $(resourceGroupName)
+
   - stage: ExecuteJob
     displayName: 'Execute container'
     jobs:
@@ -80,4 +96,4 @@ stages:
           AZURE_DEVOPS_ORGNAME: damayantibhuyan
           AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
           AZURE_OPENAI_ENDPOINT: https://azopenai-lcm.openai.azure.com/
-          AZURE_OPENAI_API_KEY: $(AZURE_OPENAI_API_KEY)      
+          AZURE_OPENAI_API_KEY: $(AZURE_OPENAI_API_KEY)
