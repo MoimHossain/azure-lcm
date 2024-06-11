@@ -2,15 +2,12 @@
 
 namespace AzLcm.Shared.Storage
 {
-    public class PromptTemplateStorage(DaemonConfig daemonConfig, IHttpClientFactory httpClientFactory)
+    public class PromptTemplateStorage(BlobContentReader blobContentReader)
     {
         public async Task<string> GetFeedPromptAsync(CancellationToken stoppingToken)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(daemonConfig.FeedPromptTemplateUri, 
-                nameof(daemonConfig.FeedPromptTemplateUri));
+            var prompt = await blobContentReader.ReadBlobContentAsync(BlobContentReader.ConfigBlobs.FeedPromptTemplate, stoppingToken);
 
-            var httpClient = httpClientFactory.CreateClient();
-            var prompt = await httpClient.GetStringAsync(daemonConfig.FeedPromptTemplateUri, stoppingToken);
             return prompt;
         }
     }

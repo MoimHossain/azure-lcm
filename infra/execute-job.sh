@@ -4,6 +4,7 @@
 # export location=$location
 # export workloadName=$workloadName
 # export workloadEnv=$workloadEnv
+# export containerName=$containerName
 # export registryURI=$registryURI
 # export imageName=$imageName
 # export imageTag=$imageTag
@@ -18,6 +19,33 @@ uamiId=$(az identity show --resource-group $resourceGroupName --name ${workloadN
 echo "UAMI ID: $uamiId"
 
 CONNECTION_STRING=$(az storage account show-connection-string --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --query connectionString --output tsv)
+
+
+# Check if the container exists
+EXISTING_CONTAINER=$(az storage container list --connection-string $CONNECTION_STRING --account-name $STORAGE_ACCOUNT --query "[?name=='$containerName'].name" --output tsv)
+
+# Create the container if it does not exist
+if [ -z "$EXISTING_CONTAINER" ]; then
+    echo "Container $containerName does not exist. Creating it now..."
+    az storage container create --name $containerName --account-name $STORAGE_ACCOUNT
+    echo "Container $containerName created."
+else
+    echo "Container $containerName already exists."
+fi
+
+
+
+LOCAL_DIRECTORY="./infra/configurations"
+# Upload files from the directory to the container with overwrite option
+for FILE in "$LOCAL_DIRECTORY"/*; do
+    if [ -f "$FILE" ]; then
+        FILE_NAME=$(basename "$FILE")
+        echo "Uploading $FILE_NAME to $containerName..."
+        az storage blob upload --connection-string $CONNECTION_STRING  --account-name $STORAGE_ACCOUNT --container-name $containerName --file "$FILE" --name "$FILE_NAME" --overwrite
+    fi
+done
+
+echo "All files uploaded successfully."
 
 
 az container create \
@@ -41,6 +69,7 @@ az container create \
     AZURE_STORAGE_FEED_TABLE_NAME="azupdatefeed" \
     AZURE_STORAGE_POLICY_TABLE_NAME="azpolicy" \
     AZURE_STORAGE_SVC_HEALTH_TABLE_NAME="azsvchealth" \
+    AZURE_STORAGE_COFIG_CONTAINER="az-lcm-configs" \
     AZURE_OPENAI_ENDPOINT="$AZURE_OPENAI_ENDPOINT" \
     AZURE_OPENAI_API_KEY="$AZURE_OPENAI_API_KEY" \
     AZURE_OPENAI_GPT_DEPLOYMENT_ID=gpt-35-turbo \
@@ -49,10 +78,4 @@ az container create \
     AZURE_DEVOPS_USE_PAT=true \
     AZURE_DEVOPS_USE_MANAGED_IDENTITY=false \
     AZURE_DEVOPS_USE_SERVICE_PRINCIPAL=false \
-    AZURE_DEVOPS_PAT="$AZURE_DEVOPS_PAT" \
-    SERVICE_HEALTH_KUSTO_QUERY="https://gist.githubusercontent.com/MoimHossain/b4e0af1ddf8230ae8fe7629fbbd1c562/raw/60bb16d1707f1113ebfe3fc9ab23a8b8449f1e42/serviceHealth-Kusto.txt" \
-    SERVICE_HEALTH_CONFIG_URI="https://gist.githubusercontent.com/MoimHossain/b4e0af1ddf8230ae8fe7629fbbd1c562/raw/60bb16d1707f1113ebfe3fc9ab23a8b8449f1e42/azure-resource-graph-config.json" \
-    SERVICE_HEALTH_WORKITEM_TEMPLATE_URI="https://gist.githubusercontent.com/MoimHossain/929bff56a45f31466eb1cd7bc05d9248/raw/e33bcc924549c5b1ba707e815e924f8d41baf377/service-health-workitem-template.json" \
-    FEED_PROMPT_TEMPLATE_URI="https://gist.githubusercontent.com/MoimHossain/929bff56a45f31466eb1cd7bc05d9248/raw/8031be143fbe58ce63bb6d5ad61c8146bb299366/FeedPromptTemplate.txt" \
-    FEED_WORKITEM_TEMPLATE_URI="https://gist.githubusercontent.com/MoimHossain/929bff56a45f31466eb1cd7bc05d9248/raw/44b483059962ccbac9e36250c0ff1bd66543f592/FeedCustomTemplate.json" \
-    POLICY_WORKITEM_TEMPLATE_URI="https://gist.githubusercontent.com/MoimHossain/929bff56a45f31466eb1cd7bc05d9248/raw/89cc625548129d8da69bb47a908a9baac56a5f76/PolicyCustomTemplate.json"
+    AZURE_DEVOPS_PAT="$AZURE_DEVOPS_PAT" 

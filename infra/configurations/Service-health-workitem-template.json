@@ -1,0 +1,41 @@
+{
+    "ProjectId": "1853c648-0f7d-4f1e-80ab-fd1ecd333520",
+    "Type": "Life Cycle Management",
+    "Fields": [
+      {
+        "Op": "add",
+        "Path": "/fields/System.Title",
+        "Value": "{SvcHealthEvent.Title}"
+      },
+      {
+        "Op": "add",
+        "Path": "/fields/Custom.Resource",
+        "Value": "{SvcHealthEvent.Service}"
+      },
+      {
+        "Op": "add",
+        "Path": "/fields/Custom.PublishDate",
+        "Value": "{SvcHealthEvent.LastUpdate}"
+      },
+      {
+        "Op": "add",
+        "Path": "/fields/Custom.Reference",
+        "Value": "{SvcHealthEvent.Url}"
+      },
+      {
+        "Op": "add",
+        "Path": "/fields/System.Description",
+        "Value": "<p>{SvcHealthEvent.Summary}</p>"
+      },
+      {
+        "Op": "add",
+        "Path": "/fields/System.Tags",
+        "Value": "{SvcHealthEvent.Tags}"
+      },
+      {
+        "Op": "add",
+        "Path": "/fields/System.AreaPath",
+        "Value": "Platform\\Engineering\\Cloud\\Azure-Service-Health-events"
+      }
+    ]
+  }

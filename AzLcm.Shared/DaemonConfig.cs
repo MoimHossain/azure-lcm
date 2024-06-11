@@ -39,6 +39,7 @@ namespace AzLcm.Shared
         public string FeedTableName => ReadEnvironmentKey("AZURE_STORAGE_FEED_TABLE_NAME");
         public string PolicyTableName => ReadEnvironmentKey("AZURE_STORAGE_POLICY_TABLE_NAME");
         public string ServiceHealthTableName => ReadEnvironmentKey("AZURE_STORAGE_SVC_HEALTH_TABLE_NAME");
+        public string StorageConfigContainer => ReadEnvironmentKey("AZURE_STORAGE_COFIG_CONTAINER");
         public string AzureOpenAIUrl => ReadEnvironmentKey("AZURE_OPENAI_ENDPOINT");
         public string AzureOpenAIKey => ReadEnvironmentKey("AZURE_OPENAI_API_KEY");
         public string AzureOpenAIGPTDeploymentId => ReadEnvironmentKey("AZURE_OPENAI_GPT_DEPLOYMENT_ID");
@@ -49,19 +50,9 @@ namespace AzLcm.Shared
         public string GitHubPAT => GetEnvironmentVariableAsString("GITHUB_PAT", string.Empty);
 
         public bool ProcessServiceHealth => GetEnvironmentVariableAsBool("PROCESS_AZURE_SERVICE_HEALTH", false);
-
         public bool ProcessPolicy => GetEnvironmentVariableAsBool("PROCESS_AZURE_POLICY", false);
         public bool ProcessFeed => GetEnvironmentVariableAsBool("PROCESS_AZURE_FEED", false);
 
-        public string FeedTemplateUri => GetEnvironmentVariableAsString("FEED_WORKITEM_TEMPLATE_URI", string.Empty);
-        public string PolicyTemplateUri => GetEnvironmentVariableAsString("POLICY_WORKITEM_TEMPLATE_URI", string.Empty);
-
-        public string ServiceHealthWorkItemTemplateUri => GetEnvironmentVariableAsString("SERVICE_HEALTH_WORKITEM_TEMPLATE_URI", string.Empty);
-
-        public string FeedPromptTemplateUri => GetEnvironmentVariableAsString("FEED_PROMPT_TEMPLATE_URI", string.Empty);
-
-        public string ServiceHealthConfigUri => GetEnvironmentVariableAsString("SERVICE_HEALTH_CONFIG_URI", string.Empty);
-        public string ServiceHealthKustoQuery => GetEnvironmentVariableAsString("SERVICE_HEALTH_KUSTO_QUERY", string.Empty);
 
         private static string GetEnvironmentVariableAsString(string name, string defaultValue)
         {

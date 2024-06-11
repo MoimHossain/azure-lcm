@@ -6,68 +6,27 @@ using System.Text.Json;
 
 namespace AzLcm.Shared.Storage
 {
-    public class WorkItemTemplateStorage(
-        DaemonConfig daemonConfig, 
-        IHttpClientFactory httpClientFactory,
-        JsonSerializerOptions jsonSerializerOptions)
+    public class WorkItemTemplateStorage(BlobContentReader blobContentReader)
     {
-        private async Task<string> GetTemplateTextAsync(string resourceName, CancellationToken stoppingToken)
-        {
-            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-            if (stream != null)
-            {
-                using var reader = new StreamReader(stream);                
-                string fileContents = await reader.ReadToEndAsync(stoppingToken);
-                return fileContents;
-            }
-            throw new InvalidOperationException($"Resource {resourceName} not found");
-        }
-
-        private async Task<WorkItemTemplate?> GetWorkItemTemplateFromEmbeddedResourceAsync(string resourceName, CancellationToken stoppingToken)
-        {   
-            var templateText = await GetTemplateTextAsync(resourceName, stoppingToken);
-            var template = JsonSerializer.Deserialize<WorkItemTemplate>(templateText, jsonSerializerOptions);
-            return template;
-        }
-
-        private async Task<WorkItemTemplate?> GetWorkItemTemplateFromUriAsync(string uri, CancellationToken stoppingToken)
-        {
-            var httpClient = httpClientFactory.CreateClient();
-            var template = await httpClient.GetFromJsonAsync<WorkItemTemplate>(uri, stoppingToken);
-            return template;
-        }
-
         public async Task<WorkItemTemplate?> GetFeedWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            if(!string.IsNullOrWhiteSpace(daemonConfig.FeedTemplateUri))
-            {
-                return await GetWorkItemTemplateFromUriAsync(daemonConfig.FeedTemplateUri, stoppingToken);
-            }
-
-            var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.FeedWorkItemTemplate.json";
-            return await GetWorkItemTemplateFromEmbeddedResourceAsync(resourceName, stoppingToken);
+            return await blobContentReader
+                .ReadFromJsonAsync<WorkItemTemplate>(
+                BlobContentReader.ConfigBlobs.FeedWorkItemTemplate, stoppingToken);
         }
 
         public async Task<WorkItemTemplate?> GetPolicyWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            if (!string.IsNullOrWhiteSpace(daemonConfig.PolicyTemplateUri))
-            {
-                return await GetWorkItemTemplateFromUriAsync(daemonConfig.PolicyTemplateUri, stoppingToken);
-            }
-
-            var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.PolicyWorkItemTemplate.json";
-            return await GetWorkItemTemplateFromEmbeddedResourceAsync(resourceName, stoppingToken);
+            return await blobContentReader
+                .ReadFromJsonAsync<WorkItemTemplate>(
+                BlobContentReader.ConfigBlobs.PolicyWorkItemTemplate, stoppingToken);
         }
-                
+
         public async Task<WorkItemTemplate?> GetServiceHealthWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            if (!string.IsNullOrWhiteSpace(daemonConfig.ServiceHealthWorkItemTemplateUri))
-            {
-                return await GetWorkItemTemplateFromUriAsync(daemonConfig.ServiceHealthWorkItemTemplateUri, stoppingToken);
-            }
-
-            var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.ServiceHealthWorkItemTemplate.json";
-            return await GetWorkItemTemplateFromEmbeddedResourceAsync(resourceName, stoppingToken);
+            return await blobContentReader
+                .ReadFromJsonAsync<WorkItemTemplate>(
+                BlobContentReader.ConfigBlobs.ServiceHealthWorkItemTemplate, stoppingToken);
         }
     }
 

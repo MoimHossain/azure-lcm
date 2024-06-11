@@ -1,31 +1,23 @@
 ﻿
 
-using System.Net.Http.Json;
+using AzLcm.Shared.Storage;
 
 namespace AzLcm.Shared.ServiceHealth
 {
-    public class ServiceHealthConfigReader(DaemonConfig daemonConfig, IHttpClientFactory httpClientFactory)
+    public class ServiceHealthConfigReader(BlobContentReader blobContentReader)
     {
-        public async Task<AzResourceGraphQueryConfig> GetResourceGraphQueryConfig(CancellationToken stoppingToken)
+        public async Task<AzResourceGraphQueryConfig?> GetResourceGraphQueryConfig(
+            CancellationToken stoppingToken)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(daemonConfig.ServiceHealthConfigUri, nameof(daemonConfig.ServiceHealthConfigUri));
-
-            var httpClient = httpClientFactory.CreateClient();
-            var azGraphConfig = await httpClient.GetFromJsonAsync<AzResourceGraphQueryConfig>(daemonConfig.ServiceHealthConfigUri, stoppingToken);
-            if (azGraphConfig == null)
-            {
-                throw new InvalidOperationException($"Failed to get azGraphConfig from {daemonConfig.FeedPromptTemplateUri}");
-            }
-            return azGraphConfig;
+            return await blobContentReader
+                .ReadFromJsonAsync<AzResourceGraphQueryConfig>(
+                BlobContentReader.ConfigBlobs.ServiceHealthConfig, stoppingToken);
         }
 
         public async Task<string?> GetKustoQueryAsync(CancellationToken stoppingToken)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(daemonConfig.ServiceHealthKustoQuery, nameof(daemonConfig.ServiceHealthKustoQuery));
-
-            var httpClient = httpClientFactory.CreateClient();
-            var queryText = await httpClient.GetStringAsync(daemonConfig.ServiceHealthKustoQuery, stoppingToken);
-            return queryText;
+            return await blobContentReader.ReadBlobContentAsync(
+                BlobContentReader.ConfigBlobs.ServiceHealthQuery, stoppingToken);
         }
     }
 
