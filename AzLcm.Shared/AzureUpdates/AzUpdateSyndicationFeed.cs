@@ -3,7 +3,7 @@
 using System.ServiceModel.Syndication;
 using System.Xml;
 
-namespace AzLcm.Shared
+namespace AzLcm.Shared.AzureUpdates
 {
     public class AzUpdateSyndicationFeed(DaemonConfig daemonConfig, HttpClient httpClient)
     {

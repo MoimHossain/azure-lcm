@@ -2,9 +2,11 @@
 
 using AzLcm.Shared;
 using AzLcm.Shared.AzureDevOps;
+using AzLcm.Shared.AzureUpdates;
 using AzLcm.Shared.Cognition;
 using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Policy;
+using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
 
 namespace AzLcm.Daemon
@@ -13,10 +15,12 @@ namespace AzLcm.Daemon
         DaemonConfig config,
         FeedStorage feedStorage,
         PolicyStorage policyStorage,
+        HealthServiceEventStorage healthServiceEventStorage,
         DevOpsClient devOpsClient,
         CognitiveService cognitiveService,
         HtmlExtractor htmlExtractor,
         PolicyReader policyReader,
+        ServiceHealthReader serviceHealthReader,
         AzUpdateSyndicationFeed azUpdateSyndicationFeed,
         PromptTemplateStorage promptTemplateStorage,
         WorkItemTemplateStorage workItemTemplateStorage,
@@ -36,15 +40,46 @@ namespace AzLcm.Daemon
 
             await feedStorage.EnsureTableExistsAsync();
             await policyStorage.EnsureTableExistsAsync();
-            
-
+            await healthServiceEventStorage.EnsureTableExistsAsync();
+                        
             while (!stoppingToken.IsCancellationRequested)
             {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
+                await ProcessServiceHealthAsync(stoppingToken);
                 await ProcessPolicyAsync(stoppingToken);
                 await ProcessFeedAsync(stoppingToken);                
+                
                 await Task.Delay(1000, stoppingToken);
+            }
+        }
+
+        private async Task ProcessServiceHealthAsync(CancellationToken stoppingToken)
+        {
+            if (config.ProcessServiceHealth)
+            {
+                var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
+                var template = await workItemTemplateStorage.GetServiceHealthWorkItemTemplateAsync(stoppingToken);
+
+                var processedCount = 0;
+                var totalEventCount = 0;
+
+                await serviceHealthReader.ProcessAsync(async serviceHealthEvent => 
+                {
+                    ++totalEventCount;
+                    var seen = await healthServiceEventStorage.HasSeenAsync(serviceHealthEvent, stoppingToken);
+
+                    if (!seen)
+                    {
+                        ++processedCount;
+
+                        await devOpsClient.CreateWorkItemFromServiceHealthAsync(azDevOpsConfig.orgName, template, serviceHealthEvent);
+
+                        await healthServiceEventStorage.MarkAsSeenAsync(serviceHealthEvent, stoppingToken);
+                    }
+                }, stoppingToken);
+                logger.LogInformation("Process {processedCount} items, out of {totalEventCount} service health events.", 
+                    processedCount, totalEventCount);
             }
         }
 

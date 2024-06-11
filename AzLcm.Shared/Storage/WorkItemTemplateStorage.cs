@@ -58,6 +58,17 @@ namespace AzLcm.Shared.Storage
             var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.PolicyWorkItemTemplate.json";
             return await GetWorkItemTemplateFromEmbeddedResourceAsync(resourceName, stoppingToken);
         }
+                
+        public async Task<WorkItemTemplate?> GetServiceHealthWorkItemTemplateAsync(CancellationToken stoppingToken)
+        {
+            if (!string.IsNullOrWhiteSpace(daemonConfig.ServiceHealthWorkItemTemplateUri))
+            {
+                return await GetWorkItemTemplateFromUriAsync(daemonConfig.ServiceHealthWorkItemTemplateUri, stoppingToken);
+            }
+
+            var resourceName = $"{typeof(WorkItemTemplateStorage).Namespace}.ServiceHealthWorkItemTemplate.json";
+            return await GetWorkItemTemplateFromEmbeddedResourceAsync(resourceName, stoppingToken);
+        }
     }
 
     public class WorkItemTemplate

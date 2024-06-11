@@ -9,9 +9,11 @@
   <ItemGroup>
     <None Remove="Storage\FeedWorkItemTemplate.json" />
     <None Remove="Storage\PolicyWorkItemTemplate.json" />
+    <None Remove="Storage\ServiceHealthWorkItemTemplate.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Storage\ServiceHealthWorkItemTemplate.json" />
     <EmbeddedResource Include="Storage\PolicyWorkItemTemplate.json" />
     <EmbeddedResource Include="Storage\FeedWorkItemTemplate.json" />
   </ItemGroup>
@@ -20,7 +22,7 @@
     <PackageReference Include="Abot" Version="2.0.70" />
     <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.14" />
     <PackageReference Include="Azure.Data.Tables" Version="12.8.3" />
-    <PackageReference Include="Azure.Identity" Version="1.11.0" />
+    <PackageReference Include="Azure.Identity" Version="1.11.3" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0-preview.2.24128.5" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />

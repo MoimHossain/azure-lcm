@@ -4,9 +4,11 @@
 using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.AzureDevOps.Authorizations;
 using AzLcm.Shared.AzureDevOps.Authorizations.AuthSchemes;
+using AzLcm.Shared.AzureUpdates;
 using AzLcm.Shared.Cognition;
 using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Policy;
+using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
 using Azure;
 using Azure.AI.OpenAI;
@@ -44,8 +46,11 @@ namespace AzLcm.Shared
             services.AddSingleton<PromptTemplateStorage>();
             services.AddSingleton<FeedStorage>();
             services.AddSingleton<PolicyStorage>();
+            services.AddSingleton<HealthServiceEventStorage>();
             services.AddSingleton<PolicyReader>();
             services.AddSingleton<AzUpdateSyndicationFeed>();
+            services.AddSingleton<ServiceHealthConfigReader>();
+            services.AddSingleton<ServiceHealthReader>();
             services.AddSingleton<HtmlExtractor>();
 
             services.AddSingleton((services) => {

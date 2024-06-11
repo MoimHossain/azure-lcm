@@ -5,6 +5,7 @@ using AzLcm.Shared.AzureDevOps.Abstracts;
 using AzLcm.Shared.AzureDevOps.Authorizations;
 using AzLcm.Shared.Cognition.Models;
 using AzLcm.Shared.Policy.Models;
+using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
 using Microsoft.Extensions.Logging;
 using System.ServiceModel.Syndication;
@@ -26,6 +27,52 @@ namespace AzLcm.Shared.AzureDevOps
             var apiPath = $"_apis/ConnectionData";
             var connectionData = await this.GetAsync<ConnectionDataPayload>(orgName, apiPath, false);
             return connectionData;
+        }
+
+        public async Task CreateWorkItemFromServiceHealthAsync(
+            string orgName,
+            WorkItemTemplate? template,
+            ServiceHealthEvent healthEvent)
+        {
+            ArgumentNullException.ThrowIfNull(template, nameof(template));
+            ArgumentNullException.ThrowIfNull(healthEvent, nameof(healthEvent));
+            ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
+
+            var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";
+            var workItemTags = string.Empty;
+            if (healthEvent != null)
+            {
+                var tags = new List<string>
+                {
+                    healthEvent.Service
+                };
+                workItemTags = string.Join(", ", tags);
+            }
+            if (healthEvent != null && template.Fields != null)
+            {
+                var fields = new List<PatchFragment>();
+                foreach (var tplField in template.Fields)
+                {
+                    var tplValue = $"{tplField.Value}";
+
+                    tplValue = tplValue.Replace("{SvcHealthEvent.Title}", healthEvent.Title);
+                    tplValue = tplValue.Replace("{SvcHealthEvent.Summary}", healthEvent.Summary);
+                    tplValue = tplValue.Replace("{SvcHealthEvent.Service}", healthEvent.Service);
+                    tplValue = tplValue.Replace("{SvcHealthEvent.Name}", healthEvent.Name);
+                    tplValue = tplValue.Replace("{SvcHealthEvent.Url}", healthEvent.Url);
+                    tplValue = tplValue.Replace("{SvcHealthEvent.LastUpdate}", healthEvent.LastUpdate.ToString());
+                    tplValue = tplValue.Replace("{SvcHealthEvent.Tags}", workItemTags);
+
+                    fields.Add(new PatchFragment
+                    {
+                        Op = tplField.Op,
+                        Path = tplField.Path,
+                        Value = tplValue
+                    });
+                }
+                
+                await this.PostAsync<object, string>(orgName, apiPath, fields, false, "application/json-patch+json");
+            }
         }
 
         public async Task CreateWorkItemFromFeedAsync(
