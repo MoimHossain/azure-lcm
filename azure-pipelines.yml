@@ -8,6 +8,7 @@ variables:
   location: "westeurope"
   workloadName: "azlcm"
   workloadEnv: "dev" 
+  containerName: "az-lcm-configs"
   registryURI: $(workloadName)azcontreg$(workloadEnv).azurecr.io 
   imageName: "azure-lcm-poc"
 
@@ -93,6 +94,7 @@ stages:
           imageTag: $(Build.BuildId)
           GTIHUB_PAT: $(GTIHUB_PAT)
           STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
+          containerName : $(containerName)
           AZURE_DEVOPS_ORGNAME: damayantibhuyan
           AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
           AZURE_OPENAI_ENDPOINT: https://azopenai-lcm.openai.azure.com/
