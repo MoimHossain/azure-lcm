@@ -1,6 +1,7 @@
 ﻿
 
 using AzLcm.Shared.AzureDevOps.Authorizations;
+using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
@@ -8,24 +9,17 @@ using System.Text.Json;
 
 namespace AzLcm.Shared.AzureDevOps.Abstracts
 {
-    public abstract class ClientBase
+    public abstract class ClientBase(
+        JsonSerializerOptions jsonSerializerOptions,
+        AzureDevOpsClientConfig appConfiguration,
+        AuthorizationFactory identitySupport,
+        ILogger? logger,
+        IHttpClientFactory httpClientFactory)
     {
-        protected readonly JsonSerializerOptions jsonSerializerOptions;        
-        protected readonly AzureDevOpsClientConfig appConfiguration;
-        private readonly AuthorizationFactory identitySupport;
-        protected readonly IHttpClientFactory httpClientFactory;
-
-        public ClientBase(
-            JsonSerializerOptions jsonSerializerOptions,            
-            AzureDevOpsClientConfig appConfiguration,
-            AuthorizationFactory identitySupport,
-            IHttpClientFactory httpClientFactory)
-        {
-            this.jsonSerializerOptions = jsonSerializerOptions;            
-            this.appConfiguration = appConfiguration;
-            this.identitySupport = identitySupport;
-            this.httpClientFactory = httpClientFactory;
-        }
+        protected readonly JsonSerializerOptions jsonSerializerOptions = jsonSerializerOptions;        
+        protected readonly AzureDevOpsClientConfig appConfiguration = appConfiguration;
+        protected readonly IHttpClientFactory httpClientFactory = httpClientFactory;
+        protected readonly ILogger logger;
 
         protected async virtual Task<TResponsePayload> PostAsync<TRequestPayload, TResponsePayload>(
             string orgName, string apiPath, TRequestPayload payload, bool elevate = false, string contentType = "")
@@ -56,8 +50,6 @@ namespace AzLcm.Shared.AzureDevOps.Abstracts
         {
             return await SendRequestWithoutBodyCoreAsync(orgName, AzureDevOpsClientConstants.CoreAPI.NAME, apiPath, HttpMethod.Patch, elevate);
         }
-
-
 
         protected async virtual Task<TPayload> GetAsync<TPayload>(string orgName, string apiPath, bool elevate = false) where TPayload : class
         {
@@ -136,6 +128,17 @@ namespace AzLcm.Shared.AzureDevOps.Abstracts
                     return result;
                 }
             }
+            else
+            {
+                LogError(message: "Error Occurred in SendRequestCoreAsync(). {httpMethod} {orgName} {apiPath} ", httpMethod, orgName, apiPath);
+
+                try
+                {
+                    var x = await response.Content.ReadAsStringAsync();
+                    LogError(message: "Error Occurred in SendRequestCoreAsync(). {response} ", x);
+                }
+                catch { }
+            }
             throw new InvalidOperationException($"Error: {response.StatusCode}");
         }
 
@@ -150,6 +153,11 @@ namespace AzLcm.Shared.AzureDevOps.Abstracts
             var request = new HttpRequestMessage(httpMethod, path);
             var response = await client.SendAsync(request);
             return response.IsSuccessStatusCode;
+        }
+
+        protected void LogError(string? message, params object?[] args)
+        {
+            logger?.LogError(message, args);
         }
     }
 }

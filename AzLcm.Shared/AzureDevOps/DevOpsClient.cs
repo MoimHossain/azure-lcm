@@ -20,7 +20,7 @@ namespace AzLcm.Shared.AzureDevOps
         IHttpClientFactory httpClientFactory,
         AuthorizationFactory identitySupport,
         ILogger<DevOpsClient> logger) : ClientBase(jsonSerializerOptions,
-            appConfiguration, identitySupport, httpClientFactory)
+            appConfiguration, identitySupport, logger, httpClientFactory)
     {
         public async Task<ConnectionDataPayload> GetConnectionDataAsync(string orgName)
         {
@@ -39,6 +39,9 @@ namespace AzLcm.Shared.AzureDevOps
             ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
 
             var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";
+
+            logger.LogInformation("Create WorkItem From ServiceHealth API Path {apiPath}", apiPath);      
+
             var workItemTags = string.Empty;
             if (healthEvent != null)
             {
