@@ -38,9 +38,7 @@ namespace AzLcm.Shared.AzureDevOps
             ArgumentNullException.ThrowIfNull(healthEvent, nameof(healthEvent));
             ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
 
-            var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";
-
-            logger.LogInformation("Create WorkItem From ServiceHealth API Path {apiPath}", apiPath);      
+            var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";   
 
             var workItemTags = string.Empty;
             if (healthEvent != null)

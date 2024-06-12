@@ -9,17 +9,27 @@ using System.Text.Json;
 
 namespace AzLcm.Shared.AzureDevOps.Abstracts
 {
-    public abstract class ClientBase(
-        JsonSerializerOptions jsonSerializerOptions,
-        AzureDevOpsClientConfig appConfiguration,
-        AuthorizationFactory identitySupport,
-        ILogger? logger,
-        IHttpClientFactory httpClientFactory)
+    public abstract class ClientBase
     {
-        protected readonly JsonSerializerOptions jsonSerializerOptions = jsonSerializerOptions;        
-        protected readonly AzureDevOpsClientConfig appConfiguration = appConfiguration;
-        protected readonly IHttpClientFactory httpClientFactory = httpClientFactory;
-        protected readonly ILogger logger;
+        private readonly JsonSerializerOptions jsonSerializerOptions;
+        private readonly AzureDevOpsClientConfig appConfiguration;
+        private readonly AuthorizationFactory identitySupport;
+        private readonly ILogger<DevOpsClient> logger;
+        private readonly IHttpClientFactory httpClientFactory;
+
+        protected ClientBase(
+            JsonSerializerOptions jsOptions,
+            AzureDevOpsClientConfig appConfig,
+            AuthorizationFactory idnSupport,
+            ILogger<DevOpsClient> logger,
+            IHttpClientFactory httpClientFactory)
+        {
+            this.jsonSerializerOptions = jsOptions;
+            this.appConfiguration = appConfig;
+            this.identitySupport = idnSupport;
+            this.logger = logger;
+            this.httpClientFactory = httpClientFactory;
+        }
 
         protected async virtual Task<TResponsePayload> PostAsync<TRequestPayload, TResponsePayload>(
             string orgName, string apiPath, TRequestPayload payload, bool elevate = false, string contentType = "")
@@ -91,10 +101,10 @@ namespace AzLcm.Shared.AzureDevOps.Abstracts
         }
 
         private async Task<TResponsePayload> SendRequestCoreAsync<TRequestPayload, TResponsePayload>(
-            string orgName, string apiType, string apiPath, 
-            TRequestPayload payload, 
-            HttpMethod httpMethod, 
-            bool elevate = false, 
+            string orgName, string apiType, string apiPath,
+            TRequestPayload payload,
+            HttpMethod httpMethod,
+            bool elevate = false,
             string contentType = "application/json")
             where TRequestPayload : class
             where TResponsePayload : class
