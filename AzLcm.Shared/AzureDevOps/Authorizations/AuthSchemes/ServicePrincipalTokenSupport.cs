@@ -22,7 +22,7 @@ namespace AzLcm.Shared.AzureDevOps.Authorizations.AuthSchemes
             }
         }
 
-        public async Task<(string, string)> GetCredentialsAsync()
+        public async Task<(string, string)> GetCredentialsAsync(CancellationToken cancellationToken)
         {
             if (tokenCredential == null)
             {
@@ -33,7 +33,7 @@ namespace AzLcm.Shared.AzureDevOps.Authorizations.AuthSchemes
             // An internal token cache is used which reduces the number of outgoing calls to Azure AD to get tokens.
             // Call GetTokenAsync whenever you are making a request. Token caching and refresh logic is handled by the credential object.
             var tokenRequestContext = new TokenRequestContext(VssAadSettings.DefaultScopes);
-            var accessToken = await tokenCredential.GetTokenAsync(tokenRequestContext, CancellationToken.None);
+            var accessToken = await tokenCredential.GetTokenAsync(tokenRequestContext, cancellationToken);
             return ("Bearer", accessToken.Token);
         }
 

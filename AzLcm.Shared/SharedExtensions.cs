@@ -49,6 +49,7 @@ namespace AzLcm.Shared
             services.AddSingleton<PolicyStorage>();
             services.AddSingleton<HealthServiceEventStorage>();
             services.AddSingleton<PolicyReader>();
+            services.AddSingleton<AzureUpdateWebScrapper>();
             services.AddSingleton<AzUpdateSyndicationFeed>();
             services.AddSingleton<ServiceHealthConfigReader>();
             services.AddSingleton<ServiceHealthReader>();

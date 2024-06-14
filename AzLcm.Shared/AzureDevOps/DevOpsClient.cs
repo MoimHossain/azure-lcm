@@ -3,6 +3,7 @@
 
 using AzLcm.Shared.AzureDevOps.Abstracts;
 using AzLcm.Shared.AzureDevOps.Authorizations;
+using AzLcm.Shared.AzureUpdates.Model;
 using AzLcm.Shared.Cognition.Models;
 using AzLcm.Shared.Policy.Models;
 using AzLcm.Shared.ServiceHealth;
@@ -22,17 +23,19 @@ namespace AzLcm.Shared.AzureDevOps
         ILogger<DevOpsClient> logger) : ClientBase(jsonSerializerOptions,
             appConfiguration, identitySupport, logger, httpClientFactory)
     {
-        public async Task<ConnectionDataPayload> GetConnectionDataAsync(string orgName)
+        public async Task<ConnectionDataPayload> GetConnectionDataAsync(
+            string orgName, CancellationToken cancellationToken)
         {
             var apiPath = $"_apis/ConnectionData";
-            var connectionData = await this.GetAsync<ConnectionDataPayload>(orgName, apiPath, false);
+            var connectionData = await this.GetAsync<ConnectionDataPayload>(
+                orgName, apiPath, cancellationToken, false);
             return connectionData;
         }
 
         public async Task CreateWorkItemFromServiceHealthAsync(
             string orgName,
             WorkItemTemplate? template,
-            ServiceHealthEvent healthEvent)
+            ServiceHealthEvent healthEvent, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(template, nameof(template));
             ArgumentNullException.ThrowIfNull(healthEvent, nameof(healthEvent));
@@ -72,7 +75,8 @@ namespace AzLcm.Shared.AzureDevOps
                     });
                 }
                 
-                await this.PostAsync<object, string>(orgName, apiPath, fields, false, "application/json-patch+json");
+                await this.PostAsync<object, string>(orgName, apiPath, 
+                    fields, cancellationToken, false, "application/json-patch+json");
             }
         }
 
@@ -80,7 +84,7 @@ namespace AzLcm.Shared.AzureDevOps
             string orgName, 
             WorkItemTemplate? template, 
             SyndicationItem feed,
-            Verdict? verdict)
+            Verdict? verdict, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(template, nameof(template));
             ArgumentNullException.ThrowIfNull(feed, nameof(feed));            
@@ -139,14 +143,84 @@ namespace AzLcm.Shared.AzureDevOps
                         Value = tplValue
                     });
                 }
-                await this.PostAsync<object, string>(orgName, apiPath, fields, false, "application/json-patch+json");
+                await this.PostAsync<object, string>(orgName, apiPath, 
+                    fields, cancellationToken, false, "application/json-patch+json");
+            }
+        }
+
+        public async Task CreateWorkItemFromFeedAsync(
+            string orgName,
+            WorkItemTemplate? template,
+            AzFeedItem feed,
+            Verdict? verdict, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(template, nameof(template));
+            ArgumentNullException.ThrowIfNull(feed, nameof(feed));
+            ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
+
+            var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";
+            var workItemTags = string.Empty;
+            if (verdict != null)
+            {
+                var tags = new List<string>();
+                if (verdict.Actionable) tags.Add("Actionable");
+                if (verdict.AnnouncementRequired) tags.Add("Announcement");
+                if (verdict.ActionableViaAzurePolicy) tags.Add("AzurePolicy");
+                tags.Add(verdict.UpdateKind.ToString());
+
+                foreach(var tag in feed.Tags)
+                {
+                    if(!tags.Contains(tag))
+                    {
+                        tags.Add(tag);
+                    }                        
+                }
+
+                workItemTags = string.Join(", ", tags);
+            }
+
+            if (template.Fields != null)
+            {
+                var fields = new List<PatchFragment>();
+                foreach (var tplField in template.Fields)
+                {
+                    var tplValue = $"{tplField.Value}";
+
+                    tplValue = tplValue.Replace("{Feed.Title}", feed.Title);
+                    tplValue = tplValue.Replace("{Feed.Id}", feed.GetID());
+                    tplValue = tplValue.Replace("{Feed.Summary}", feed.HtmlBody);
+                    tplValue = tplValue.Replace("{Feed.PublishDate}", feed.PublishedDate.ToString());
+
+                    tplValue = tplValue.Replace("{Feed.Link}", feed.link);
+
+
+                    if (verdict != null)
+                    {
+                        tplValue = tplValue.Replace("{Classification.Kind}", verdict.UpdateKind.ToString());
+                        if (verdict.AzureServiceNames != null)
+                        {
+                            tplValue = tplValue.Replace("{Classification.ServiceName}", string.Join(", ", verdict.AzureServiceNames));
+                        }
+                        tplValue = tplValue.Replace("{Classification.AiSuggestion}", $"{verdict.MitigationInstructionMarkdown}");
+                        tplValue = tplValue.Replace("{Classification.Tags}", workItemTags);
+                    }
+
+                    fields.Add(new PatchFragment
+                    {
+                        Op = tplField.Op,
+                        Path = tplField.Path,
+                        Value = tplValue
+                    });
+                }
+                await this.PostAsync<object, string>(orgName, apiPath, fields,
+                    cancellationToken, false, "application/json-patch+json");
             }
         }
 
         public async Task CreateWorkItemFromPolicyAsync(
             string orgName,
             WorkItemTemplate? template,
-            PolicyModelChange policyUpdate)
+            PolicyModelChange policyUpdate, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
             ArgumentNullException.ThrowIfNull(template, nameof(template));
@@ -208,7 +282,8 @@ namespace AzLcm.Shared.AzureDevOps
                             Value = tplValue
                         });
                     }
-                    await this.PostAsync<object, string>(orgName, apiPath, fields, false, "application/json-patch+json");
+                    await this.PostAsync<object, string>(orgName, apiPath, fields, 
+                        cancellationToken, false, "application/json-patch+json");
                 }
             }
         }

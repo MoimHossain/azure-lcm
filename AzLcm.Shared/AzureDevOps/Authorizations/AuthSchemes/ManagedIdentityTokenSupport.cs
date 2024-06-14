@@ -36,7 +36,7 @@ namespace AzLcm.Shared.AzureDevOps.Authorizations.AuthSchemes
         }
 
 
-        public async Task<(string, string)> GetCredentialsAsync()
+        public async Task<(string, string)> GetCredentialsAsync(CancellationToken cancellationToken)
         {
             if (tokenCredential == null)
             {
@@ -45,7 +45,7 @@ namespace AzLcm.Shared.AzureDevOps.Authorizations.AuthSchemes
 
             logger.LogInformation("Managed Identity Auth attempting to get token...");
             var tokenRequestContext = new TokenRequestContext(VssAadSettings.DefaultScopes);
-            var accessToken = await tokenCredential.GetTokenAsync(tokenRequestContext, CancellationToken.None);
+            var accessToken = await tokenCredential.GetTokenAsync(tokenRequestContext, cancellationToken);
             logger.LogInformation("Managed Identity Auth is configured...token received");
             return ("Bearer", accessToken.Token);
         }

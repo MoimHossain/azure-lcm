@@ -26,15 +26,16 @@ namespace AzLcm.Shared.AzureDevOps.Authorizations
             this.config = config;
         }
 
-        public async Task<(string, string)> GetCredentialsAsync(bool elevatedPrivilege = false)
+        public async Task<(string, string)> GetCredentialsAsync(
+            CancellationToken cancellationToken, bool elevatedPrivilege = false)
         {
             if (managedIdentityTokenSupport.IsConfigured())
             {
-                return await managedIdentityTokenSupport.GetCredentialsAsync();
+                return await managedIdentityTokenSupport.GetCredentialsAsync(cancellationToken);
             }
             if (servicePrincipalTokenSupport.IsConfigured())
             {
-                return await servicePrincipalTokenSupport.GetCredentialsAsync();
+                return await servicePrincipalTokenSupport.GetCredentialsAsync(cancellationToken);
             }
             if (personalAccessTokenSupport.IsConfigured())
             {

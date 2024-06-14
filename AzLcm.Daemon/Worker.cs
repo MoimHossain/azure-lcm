@@ -22,6 +22,7 @@ namespace AzLcm.Daemon
         PolicyReader policyReader,
         ServiceHealthReader serviceHealthReader,
         AzUpdateSyndicationFeed azUpdateSyndicationFeed,
+        AzureUpdateWebScrapper azureUpdateWebScrapper,
         PromptTemplateStorage promptTemplateStorage,
         WorkItemTemplateStorage workItemTemplateStorage,
         ILogger<Worker> logger) : BackgroundService
@@ -29,7 +30,7 @@ namespace AzLcm.Daemon
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var azdoConfig = config.GetAzureDevOpsClientConfig();
-            var connectionData = await devOpsClient.GetConnectionDataAsync(azdoConfig.orgName);
+            var connectionData = await devOpsClient.GetConnectionDataAsync(azdoConfig.orgName, stoppingToken);
 
             if (connectionData.AuthenticatedUser == null ||
                 string.IsNullOrWhiteSpace(connectionData.AuthenticatedUser.SubjectDescriptor))
@@ -73,7 +74,8 @@ namespace AzLcm.Daemon
                     {
                         ++processedCount;
 
-                        await devOpsClient.CreateWorkItemFromServiceHealthAsync(azDevOpsConfig.orgName, template, serviceHealthEvent);
+                        await devOpsClient.CreateWorkItemFromServiceHealthAsync(
+                            azDevOpsConfig.orgName, template, serviceHealthEvent, stoppingToken);
 
                         await healthServiceEventStorage.MarkAsSeenAsync(serviceHealthEvent, stoppingToken);
                     }
@@ -102,7 +104,8 @@ namespace AzLcm.Daemon
                     if (difference.ChangeKind != Shared.Policy.Models.ChangeKind.None)
                     {
                         ++processedCount;
-                        await devOpsClient.CreateWorkItemFromPolicyAsync(azDevOpsConfig.orgName, template, difference);
+                        await devOpsClient.CreateWorkItemFromPolicyAsync(
+                            azDevOpsConfig.orgName, template, difference, stoppingToken);
                         await policyStorage.MarkAsSeenAsync(policy, stoppingToken);
                     }
                 }, stoppingToken);
@@ -117,6 +120,27 @@ namespace AzLcm.Daemon
                 var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
                 var template = await workItemTemplateStorage.GetFeedWorkItemTemplateAsync(stoppingToken);
                 var promptTemplate = await promptTemplateStorage.GetFeedPromptAsync(stoppingToken);
+
+
+                var processedCount = 0;
+                await azureUpdateWebScrapper.ReadAsync(async (feedItem) => 
+                {
+                    var seen = await feedStorage.HasSeenAsync(feedItem, stoppingToken);
+
+                    if (!seen)
+                    {
+                        ++processedCount;
+
+                        var verdict = await cognitiveService.AnalyzeV2Async(feedItem, promptTemplate, stoppingToken);
+                        await devOpsClient.CreateWorkItemFromFeedAsync(
+                            azDevOpsConfig.orgName, template, feedItem, verdict, stoppingToken);
+
+                        await feedStorage.MarkAsSeenAsync(feedItem, stoppingToken);
+                    }
+                }, stoppingToken);
+                logger.LogInformation("Processed {count} items", processedCount);
+
+                /*
                 var feeds = await azUpdateSyndicationFeed.ReadAsync(stoppingToken);
                 var processedCount = 0;
                 foreach (var feed in feeds)
@@ -137,6 +161,7 @@ namespace AzLcm.Daemon
                 }
 
                 logger.LogInformation("Process {processedFeedCount} items, out of {totalFeedCount} feeds.", processedCount, feeds.Count());
+                */
             }
         }
     }

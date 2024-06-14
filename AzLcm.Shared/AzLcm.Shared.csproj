@@ -1,34 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Storage\FeedWorkItemTemplate.json" />
-    <None Remove="Storage\PolicyWorkItemTemplate.json" />
-    <None Remove="Storage\ServiceHealthWorkItemTemplate.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Storage\FeedWorkItemTemplate.json" />
+		<None Remove="Storage\PolicyWorkItemTemplate.json" />
+		<None Remove="Storage\ServiceHealthWorkItemTemplate.json" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Storage\ServiceHealthWorkItemTemplate.json" />
-    <EmbeddedResource Include="Storage\PolicyWorkItemTemplate.json" />
-    <EmbeddedResource Include="Storage\FeedWorkItemTemplate.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Storage\ServiceHealthWorkItemTemplate.json" />
+		<EmbeddedResource Include="Storage\PolicyWorkItemTemplate.json" />
+		<EmbeddedResource Include="Storage\FeedWorkItemTemplate.json" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Abot" Version="2.0.70" />
-    <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.14" />
-    <PackageReference Include="Azure.Data.Tables" Version="12.8.3" />
-    <PackageReference Include="Azure.Identity" Version="1.11.4" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.20.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0-preview.2.24128.5" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
-    <PackageReference Include="System.ServiceModel.Syndication" Version="9.0.0-preview.2.24128.5" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Abot" Version="2.0.70" />
+		<PackageReference Include="AngleSharp" Version="1.1.2" />
+		<PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.14" />
+		<PackageReference Include="Azure.Data.Tables" Version="12.8.3" />
+		<PackageReference Include="Azure.Identity" Version="1.11.4" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.20.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0-preview.2.24128.5" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+		<PackageReference Include="System.ServiceModel.Syndication" Version="9.0.0-preview.2.24128.5" />
+	</ItemGroup>
 
 </Project>

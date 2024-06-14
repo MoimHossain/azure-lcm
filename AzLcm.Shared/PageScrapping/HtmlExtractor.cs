@@ -4,7 +4,6 @@ using Abot2.Crawler;
 using Abot2.Poco;
 using AngleSharp.Html.Dom;
 using Microsoft.Extensions.Logging;
-using Serilog.Core;
 using System.ServiceModel.Syndication;
 
 

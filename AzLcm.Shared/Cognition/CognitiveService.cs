@@ -1,5 +1,6 @@
 ﻿
 
+using AzLcm.Shared.AzureUpdates.Model;
 using AzLcm.Shared.Cognition.Models;
 using AzLcm.Shared.PageScrapping;
 using Azure.AI.OpenAI;
@@ -25,6 +26,36 @@ namespace AzLcm.Shared.Cognition
             PresencePenalty = (float)0,
             Temperature = (float)1
         };
+
+        public async Task<Verdict?> AnalyzeV2Async(
+            AzFeedItem feedItem,  string promptTemplate, CancellationToken stoppingToken)
+        {
+            ArgumentNullException.ThrowIfNull(nameof(feedItem));
+
+            var thread = GetChatCompletionsOptions();
+
+            thread.Messages.Add(new ChatRequestSystemMessage(promptTemplate));
+
+            var feedDetails = new StringBuilder();
+            feedDetails.AppendLine($"Title: {feedItem.Title}");
+            feedDetails.AppendLine($"Summary: {feedItem.UpdateBody}");
+            feedDetails.AppendLine($"Tags: {string.Join(", ", feedItem.Tags)}");
+            thread.Messages.Add(new ChatRequestUserMessage(feedDetails.ToString()));
+
+            try
+            {
+                var response = await openAIClient.GetChatCompletionsAsync(thread, stoppingToken);
+                var rawContent = response.Value.Choices[0].Message.Content;
+                var verdict = Verdict.FromJson(rawContent, jsonSerializerOptions);
+                return verdict;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, message: "");
+            }
+            return null;
+        }
+
 
         public async Task<Verdict?> AnalyzeAsync(
             SyndicationItem feed, List<HtmlFragment> fragments, 
