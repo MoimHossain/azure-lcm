@@ -21,6 +21,7 @@ namespace AzLcm.Shared.Storage
             public const string ServiceHealthConfig = "service-health-config.json";
             public const string ServiceHealthQuery = "service-health-query.txt";
             public const string ServiceHealthWorkItemTemplate = "Service-health-workitem-template.json";
+            public const string AreaPathRouteTemplate = "AreaPathRouteConfig.json";
         }
 
         public async Task<TPayloadType?> ReadFromJsonAsync<TPayloadType>(string blobName, CancellationToken stoppingToken)

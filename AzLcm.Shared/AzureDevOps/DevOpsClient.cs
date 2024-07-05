@@ -4,6 +4,7 @@
 using AzLcm.Shared.AzureDevOps.Abstracts;
 using AzLcm.Shared.AzureDevOps.Authorizations;
 using AzLcm.Shared.AzureUpdates.Model;
+using AzLcm.Shared.Cognition;
 using AzLcm.Shared.Cognition.Models;
 using AzLcm.Shared.Policy.Models;
 using AzLcm.Shared.ServiceHealth;
@@ -12,10 +13,12 @@ using Microsoft.Extensions.Logging;
 using System.ServiceModel.Syndication;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 namespace AzLcm.Shared.AzureDevOps
 {
-    public class DevOpsClient(        
+    public class DevOpsClient(
+        CognitiveService cognitiveService,
         JsonSerializerOptions jsonSerializerOptions,
         AzureDevOpsClientConfig appConfiguration,
         IHttpClientFactory httpClientFactory,
@@ -32,29 +35,68 @@ namespace AzLcm.Shared.AzureDevOps
             return connectionData;
         }
 
+        private async Task<bool> MapAreaPathAsync(
+            string serviceName,
+            AreaPathServiceMapConfig? areaPathServiceMapConfig,
+            List<PatchFragment> fields,
+            CancellationToken cancellationToken)
+        {
+            if(areaPathServiceMapConfig != null && !string.IsNullOrWhiteSpace(serviceName) && fields != null)
+            {
+                var mapResponse = await cognitiveService
+                    .MapServiceToAreaPathAsync(serviceName, areaPathServiceMapConfig, cancellationToken);
+                if (mapResponse != null)
+                {
+                    fields.RemoveAll(f => f.Path == "/fields/System.AreaPath");
+
+                    if (!string.IsNullOrWhiteSpace(mapResponse.AreaPath))
+                    {
+                        fields.Add(new PatchFragment
+                        {
+                            Op = "add",
+                            Path = "/fields/System.AreaPath",
+                            Value = mapResponse.AreaPath
+                        });
+
+                        return true;
+                    }
+                    else 
+                    {
+                        if (!areaPathServiceMapConfig.IgnoreWhenNoMatchFound 
+                            && !string.IsNullOrWhiteSpace(areaPathServiceMapConfig.DefaultAreaPath))
+                        {
+                            fields.Add(new PatchFragment
+                            {
+                                Op = "add",
+                                Path = "/fields/System.AreaPath",
+                                Value = areaPathServiceMapConfig.DefaultAreaPath
+                            });
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
         public async Task CreateWorkItemFromServiceHealthAsync(
             string orgName,
             WorkItemTemplate? template,
+            AreaPathMapConfig? areaPathMapConfig, 
             ServiceHealthEvent healthEvent, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(template, nameof(template));
+            ArgumentNullException.ThrowIfNull(areaPathMapConfig, nameof(areaPathMapConfig));
             ArgumentNullException.ThrowIfNull(healthEvent, nameof(healthEvent));
             ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
 
-            var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";   
-
-            var workItemTags = string.Empty;
-            if (healthEvent != null)
-            {
-                var tags = new List<string>
-                {
-                    healthEvent.Service
-                };
-                workItemTags = string.Join(", ", tags);
-            }
+            var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";
             if (healthEvent != null && template.Fields != null)
             {
-                var fields = new List<PatchFragment>();
+                List<PatchFragment> fields = [];
+                List<string> tags = [ healthEvent.Service ];
+                string? workItemTags = string.Join(", ", tags);
+                
                 foreach (var tplField in template.Fields)
                 {
                     var tplValue = $"{tplField.Value}";
@@ -74,19 +116,31 @@ namespace AzLcm.Shared.AzureDevOps
                         Value = tplValue
                     });
                 }
-                
-                await this.PostAsync<object, string>(orgName, apiPath, 
-                    fields, cancellationToken, false, "application/json-patch+json");
+
+                var proceedCreateWorkItem = await MapAreaPathAsync(
+                    healthEvent.Service, areaPathMapConfig.ServiceHealthMap, fields, cancellationToken);
+
+                if (proceedCreateWorkItem)
+                {
+                    await this.PostAsync<object, string>(orgName, apiPath,
+                        fields, cancellationToken, false, "application/json-patch+json");
+                }
+                else 
+                {
+                    logger.LogWarning("Failed to map area path for service {serviceName}. Skipping Work item creation.", healthEvent.Service);
+                }
             }
         }
 
         public async Task CreateWorkItemFromFeedAsync(
             string orgName, 
-            WorkItemTemplate? template, 
+            WorkItemTemplate? template,
+            AreaPathMapConfig? areaPathMapConfig,
             SyndicationItem feed,
             Verdict? verdict, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(template, nameof(template));
+            ArgumentNullException.ThrowIfNull(areaPathMapConfig, nameof(areaPathMapConfig));
             ArgumentNullException.ThrowIfNull(feed, nameof(feed));            
             ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
 
@@ -142,20 +196,39 @@ namespace AzLcm.Shared.AzureDevOps
                         Path = tplField.Path,
                         Value = tplValue
                     });
+
+
                 }
-                await this.PostAsync<object, string>(orgName, apiPath, 
-                    fields, cancellationToken, false, "application/json-patch+json");
+
+                var proceedCreateWorkItem = false;
+                if (verdict != null && verdict.AzureServiceNames != null && verdict.AzureServiceNames.Count != 0)
+                {
+                    proceedCreateWorkItem = await MapAreaPathAsync(
+                        verdict.AzureServiceNames.First(), areaPathMapConfig.AzureUpdatesMap, fields, cancellationToken);
+                }
+
+                if (proceedCreateWorkItem)
+                {
+                    await this.PostAsync<object, string>(orgName, apiPath,
+                        fields, cancellationToken, false, "application/json-patch+json");
+                }
+                else 
+                {
+                    logger.LogWarning("Failed to map area path for service {serviceName}. Skipping Work item creation.", verdict.AzureServiceNames);
+                }
             }
         }
 
         public async Task CreateWorkItemFromFeedAsync(
             string orgName,
             WorkItemTemplate? template,
+            AreaPathMapConfig? areaPathMapConfig,
             AzFeedItem feed,
             Verdict? verdict, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(template, nameof(template));
             ArgumentNullException.ThrowIfNull(feed, nameof(feed));
+            ArgumentNullException.ThrowIfNull(areaPathMapConfig, nameof(areaPathMapConfig));
             ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
 
             var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";
@@ -212,18 +285,37 @@ namespace AzLcm.Shared.AzureDevOps
                         Value = tplValue
                     });
                 }
-                await this.PostAsync<object, string>(orgName, apiPath, fields,
-                    cancellationToken, false, "application/json-patch+json");
+
+
+
+                var proceedCreateWorkItem = false;
+                if (verdict != null && verdict.AzureServiceNames != null && verdict.AzureServiceNames.Count != 0)
+                {
+                    proceedCreateWorkItem = await MapAreaPathAsync(
+                        verdict.AzureServiceNames.First(), areaPathMapConfig.AzureUpdatesMap, fields, cancellationToken);
+                }
+
+                if (proceedCreateWorkItem)
+                {
+                    await this.PostAsync<object, string>(orgName, apiPath,
+                        fields, cancellationToken, false, "application/json-patch+json");
+                }
+                else
+                {
+                    logger.LogWarning("Failed to map area path for service {serviceName}. Skipping Work item creation.", verdict.AzureServiceNames);
+                }
             }
         }
 
         public async Task CreateWorkItemFromPolicyAsync(
             string orgName,
             WorkItemTemplate? template,
+            AreaPathMapConfig? areaPathMapConfig,
             PolicyModelChange policyUpdate, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
             ArgumentNullException.ThrowIfNull(template, nameof(template));
+            ArgumentNullException.ThrowIfNull(areaPathMapConfig, nameof(areaPathMapConfig));
             ArgumentNullException.ThrowIfNull(policyUpdate, nameof(policyUpdate));
             ArgumentNullException.ThrowIfNull(policyUpdate.Policy, nameof(policyUpdate.Policy));            
 
@@ -282,8 +374,18 @@ namespace AzLcm.Shared.AzureDevOps
                             Value = tplValue
                         });
                     }
-                    await this.PostAsync<object, string>(orgName, apiPath, fields, 
-                        cancellationToken, false, "application/json-patch+json");
+
+                    var proceedCreateWorkItem = await MapAreaPathAsync(
+                        policy.Properties.Metadata.Category, areaPathMapConfig.PolicyMap, fields, cancellationToken);
+                    if (proceedCreateWorkItem)
+                    {
+                        await this.PostAsync<object, string>(orgName, apiPath, fields,
+                            cancellationToken, false, "application/json-patch+json");
+                    }
+                    else 
+                    {
+                        logger.LogWarning("Failed to map area path for service {serviceName}. Skipping Work item creation.", policy.Properties.Metadata.Category);
+                    }                    
                 }
             }
         }

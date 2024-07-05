@@ -20,6 +20,11 @@ namespace AzLcm.Shared.ServiceHealth
         {
             var config = daemonConfig.GetAzureConnectionConfig();            
             var healthConfig = await serviceHealthConfigReader.GetResourceGraphQueryConfig(cancellationToken);
+            if(healthConfig == null )
+            {
+                logger.LogWarning("No health configuration found");
+                return;
+            }
             var queryText = await serviceHealthConfigReader.GetKustoQueryAsync(cancellationToken);
             var resourceGraphUri = "https://management.azure.com/providers/Microsoft.ResourceGraph/resources?api-version=2021-03-01";
             if(!string.IsNullOrWhiteSpace(healthConfig.Uri))
@@ -29,15 +34,23 @@ namespace AzLcm.Shared.ServiceHealth
 
             logger.LogInformation("Querying Azure Resource Graph with query: {Query}", queryText);
 
-            //var cred = new ClientSecretCredential(config.TenantId, config.ClientId, config.ClientSecret);
-            var cred = new DefaultAzureCredential();
-            var accessToken = cred.GetToken(
+            TokenCredential? cred;
+            if (!string.IsNullOrWhiteSpace(config.ClientId) && !string.IsNullOrWhiteSpace(config.ClientSecret))
+            {
+                logger.LogInformation("Using client secret for authentication");
+                cred = new ClientSecretCredential(config.TenantId, config.ClientId, config.ClientSecret);
+            }
+            else 
+            {
+                logger.LogInformation("Using default Azure credential for authentication");
+                cred = new DefaultAzureCredential();
+            }            
+            
+            var accessToken = await cred.GetTokenAsync(
                 new TokenRequestContext(["https://management.azure.com/.default"]), cancellationToken);
             logger.LogInformation("Access token acquired for {clientId}", config.ClientId);
 
             var httpClient = httpClientFactory.CreateClient();
-
-
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Token);            
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.BaseAddress = new Uri(resourceGraphUri);

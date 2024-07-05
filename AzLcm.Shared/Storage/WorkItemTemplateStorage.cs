@@ -1,9 +1,5 @@
 ﻿
 
-using System.Net.Http.Json;
-using System.Reflection;
-using System.Text.Json;
-
 namespace AzLcm.Shared.Storage
 {
     public class WorkItemTemplateStorage(BlobContentReader blobContentReader)
@@ -27,6 +23,13 @@ namespace AzLcm.Shared.Storage
             return await blobContentReader
                 .ReadFromJsonAsync<WorkItemTemplate>(
                 BlobContentReader.ConfigBlobs.ServiceHealthWorkItemTemplate, stoppingToken);
+        }
+
+        public async Task<AreaPathMapConfig?> GetAreaPathMapConfigAsync(CancellationToken stoppingToken)
+        {
+            return await blobContentReader
+                .ReadFromJsonAsync<AreaPathMapConfig>(
+                BlobContentReader.ConfigBlobs.AreaPathRouteTemplate, stoppingToken);
         }
     }
 

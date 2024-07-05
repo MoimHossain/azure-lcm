@@ -7,12 +7,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Remove="Storage\AreaPathRouteConfig.json" />
 		<None Remove="Storage\FeedWorkItemTemplate.json" />
 		<None Remove="Storage\PolicyWorkItemTemplate.json" />
 		<None Remove="Storage\ServiceHealthWorkItemTemplate.json" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<EmbeddedResource Include="Storage\AreaPathRouteConfig.json" />
 		<EmbeddedResource Include="Storage\ServiceHealthWorkItemTemplate.json" />
 		<EmbeddedResource Include="Storage\PolicyWorkItemTemplate.json" />
 		<EmbeddedResource Include="Storage\FeedWorkItemTemplate.json" />

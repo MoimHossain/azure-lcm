@@ -51,7 +51,7 @@ namespace AzLcm.Daemon
                 await ProcessPolicyAsync(stoppingToken);
                 await ProcessFeedAsync(stoppingToken);                
                 
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(5000, stoppingToken);
             }
         }
 
@@ -60,6 +60,7 @@ namespace AzLcm.Daemon
             if (config.ProcessServiceHealth)
             {
                 var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
+                var areaPathMapConfig = await workItemTemplateStorage.GetAreaPathMapConfigAsync(stoppingToken);
                 var template = await workItemTemplateStorage.GetServiceHealthWorkItemTemplateAsync(stoppingToken);
 
                 var processedCount = 0;
@@ -75,7 +76,8 @@ namespace AzLcm.Daemon
                         ++processedCount;
 
                         await devOpsClient.CreateWorkItemFromServiceHealthAsync(
-                            azDevOpsConfig.orgName, template, serviceHealthEvent, stoppingToken);
+                            azDevOpsConfig.orgName, template, areaPathMapConfig, 
+                            serviceHealthEvent, stoppingToken);
 
                         await healthServiceEventStorage.MarkAsSeenAsync(serviceHealthEvent, stoppingToken);
                     }
@@ -90,6 +92,7 @@ namespace AzLcm.Daemon
             if (config.ProcessPolicy)
             {
                 var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
+                var areaPathMapConfig = await workItemTemplateStorage.GetAreaPathMapConfigAsync(stoppingToken);
                 var template = await workItemTemplateStorage.GetPolicyWorkItemTemplateAsync(stoppingToken);
 
                 var processedCount = 0;
@@ -105,7 +108,7 @@ namespace AzLcm.Daemon
                     {
                         ++processedCount;
                         await devOpsClient.CreateWorkItemFromPolicyAsync(
-                            azDevOpsConfig.orgName, template, difference, stoppingToken);
+                            azDevOpsConfig.orgName, template, areaPathMapConfig, difference, stoppingToken);
                         await policyStorage.MarkAsSeenAsync(policy, stoppingToken);
                     }
                 }, stoppingToken);
@@ -118,6 +121,7 @@ namespace AzLcm.Daemon
             if (config.ProcessFeed)
             {
                 var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
+                var areaPathMapConfig = await workItemTemplateStorage.GetAreaPathMapConfigAsync(stoppingToken);
                 var template = await workItemTemplateStorage.GetFeedWorkItemTemplateAsync(stoppingToken);
                 var promptTemplate = await promptTemplateStorage.GetFeedPromptAsync(stoppingToken);
 
@@ -133,7 +137,7 @@ namespace AzLcm.Daemon
 
                         var verdict = await cognitiveService.AnalyzeV2Async(feedItem, promptTemplate, stoppingToken);
                         await devOpsClient.CreateWorkItemFromFeedAsync(
-                            azDevOpsConfig.orgName, template, feedItem, verdict, stoppingToken);
+                            azDevOpsConfig.orgName, template, areaPathMapConfig, feedItem, verdict, stoppingToken);
 
                         await feedStorage.MarkAsSeenAsync(feedItem, stoppingToken);
                     }
