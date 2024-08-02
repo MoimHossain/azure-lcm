@@ -23,7 +23,7 @@ stages:
       - task: AzureCLI@2
         displayName: 'Deploy infrastructure'
         inputs:
-          azureSubscription: 'masterconnection'
+          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
           scriptType: bash
           scriptPath: 'infra/build-infra.sh'
           workingDirectory: infra
@@ -43,7 +43,7 @@ stages:
       - task: AzureCLI@2
         displayName: 'Build-Container-Image'
         inputs:
-          azureSubscription: 'masterconnection'
+          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
           scriptType: bash
           scriptPath: 'infra/build-container.sh'
         env:
@@ -65,7 +65,7 @@ stages:
       - task: AzureCLI@2
         displayName: 'Delete-Old-Job'
         inputs:
-          azureSubscription: 'masterconnection'
+          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
           scriptType: bash
           scriptPath: 'infra/delete-old-containers.sh'
         env:
@@ -81,7 +81,7 @@ stages:
       - task: AzureCLI@2
         displayName: 'Run-Job'
         inputs:
-          azureSubscription: 'masterconnection'
+          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
           scriptType: bash
           scriptPath: 'infra/execute-job.sh'
         env:
