@@ -21,8 +21,7 @@ namespace AzLcm.Daemon
         HtmlExtractor htmlExtractor,
         PolicyReader policyReader,
         ServiceHealthReader serviceHealthReader,
-        AzUpdateSyndicationFeed azUpdateSyndicationFeed,
-        AzureUpdateWebScrapper azureUpdateWebScrapper,
+        AzUpdateSyndicationFeed azUpdateSyndicationFeed,        
         PromptTemplateStorage promptTemplateStorage,
         WorkItemTemplateStorage workItemTemplateStorage,
         ILogger<Worker> logger) : BackgroundService
@@ -126,25 +125,6 @@ namespace AzLcm.Daemon
                 var promptTemplate = await promptTemplateStorage.GetFeedPromptAsync(stoppingToken);
 
 
-                var processedCount = 0;
-                await azureUpdateWebScrapper.ReadAsync(async (feedItem) => 
-                {
-                    var seen = await feedStorage.HasSeenAsync(feedItem, stoppingToken);
-
-                    if (!seen)
-                    {
-                        ++processedCount;
-
-                        var verdict = await cognitiveService.AnalyzeV2Async(feedItem, promptTemplate, stoppingToken);
-                        await devOpsClient.CreateWorkItemFromFeedAsync(
-                            azDevOpsConfig.orgName, template, areaPathMapConfig, feedItem, verdict, stoppingToken);
-
-                        await feedStorage.MarkAsSeenAsync(feedItem, stoppingToken);
-                    }
-                }, stoppingToken);
-                logger.LogInformation("Processed {count} items", processedCount);
-
-                /*
                 var feeds = await azUpdateSyndicationFeed.ReadAsync(stoppingToken);
                 var processedCount = 0;
                 foreach (var feed in feeds)
@@ -154,18 +134,15 @@ namespace AzLcm.Daemon
                     if (!seen)
                     {
                         ++processedCount;
-
-                        var fragments = await htmlExtractor.GetHtmlExtractedFragmentsAsync(feed);
-
-                        var verdict = await cognitiveService.AnalyzeAsync(feed, fragments, promptTemplate, stoppingToken);
-                        await devOpsClient.CreateWorkItemFromFeedAsync(azDevOpsConfig.orgName, template, feed, verdict);
+                        var verdict = await cognitiveService.AnalyzeV2Async(feed, promptTemplate, stoppingToken);
+                        await devOpsClient.CreateWorkItemFromFeedAsync(
+                            azDevOpsConfig.orgName, template, areaPathMapConfig, feed, verdict, stoppingToken);
 
                         await feedStorage.MarkAsSeenAsync(feed, stoppingToken);
                     }
                 }
 
                 logger.LogInformation("Process {processedFeedCount} items, out of {totalFeedCount} feeds.", processedCount, feeds.Count());
-                */
             }
         }
     }

@@ -1,0 +1,49 @@
+﻿{
+  "ServiceHealthMap": {
+    "Map": [
+      {
+        "Services": [ "Monitor", "Key Vault" ],
+        "RouteToAreaPath": "Platform\\Engineering\\Cloud\\Azure-Service-Health-events\\Infra"
+      },
+      {
+        "Services": [ "Cosmos Database", "SQL Database", "Storage Account" ],
+        "RouteToAreaPath": "Platform\\Engineering\\Cloud\\Azure-Service-Health-events\\Storage"
+      },
+      {
+        "Services": [ "Cognitive Service" ],
+        "RouteToAreaPath": "Platform\\Engineering\\Cloud\\Azure-Service-Health-events\\AI-Services"
+      }
+    ],
+    "DefaultAreaPath": "Platform\\Engineering\\Cloud\\Azure-Updates",
+    "IgnoreWhenNoMatchFound": true
+  },
+  "PolicyMap": {
+    "Map": [
+      {
+        "Services": [ "Monitor", "Key Vault" ],
+        "RouteToAreaPath": "Platform\\Engineering\\Cloud\\Azure-Policy-Updates\\Infra"
+      },
+      {
+        "Services": [ "Cosmos Database", "SQL Database", "Storage Account" ],
+        "RouteToAreaPath": "Platform\\Engineering\\Cloud\\Azure-Policy-Updates\\Storage"
+      }
+    ],
+    "DefaultAreaPath": "Platform\\Engineering\\Cloud\\Azure-Policy-Updates",
+    "IgnoreWhenNoMatchFound": true
+  },
+  "AzureUpdatesMap": {
+    "Map": [
+      {
+        "Services": [ "Monitor", "Key Vault" ],
+        "RouteToAreaPath": "Platform\\Engineering\\Cloud\\Azure-Updates\\Infra"
+      },
+      {
+        "Services": [ "Cosmos Database", "SQL Database", "Storage Account" ],
+        "RouteToAreaPath": "Platform\\Engineering\\Cloud\\Azure-Updates\\Storage"
+      }
+    ],
+    "DefaultAreaPath": "Platform\\Engineering\\Cloud\\Azure-Updates",
+    "IgnoreWhenNoMatchFound": true
+  }
+}
+

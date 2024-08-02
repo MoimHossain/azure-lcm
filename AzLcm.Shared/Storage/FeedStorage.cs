@@ -1,6 +1,6 @@
 ﻿
 
-using AzLcm.Shared.AzureUpdates.Model;
+
 using Azure.Data.Tables;
 using System.ServiceModel.Syndication;
 
@@ -13,29 +13,6 @@ namespace AzLcm.Shared.Storage
         public async Task EnsureTableExistsAsync()
         {
             await tableClient.CreateIfNotExistsAsync();
-        }
-
-        public async Task<bool> HasSeenAsync(AzFeedItem feed, CancellationToken stoppingToken)
-        {
-            ArgumentNullException.ThrowIfNull(feed, nameof(feed));
-
-            var (partitionKey, rowKey) = feed.GetKeyPair();
-
-            var existingEntity = await tableClient.GetEntityIfExistsAsync<TableEntity>(partitionKey, rowKey, null, stoppingToken);
-            return existingEntity.HasValue;
-        }
-
-        public async Task MarkAsSeenAsync(AzFeedItem feed, CancellationToken stoppingToken)
-        {
-            ArgumentNullException.ThrowIfNull(feed, nameof(feed));
-
-            var (partitionKey, rowKey) = feed.GetKeyPair();
-
-            await tableClient.UpsertEntityAsync(new TableEntity(partitionKey, rowKey)
-                {
-                    { "FeedId", feed.GetID() },
-                    { "Title", feed.Title }
-                }, TableUpdateMode.Merge, stoppingToken);
         }
 
         public async Task<bool> HasSeenAsync(SyndicationItem feed, CancellationToken stoppingToken)

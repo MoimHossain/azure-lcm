@@ -1,6 +1,6 @@
 ﻿
 
-using AzLcm.Shared.AzureUpdates.Model;
+
 using AzLcm.Shared.Cognition.Models;
 using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Storage;
@@ -29,74 +29,29 @@ namespace AzLcm.Shared.Cognition
         };
 
         public async Task<Verdict?> AnalyzeV2Async(
-            AzFeedItem feedItem,  string promptTemplate, CancellationToken stoppingToken)
+            SyndicationItem feedItem,  string promptTemplate, CancellationToken stoppingToken)
         {
             ArgumentNullException.ThrowIfNull(nameof(feedItem));
 
-            var thread = GetChatCompletionsOptions();
+            var thread = GetChatCompletionsOptions((float)0.7);
 
             thread.Messages.Add(new ChatRequestSystemMessage(promptTemplate));
 
+            var tags = feedItem.Categories.Select(c => c.Name).ToList();
+
             var feedDetails = new StringBuilder();
-            feedDetails.AppendLine($"Title: {feedItem.Title}");
-            feedDetails.AppendLine($"Summary: {feedItem.UpdateBody}");
-            feedDetails.AppendLine($"Tags: {string.Join(", ", feedItem.Tags)}");
+            feedDetails.AppendLine($"<Update info BEGIN>");
+            feedDetails.AppendLine($"Title: {feedItem.Title.Text}");
+            feedDetails.AppendLine($"Summary: {feedItem.Summary.Text}");
+            feedDetails.AppendLine($"Tags: {string.Join(", ", tags)}");
+            feedDetails.AppendLine($"</Update info END>");
             thread.Messages.Add(new ChatRequestUserMessage(feedDetails.ToString()));
 
             try
             {
                 var response = await openAIClient.GetChatCompletionsAsync(thread, stoppingToken);
                 var rawContent = response.Value.Choices[0].Message.Content;
-                var verdict = Verdict.FromJson(rawContent, jsonSerializerOptions);
-                return verdict;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, message: "");
-            }
-            return null;
-        }
-
-
-        public async Task<Verdict?> AnalyzeAsync(
-            SyndicationItem feed, List<HtmlFragment> fragments, 
-            string promptTemplate, CancellationToken stoppingToken)
-        {
-            ArgumentNullException.ThrowIfNull(nameof(feed));
-
-            var thread = GetChatCompletionsOptions();
-
-            thread.Messages.Add(new ChatRequestSystemMessage(promptTemplate));            
-
-            var feedDetails = new StringBuilder();            
-            feedDetails.AppendLine($"Title: {feed.Title.Text}");
-            feedDetails.AppendLine($"Summary: {feed.Summary.Text}");
-
-            var textContent = feed.Content as System.ServiceModel.Syndication.TextSyndicationContent;
-            if (textContent != null)
-            {
-                feedDetails.AppendLine($"Content: {textContent.Text}");
-            }
-
-            foreach (var fragment in fragments)
-            {
-                feedDetails.AppendLine($"{fragment.Content}");
-                if(fragment.Links != null)
-                {
-                    foreach(var link in fragment.Links)
-                    {
-                        feedDetails.AppendLine($"Ref: {link}");
-                    }
-                }
-            }
-
-            thread.Messages.Add(new ChatRequestUserMessage(feedDetails.ToString()));
-
-            try
-            {
-                var response = await openAIClient.GetChatCompletionsAsync(thread, stoppingToken);
-                var rawContent = response.Value.Choices[0].Message.Content;
-                var verdict = Verdict.FromJson(rawContent, jsonSerializerOptions);
+                var verdict = Verdict.FromJson(rawContent, logger, jsonSerializerOptions);
                 return verdict;
             }
             catch (Exception ex)
@@ -112,7 +67,7 @@ namespace AzLcm.Shared.Cognition
         {
             ArgumentNullException.ThrowIfNull(nameof(areaPathServiceMapConfig));
 
-            var thread = GetChatCompletionsOptions((float)0.9);
+            var thread = GetChatCompletionsOptions((float)1);
             thread.Messages.Add(new ChatRequestSystemMessage(
 """
 You have a map of services to area paths. Your task is to map the service name to the area path.
@@ -130,7 +85,7 @@ You have a map of services to area paths. Your task is to map the service name t
 
             thread.Messages.Add(new ChatRequestSystemMessage(
 """
-IMPORTANT: You must response with JSON object with following schema:
+IMPORTANT: You MUST response with JSON object with following schema:
 
 export type MapResponse {
     areaPath: string;
@@ -138,22 +93,25 @@ export type MapResponse {
 
 Example1: If user provide a service name "Azure SQL" and it matches to an area path '/area-path/demo'
 Response should be:
+```
     { areaPath: "/area-path/demo", matched: true }
+```
 
 Example2: If user provide a service name "Azure X-Service" and there is no match found
 Response should be:
+```
     { areaPath: "", matched: false }
-
-The response MUST be in JSON format!!
+```
 """));
-
+            thread.Messages.Add(new ChatRequestSystemMessage("The response MUST contain ONLY valid JSON object like examples, no additional explanation or text!!"));
 
             thread.Messages.Add(new ChatRequestUserMessage($"Service Name: {serviceName}"));
 
+            var rawContent = string.Empty;
             try
             {
                 var response = await openAIClient.GetChatCompletionsAsync(thread, stoppingToken);
-                var rawContent = response.Value.Choices[0].Message.Content;
+                rawContent = response.Value.Choices[0].Message.Content;
                 var mapResponse = AreaPathMapResponse.FromJson(rawContent, jsonSerializerOptions);
 
                 var validAreaPaths = areaPathServiceMapConfig.Map.Select(m => m.RouteToAreaPath).ToList();
@@ -173,7 +131,7 @@ The response MUST be in JSON format!!
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, message: "");
+                logger.LogError(ex, message: $"Raw: {rawContent}");
             }
             return null;
         }

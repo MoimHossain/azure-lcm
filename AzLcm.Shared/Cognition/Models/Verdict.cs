@@ -2,6 +2,7 @@
 
 
 using AzLcm.Shared.Storage;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace AzLcm.Shared.Cognition.Models
@@ -10,7 +11,9 @@ namespace AzLcm.Shared.Cognition.Models
     {
         Retired,
         Deprecated,
+        Deprecation,
         Unsupported,
+        Announcement,
         GenerallyAvailable,
         Preview,
         Unknown
@@ -24,17 +27,26 @@ namespace AzLcm.Shared.Cognition.Models
         public bool AnnouncementRequired { get; set; }
         public bool ActionableViaAzurePolicy { get; set; }
         public string? MitigationInstructionMarkdown { get; set; }
-        public static Verdict? FromJson(string rawContent, JsonSerializerOptions jsonSerializerOptions)
+        public static Verdict? FromJson(
+            string rawContent, ILogger logger, JsonSerializerOptions jsonSerializerOptions)
         {
-            rawContent = $"{rawContent}".Trim();
-            // also cover text starts with ```json and ends with ```
-            var startIndex = rawContent.IndexOf("{");
-            var endIndex = rawContent.LastIndexOf("}");
-            if (startIndex > -1 && endIndex > -1 && startIndex < endIndex)
+            try
             {
-                rawContent = rawContent.Substring(startIndex, endIndex - startIndex + 1);
+                rawContent = $"{rawContent}".Trim();
+                // also cover text starts with ```json and ends with ```
+                var startIndex = rawContent.IndexOf("{");
+                var endIndex = rawContent.LastIndexOf("}");
+                if (startIndex > -1 && endIndex > -1 && startIndex < endIndex)
+                {
+                    rawContent = rawContent.Substring(startIndex, endIndex - startIndex + 1);
+                }
+                return JsonSerializer.Deserialize<Verdict>(rawContent, jsonSerializerOptions);
             }
-            return JsonSerializer.Deserialize<Verdict>(rawContent, jsonSerializerOptions);
+            catch (Exception e)
+            {
+                logger.LogError(e, message: $"rawContent: {rawContent}");
+            }
+            return null;
         }
     }
 }
