@@ -7,7 +7,7 @@ variables:
   resourceGroupName: "azlcm-poc"
   location: "westeurope"
   workloadName: "azlcm"
-  workloadEnv: "dev" 
+  workloadEnv: "poc" 
   containerName: "az-lcm-configs"
   registryURI: $(workloadName)azcontreg$(workloadEnv).azurecr.io 
   imageName: "azure-lcm-poc"
