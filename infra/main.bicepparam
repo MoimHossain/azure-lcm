@@ -7,3 +7,4 @@ param uamiName = '${workloadName}-uami-${workloadEnv}'
 param containerRegistryName = toLower('${workloadName}azcontreg${workloadEnv}')
 param logAnalyticsName = toLower('${workloadName}-log-analytics-${workloadEnv}')
 param storageAccountName = toLower('${workloadName}storageacc${workloadEnv}') 
+param openaiName = toLower('${workloadName}openai${workloadEnv}')

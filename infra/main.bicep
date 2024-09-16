@@ -5,11 +5,20 @@ param uamiName string
 param logAnalyticsName string
 param storageAccountName string 
 param containerRegistryName string
+param openaiName string
 
 module uami 'modules/identity.bicep' = {
   name: uamiName
   params: {
     uamiName: uamiName
+    location: location
+  }
+}
+
+module openai 'modules/openai.bicep' = {
+  name: openaiName
+  params: {
+    aoiName: openaiName
     location: location
   }
 }
