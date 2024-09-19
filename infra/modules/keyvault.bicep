@@ -61,8 +61,11 @@ resource kv 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
       family: 'A'
     }
     networkAcls: {
-      defaultAction: 'Allow'
-      bypass: 'AzureServices'
+      defaultAction: 'Deny' // Allow | Deny
+      bypass: 'None' // None | AzureServices
     }
   }
 }
+
+
+output keyVaultId string = kv.id
