@@ -21,23 +21,23 @@ resource aoi 'Microsoft.CognitiveServices/accounts@2021-04-30' = {
   }
 }
 
-// resource model_gpt_4o 'Microsoft.CognitiveServices/accounts/deployments@2024-04-01-preview' = {
-//   parent: aoi
-//   name: 'gpt-4o'
-//   sku: {
-//     name: 'GlobalStandard'
-//     capacity: 20
-//   }  
-//   properties: {    
-//     model: {
-//       format: 'OpenAI'
-//       name: 'gpt-4o'
-//       version: '2024-05-13'
-//     }
-//     versionUpgradeOption: 'OnceCurrentVersionExpired'
-//     currentCapacity: 20
-//   }
-// }
+resource model_gpt_4o 'Microsoft.CognitiveServices/accounts/deployments@2024-04-01-preview' = {
+  parent: aoi
+  name: 'gpt-4o'
+  sku: {
+    name: 'GlobalStandard'
+    capacity: 20
+  }  
+  properties: {    
+    model: {
+      format: 'OpenAI'
+      name: 'gpt-4o'
+      version: '2024-05-13'
+    }
+    versionUpgradeOption: 'OnceCurrentVersionExpired'
+    currentCapacity: 20
+  }
+}
 
 module keySecretForAOIKey 'kvSecret.bicep' = {
   name: 'keySecretForAOIKey'
