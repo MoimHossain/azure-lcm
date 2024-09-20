@@ -11,11 +11,12 @@ param keyvaultName string
 param privateEndpointNameOpenAI string = 'privatelink-cognitiveservices'
 param privateEndpointNameKeyVault string = 'privatelink-keyvault'
 
-var commonPrivateDnsZoneName = 'privatezone.azure.com'
-// var privateDnsZoneName = 'privatelink.openai.azure.com'
-// var privateDnsZoneNameKeyVault = 'privatelink.vaultcore.azure.net'
-var networkInterfaceCardNameForOpenAI = '${privateEndpointNameOpenAI}-nic'
-var networkInterfaceCardNameForKeyvault = '${privateEndpointNameKeyVault}-nic'
+
+//var privateDnsZoneName = 'privatelink.openai.azure.com'
+var keyVaultPrivateDNSZoneName = 'privatelink.vaultcore.azure.net'
+
+//var networkInterfaceCardNameForOpenAI = '${privateEndpointNameOpenAI}-nic'
+var networkInterfaceCardNameForKeyvault = '${keyVaultPrivateDNSZoneName}-nic'
 
 module uami 'modules/identity.bicep' = {
   name: uamiName
@@ -54,17 +55,7 @@ module vnet 'modules/vnet.bicep'= {
   }
 }
 
-module openai 'modules/openai.bicep' = {
-  name: openaiName
-  params: {
-    aoiName: openaiName
-    location: location
-    keyVaultName: keyvaultName
-  }
-  dependsOn: [
-    keyvault
-  ]
-}
+
 
 // Private endpoint and DNS for KeyVault
 
@@ -160,7 +151,7 @@ resource dnsZoneGroupKeyVault 'Microsoft.Network/privateEndpoints/privateDnsZone
 
 
 resource keyVaultDnsRecord 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
-  name: '${keyvaultName}.${privateDnsZone.name}'
+  name: keyvaultName
   parent: privateDnsZone
   properties: {
     ttl: 300
@@ -191,7 +182,7 @@ resource dnsZoneGroupOpenAI 'Microsoft.Network/privateEndpoints/privateDnsZoneGr
 
 
 resource OpenAIDnsRecord 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
-  name: '${openaiName}.${privateDnsZone.name}'
+  name: openaiName
   parent: privateDnsZone
   properties: {
     ttl: 300
@@ -231,4 +222,17 @@ resource OpenAIDnsRecord 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
 //     location: location
 //     identityPrincipalId: uami.outputs.principalId
 //   }
+// }
+
+
+// module openai 'modules/openai.bicep' = {
+//   name: openaiName
+//   params: {
+//     aoiName: openaiName
+//     location: location
+//     keyVaultName: keyvaultName
+//   }
+//   dependsOn: [
+//     keyvault
+//   ]
 // }
