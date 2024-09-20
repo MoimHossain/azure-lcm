@@ -8,15 +8,11 @@ param containerRegistryName string
 param openaiName string
 param vnetName string
 param keyvaultName string
-param privateEndpointNameOpenAI string = 'privatelink-cognitiveservices'
-param privateEndpointNameKeyVault string = 'privatelink-keyvault'
 
 
-//var privateDnsZoneName = 'privatelink.openai.azure.com'
-var keyVaultPrivateDNSZoneName = 'privatelink.vaultcore.azure.net'
+var privateEndpointNameOpenAI = 'privatelink-cognitiveservices'
+var privateEndpointNameKeyVault = 'privatelink-keyvault'
 
-//var networkInterfaceCardNameForOpenAI = '${privateEndpointNameOpenAI}-nic'
-var networkInterfaceCardNameForKeyvault = '${keyVaultPrivateDNSZoneName}-nic'
 
 module uami 'modules/identity.bicep' = {
   name: uamiName
@@ -25,6 +21,31 @@ module uami 'modules/identity.bicep' = {
     location: location
   }
 }
+
+module vnet 'modules/vnet.bicep'= {
+  name: vnetName
+  params: {
+    vnetName: vnetName
+    location: location
+  }
+}
+
+
+module privateDnsZoneKeyVault 'modules/privateDnsKeyVault.bicep' = {
+  name: 'privateDnsKeyVault'
+  params: {    
+    vnetId: vnet.outputs.vnetId
+  }
+}
+
+module privateDnsZoneOpenAI 'modules/privateDnsOpenAI.bicep' = {
+  name: 'privateDnsOpenAI'
+  params: {    
+    vnetId: vnet.outputs.vnetId
+  }
+}
+
+
 
 module keyvault 'modules/keyvault.bicep' = {
   name: keyvaultName
@@ -47,40 +68,6 @@ module keyvault 'modules/keyvault.bicep' = {
   }
 }
 
-module vnet 'modules/vnet.bicep'= {
-  name: vnetName
-  params: {
-    vnetName: vnetName
-    location: location
-  }
-}
-
-
-
-// Private endpoint and DNS for KeyVault
-
-@description('Private DNS Zone for custom entries')
-resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: commonPrivateDnsZoneName
-  location: 'global'
-}
-
-@description('Private DNS Zone Virtual Network Link')
-resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
-  parent: privateDnsZone
-  name: 'vnetlink'
-  location: 'global'
-  properties: {
-    virtualNetwork: {
-      id: vnet.outputs.vnetId
-    }
-    registrationEnabled: false
-  }
-}
-
-
-
-
 resource privateEndpointForKeyvault 'Microsoft.Network/privateEndpoints@2021-05-01' = {
   location: location
   name: privateEndpointNameKeyVault
@@ -99,7 +86,33 @@ resource privateEndpointForKeyvault 'Microsoft.Network/privateEndpoints@2021-05-
         }
       }
     ]
-    customNetworkInterfaceName: networkInterfaceCardNameForKeyvault
+    customNetworkInterfaceName: '${keyvaultName}-nic'
+  }
+}
+
+resource privateDnsZoneGroupsKeyVault 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2020-03-01' = {  
+  parent: privateEndpointForKeyvault
+  name: 'default'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: privateEndpointNameKeyVault
+        properties: {
+          privateDnsZoneId: privateDnsZoneKeyVault.outputs.dnsZoneId
+        }
+      }
+    ]
+  }
+}
+
+
+
+module openai 'modules/openai.bicep' = {
+  name: openaiName
+  params: {
+    aoiName: openaiName
+    location: location
+    keyVaultName: keyvault.outputs.keyVaultName
   }
 }
 
@@ -121,59 +134,19 @@ resource privateEndpointForOpenAI 'Microsoft.Network/privateEndpoints@2021-05-01
         }
       }
     ]
-    customNetworkInterfaceName: networkInterfaceCardNameForOpenAI
+    customNetworkInterfaceName: '${openaiName}-nic'
   }
 }
 
-
-
-
-
-
-
-
-
-
-resource dnsZoneGroupKeyVault 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2020-03-01' = {
-  parent: privateEndpointForKeyvault
-  name: 'keyvault-dnsZoneGroup'
-  properties: {
-    privateDnsZoneConfigs: [
-      {
-        name: 'keyvault-config'
-        properties: {
-          privateDnsZoneId: privateDnsZone.id
-        }
-      }
-    ]
-  }
-}
-
-
-resource keyVaultDnsRecord 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
-  name: keyvaultName
-  parent: privateDnsZone
-  properties: {
-    ttl: 300
-    aRecords: [
-      {
-        ipv4Address: privateEndpointForKeyvault.properties.customDnsConfigs[0].ipAddresses[0]
-      }
-    ]
-  }
-}
-
-
-
-resource dnsZoneGroupOpenAI 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2020-03-01' = {
+resource privateDnsZoneGroupsOpenAI 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2020-03-01' = {  
   parent: privateEndpointForOpenAI
-  name: 'openai-dnsZoneGroup'
+  name: 'default'
   properties: {
     privateDnsZoneConfigs: [
       {
-        name: 'openai-config'
+        name: privateEndpointNameOpenAI
         properties: {
-          privateDnsZoneId: privateDnsZone.id
+          privateDnsZoneId: privateDnsZoneOpenAI.outputs.dnsZoneId
         }
       }
     ]
@@ -181,31 +154,19 @@ resource dnsZoneGroupOpenAI 'Microsoft.Network/privateEndpoints/privateDnsZoneGr
 }
 
 
-resource OpenAIDnsRecord 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
-  name: openaiName
-  parent: privateDnsZone
-  properties: {
-    ttl: 300
-    aRecords: [
-      {
-        ipv4Address: privateEndpointForOpenAI.properties.customDnsConfigs[0].ipAddresses[0]
-      }
-    ]
+
+
+
+module containerRegistry  'modules/registry.bicep' = {
+  name: containerRegistryName
+  params: {
+    location: location
+    registryName: containerRegistryName
+    skuName: 'Basic'
+    userAssignedIdentityPrincipalId: uami.outputs.principalId
+    adminUserEnabled: false
   }
 }
-
-
-
-// module containerRegistry  'modules/registry.bicep' = {
-//   name: containerRegistryName
-//   params: {
-//     location: location
-//     registryName: containerRegistryName
-//     skuName: 'Basic'
-//     userAssignedIdentityPrincipalId: uami.outputs.principalId
-//     adminUserEnabled: false
-//   }
-// }
 
 // module logAnalytics 'modules/log-analytics.bicep' = {
 //   name: logAnalyticsName
@@ -225,14 +186,3 @@ resource OpenAIDnsRecord 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
 // }
 
 
-// module openai 'modules/openai.bicep' = {
-//   name: openaiName
-//   params: {
-//     aoiName: openaiName
-//     location: location
-//     keyVaultName: keyvaultName
-//   }
-//   dependsOn: [
-//     keyvault
-//   ]
-// }

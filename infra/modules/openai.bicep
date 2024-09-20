@@ -59,4 +59,4 @@ module keySecretForEndpoint 'kvSecret.bicep' = {
 
 
 output aoiResourceId string = '${resourceGroup().id}/providers/Microsoft.CognitiveServices/accounts/${aoiName}'
-output aoiId string = aoi.id 
+
