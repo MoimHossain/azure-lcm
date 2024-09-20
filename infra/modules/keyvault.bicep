@@ -63,7 +63,10 @@ resource kv 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
     networkAcls: {
       defaultAction: 'Deny' // Allow | Deny
       bypass: 'None' // None | AzureServices
+      ipRules: []
+      virtualNetworkRules: []
     }
+    publicNetworkAccess: 'Disabled' // Enabled | Disabled
   }
 }
 
