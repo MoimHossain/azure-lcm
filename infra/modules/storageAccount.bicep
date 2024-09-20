@@ -13,7 +13,14 @@ resource mainstorage 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   properties: {
     minimumTlsVersion: 'TLS1_2'
     supportsHttpsTrafficOnly: true
-  }
+    networkAcls: {
+      bypass: 'None'
+      defaultAction: 'Deny'
+      ipRules: []
+      virtualNetworkRules: []
+    }    
+    allowBlobPublicAccess: false
+  }  
 }
 
 
@@ -44,3 +51,4 @@ resource defaultBlobService 'Microsoft.Storage/storageAccounts/blobServices@2023
 }
 
 output accountName string = mainstorage.name
+output storageAccountId string = mainstorage.id

@@ -153,10 +153,6 @@ resource privateDnsZoneGroupsOpenAI 'Microsoft.Network/privateEndpoints/privateD
   }
 }
 
-
-
-
-
 module containerRegistry  'modules/registry.bicep' = {
   name: containerRegistryName
   params: {
@@ -168,21 +164,31 @@ module containerRegistry  'modules/registry.bicep' = {
   }
 }
 
-// module logAnalytics 'modules/log-analytics.bicep' = {
-//   name: logAnalyticsName
-//   params: {
-//     logAnalyticsName: logAnalyticsName
-//     localtion: location
-//   }
-// }
+module logAnalytics 'modules/log-analytics.bicep' = {
+  name: logAnalyticsName
+  params: {
+    logAnalyticsName: logAnalyticsName
+    localtion: location
+  }
+}
 
-// module storageAccount 'modules/storageAccount.bicep' = {
-//   name: storageAccountName
-//   params: {
-//     accountName: storageAccountName
-//     location: location
-//     identityPrincipalId: uami.outputs.principalId
-//   }
-// }
+module storageAccount 'modules/storageAccount.bicep' = {
+  name: storageAccountName
+  params: {
+    accountName: storageAccountName
+    location: location
+    identityPrincipalId: uami.outputs.principalId
+  }
+}
 
 
+module privateEndpointStorage 'modules/privateEndpointStorage.bicep' = {
+  name: 'privateEndpointStorage'
+  params: {
+    location: location
+    storageAccountId: storageAccount.outputs.storageAccountId
+    storageAccountName: storageAccount.outputs.accountName
+    vnetId: vnet.outputs.vnetId
+    subnetId: vnet.outputs.defaultSubnetId
+  }
+}
