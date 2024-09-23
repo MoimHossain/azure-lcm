@@ -40,6 +40,7 @@ namespace AzLcm.Shared
         public string PolicyTableName => ReadEnvironmentKey("AZURE_STORAGE_POLICY_TABLE_NAME");
         public string ServiceHealthTableName => ReadEnvironmentKey("AZURE_STORAGE_SVC_HEALTH_TABLE_NAME");
         public string StorageConfigContainer => ReadEnvironmentKey("AZURE_STORAGE_COFIG_CONTAINER");
+        public string KeyVaultURI = ReadEnvironmentKey("AZURE_KEY_VAULT_URI");
         public string AzureOpenAIUrl => ReadEnvironmentKey("AZURE_OPENAI_ENDPOINT");
         public string AzureOpenAIKey => ReadEnvironmentKey("AZURE_OPENAI_API_KEY");
         public string AzureOpenAIGPTDeploymentId => ReadEnvironmentKey("AZURE_OPENAI_GPT_DEPLOYMENT_ID");
