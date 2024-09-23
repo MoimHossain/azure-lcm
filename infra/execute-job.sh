@@ -20,6 +20,9 @@ echo "UAMI ID: $uamiId"
 
 CONNECTION_STRING=$(az storage account show-connection-string --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --query connectionString --output tsv)
 
+# Temporarily allowing access to storage account from all networks
+az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Allow --public-network-access Enabled
+
 
 # Check if the container exists
 EXISTING_CONTAINER=$(az storage container list --connection-string $CONNECTION_STRING --account-name $STORAGE_ACCOUNT --query "[?name=='$containerName'].name" --output tsv)
@@ -46,6 +49,7 @@ for FILE in "$LOCAL_DIRECTORY"/*; do
 done
 
 echo "All files uploaded successfully."
+az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Deny --public-network-access Disabled
 
 
 az container create \
@@ -62,6 +66,7 @@ az container create \
     PROCESS_AZURE_POLICY=false \
     PROCESS_AZURE_FEED=false \
     GITHUB_PAT="$GTIHUB_PAT" \
+    AZURE_KEY_VAULT_URI="https://mopkeyvault1poc.vault.azure.net/" \
     AZURE_POLICY_URI_BASE="https://api.github.com/repos/azure/azure-policy/contents/" \
     AZURE_POLICY_PATH="built-in-policies/policyDefinitions" \
     AZURE_UPDATE_FEED_URI="https://azurecomcdn.azureedge.net/en-us/updates/feed/" \
