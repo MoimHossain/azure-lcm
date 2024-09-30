@@ -12,15 +12,8 @@ echo "Resource Group: $resourceGroupName"
 echo "Location: $location"
 echo "Workload Name: $workloadName"
 echo "Workload Environment: $workloadEnv"
-echo "Container Name: $containerName"
-echo "Key Vault URI: $keyvaultUri"
-echo "Registry URI: $registryURI"
-echo "Image Name: $imageName"
-echo "Image Tag: $imageTag"
 echo "Storage Account: $STORAGE_ACCOUNT"
-echo "Azure DevOps Organization Name: $AZURE_DEVOPS_ORGNAME"
-echo "Azure DevOps PAT: $AZURE_DEVOPS_PAT"
-echo "GitHub PAT: $GTIHUB_PAT"
+echo "Container Name: $containerName"
 
 
 CONNECTION_STRING=$(az storage account show-connection-string --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --query connectionString --output tsv)

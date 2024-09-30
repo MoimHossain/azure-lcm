@@ -29,43 +29,15 @@ echo "Azure DevOps Organization Name: $AZURE_DEVOPS_ORGNAME"
 echo "Azure DevOps PAT: $AZURE_DEVOPS_PAT"
 echo "GitHub PAT: $GTIHUB_PAT"
 
+vnetName=${workloadName}vnet${workloadEnv}
+
 uamiId=$(az identity show --resource-group $resourceGroupName --name ${workloadName}-uami-${workloadEnv} | jq -r '.id')
+vnetId=$(az network vnet show --resource-group $resourceGroupName --name $vnetName  --query id --output tsv)
+subnetId=$(az network vnet subnet show --resource-group $resourceGroupName --vnet-name $vnetName --name containergroup --query id --output tsv)
+
 echo "UAMI ID: $uamiId"
-
-# Temporarily allowing access to storage account from all networks
-#pubacc=$(az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Allow --public-network-access Enabled)
-
-CONNECTION_STRING=$(az storage account show-connection-string --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --query connectionString --output tsv)
-
-# Check if the container exists
-EXISTING_CONTAINER=$(az storage container list --connection-string $CONNECTION_STRING --account-name $STORAGE_ACCOUNT --query "[?name=='$containerName'].name" --output tsv)
-
-echo $EXISTING_CONTAINER
-
-# Create the container if it does not exist
-if [ -z "$EXISTING_CONTAINER" ]; then
-    echo "Container $containerName does not exist. Creating it now..."
-    az storage container create --name $containerName --account-name $STORAGE_ACCOUNT
-    echo "Container $containerName created."
-else
-    echo "Container $containerName already exists."
-fi
-
-
-
-LOCAL_DIRECTORY="./infra/configurations"
-# Upload files from the directory to the container with overwrite option
-for FILE in "$LOCAL_DIRECTORY"/*; do
-    if [ -f "$FILE" ]; then
-        FILE_NAME=$(basename "$FILE")
-        echo "Uploading $FILE_NAME to $containerName..."
-        az storage blob upload --connection-string $CONNECTION_STRING  --account-name $STORAGE_ACCOUNT --container-name $containerName --file "$FILE" --name "$FILE_NAME" --overwrite
-    fi
-done
-
-echo "All files uploaded successfully."
-#pubAccDisabled=$(az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Deny --public-network-access Disabled)
-
+echo "VNET ID: $vnetId"
+echo "Subnet ID: $subnetId"
 
 # az container create \
 #     --resource-group $resourceGroupName \
