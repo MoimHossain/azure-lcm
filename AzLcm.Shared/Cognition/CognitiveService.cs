@@ -155,7 +155,7 @@ Response should be:
                 {
                     throw new InvalidOperationException("Failed to read the OpenAI config from KeyVault");
                 }
-                return new OpenAIClient(openAIEndpoint, new AzureKeyCredential(openAIKey));
+                _openAIClient = new OpenAIClient(openAIEndpoint, new AzureKeyCredential(openAIKey));
             }
             return _openAIClient;
         }
