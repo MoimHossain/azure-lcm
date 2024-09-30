@@ -97,6 +97,8 @@ stages:
           STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
     - job: UploadConfigFiles
       displayName: 'Upload configuration files to the Storage container'
+      dependsOn: TemporarilyAllowPublicAccess
+      condition: succeeded()
       steps:
       - checkout: self
       - task: AzureCLI@2
@@ -114,6 +116,8 @@ stages:
           containerName : $(containerName)
     - job: DisablePublicAccess
       displayName: 'Disable public access to the storage container'
+      dependsOn: UploadConfigFiles
+      condition: always()
       steps:
       - checkout: self
       - task: AzureCLI@2
