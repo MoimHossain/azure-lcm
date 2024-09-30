@@ -4,10 +4,10 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 variables:
-  resourceGroupName: "azlcm-poc"
+  resourceGroupName: "azlcm-solution"
   location: "westeurope"
   workloadName: "azlcm"
-  workloadEnv: "dev" 
+  workloadEnv: "uat" 
   containerName: "az-lcm-configs"
   registryURI: $(workloadName)azcontreg$(workloadEnv).azurecr.io 
   imageName: "azure-lcm-poc"
