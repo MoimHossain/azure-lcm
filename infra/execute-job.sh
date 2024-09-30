@@ -19,6 +19,8 @@
 uamiId=$(az identity show --resource-group $resourceGroupName --name ${workloadName}-uami-${workloadEnv} | jq -r '.id')
 echo "UAMI ID: $uamiId"
 
+CONNECTION_STRING=$(az storage account show-connection-string --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --query connectionString --output tsv)
+
 # Temporarily allowing access to storage account from all networks
 az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Allow --public-network-access Enabled
 
