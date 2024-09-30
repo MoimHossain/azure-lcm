@@ -11,6 +11,7 @@ variables:
   containerName: "az-lcm-configs"
   registryURI: $(workloadName)azcontreg$(workloadEnv).azurecr.io 
   imageName: "azure-lcm-poc"
+  serviceConnectionName: "MCAPS-Hybrid-REQ-38041-2022-MoimHossain"
 
 stages:
   - stage: CreateInfrastructure
@@ -23,7 +24,7 @@ stages:
       - task: AzureCLI@2
         displayName: 'Deploy infrastructure'
         inputs:
-          azureSubscription: 'masterconnection'
+          azureSubscription: $(serviceConnectionName)
           scriptType: bash
           scriptPath: 'infra/build-infra.sh'
           workingDirectory: infra
@@ -33,69 +34,69 @@ stages:
           workloadName: $(workloadName)
           workloadEnv: $(workloadEnv)
 
-  - stage: BuildContainerImage
-    displayName: 'Build Container image'
-    jobs:
-    - job: BuildContainer
-      displayName: 'Build Container image'
-      steps:
-      - checkout: self
-      - task: AzureCLI@2
-        displayName: 'Build-Container-Image'
-        inputs:
-          azureSubscription: 'masterconnection'
-          scriptType: bash
-          scriptPath: 'infra/build-container.sh'
-        env:
-          resourceGroupName: $(resourceGroupName)
-          location: $(location)
-          workloadName: $(workloadName)
-          workloadEnv: $(workloadEnv)
-          registryURI: $(registryURI)
-          imageName: $(imageName)
-          imageTag: $(Build.BuildId)
+  # - stage: BuildContainerImage
+  #   displayName: 'Build Container image'
+  #   jobs:
+  #   - job: BuildContainer
+  #     displayName: 'Build Container image'
+  #     steps:
+  #     - checkout: self
+  #     - task: AzureCLI@2
+  #       displayName: 'Build-Container-Image'
+  #       inputs:
+  #         azureSubscription: 'masterconnection'
+  #         scriptType: bash
+  #         scriptPath: 'infra/build-container.sh'
+  #       env:
+  #         resourceGroupName: $(resourceGroupName)
+  #         location: $(location)
+  #         workloadName: $(workloadName)
+  #         workloadEnv: $(workloadEnv)
+  #         registryURI: $(registryURI)
+  #         imageName: $(imageName)
+  #         imageTag: $(Build.BuildId)
 
-  - stage: DeleteOldContainers
-    displayName: 'Delete old containers'
-    jobs:
-    - job: DeleteOldContainers
-      displayName: 'Delete old containers'
-      steps:
-      - checkout: self
-      - task: AzureCLI@2
-        displayName: 'Delete-Old-Job'
-        inputs:
-          azureSubscription: 'masterconnection'
-          scriptType: bash
-          scriptPath: 'infra/delete-old-containers.sh'
-        env:
-          resourceGroupName: $(resourceGroupName)
+  # - stage: DeleteOldContainers
+  #   displayName: 'Delete old containers'
+  #   jobs:
+  #   - job: DeleteOldContainers
+  #     displayName: 'Delete old containers'
+  #     steps:
+  #     - checkout: self
+  #     - task: AzureCLI@2
+  #       displayName: 'Delete-Old-Job'
+  #       inputs:
+  #         azureSubscription: 'masterconnection'
+  #         scriptType: bash
+  #         scriptPath: 'infra/delete-old-containers.sh'
+  #       env:
+  #         resourceGroupName: $(resourceGroupName)
 
-  - stage: ExecuteJob
-    displayName: 'Execute container'
-    jobs:
-    - job: ExecuteJob
-      displayName: 'Execute container'
-      steps:
-      - checkout: self
-      - task: AzureCLI@2
-        displayName: 'Run-Job'
-        inputs:
-          azureSubscription: 'masterconnection'
-          scriptType: bash
-          scriptPath: 'infra/execute-job.sh'
-        env:
-          resourceGroupName: $(resourceGroupName)
-          location: $(location)
-          workloadName: $(workloadName)
-          workloadEnv: $(workloadEnv)
-          registryURI: $(registryURI)
-          imageName: $(imageName)
-          imageTag: $(Build.BuildId)
-          GTIHUB_PAT: $(GTIHUB_PAT)
-          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
-          containerName : $(containerName)
-          AZURE_DEVOPS_ORGNAME: damayantibhuyan
-          AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
-          AZURE_OPENAI_ENDPOINT: https://azopenai-lcm.openai.azure.com/
-          AZURE_OPENAI_API_KEY: $(AZURE_OPENAI_API_KEY)
+  # - stage: ExecuteJob
+  #   displayName: 'Execute container'
+  #   jobs:
+  #   - job: ExecuteJob
+  #     displayName: 'Execute container'
+  #     steps:
+  #     - checkout: self
+  #     - task: AzureCLI@2
+  #       displayName: 'Run-Job'
+  #       inputs:
+  #         azureSubscription: 'masterconnection'
+  #         scriptType: bash
+  #         scriptPath: 'infra/execute-job.sh'
+  #       env:
+  #         resourceGroupName: $(resourceGroupName)
+  #         location: $(location)
+  #         workloadName: $(workloadName)
+  #         workloadEnv: $(workloadEnv)
+  #         registryURI: $(registryURI)
+  #         imageName: $(imageName)
+  #         imageTag: $(Build.BuildId)
+  #         GTIHUB_PAT: $(GTIHUB_PAT)
+  #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
+  #         containerName : $(containerName)
+  #         AZURE_DEVOPS_ORGNAME: damayantibhuyan
+  #         AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
+  #         AZURE_OPENAI_ENDPOINT: https://azopenai-lcm.openai.azure.com/
+  #         AZURE_OPENAI_API_KEY: $(AZURE_OPENAI_API_KEY)
