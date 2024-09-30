@@ -13,20 +13,34 @@
 # export STORAGE_ACCOUNT=$STORAGE_ACCOUNT
 # export AZURE_DEVOPS_ORGNAME=$AZURE_DEVOPS_ORGNAME
 # export AZURE_DEVOPS_PAT=$AZURE_DEVOPS_PAT
-# export AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT
-# export AZURE_OPENAI_API_KEY=$AZURE_OPENAI_API_KEY
+
+echo "Starting Configuration Blob Uploading..."
+echo "Resource Group: $resourceGroupName"
+echo "Location: $location"
+echo "Workload Name: $workloadName"
+echo "Workload Environment: $workload"
+echo "Container Name: $containerName"
+echo "Key Vault URI: $keyvaultUri"
+echo "Registry URI: $registryURI"
+echo "Image Name: $imageName"
+echo "Image Tag: $imageTag"
+echo "Storage Account: $STORAGE_ACCOUNT"
+echo "Azure DevOps Organization Name: $AZURE_DEVOPS_ORGNAME"
+echo "Azure DevOps PAT: $AZURE_DEVOPS_PAT"
+echo "GitHub PAT: $GTIHUB_PAT"
 
 uamiId=$(az identity show --resource-group $resourceGroupName --name ${workloadName}-uami-${workloadEnv} | jq -r '.id')
 echo "UAMI ID: $uamiId"
 
-CONNECTION_STRING=$(az storage account show-connection-string --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --query connectionString --output tsv)
-
 # Temporarily allowing access to storage account from all networks
-az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Allow --public-network-access Enabled
+pubacc=$(az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Allow --public-network-access Enabled)
 
+CONNECTION_STRING=$(az storage account show-connection-string --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --query connectionString --output tsv)
 
 # Check if the container exists
 EXISTING_CONTAINER=$(az storage container list --connection-string $CONNECTION_STRING --account-name $STORAGE_ACCOUNT --query "[?name=='$containerName'].name" --output tsv)
+
+echo $EXISTING_CONTAINER
 
 # Create the container if it does not exist
 if [ -z "$EXISTING_CONTAINER" ]; then
@@ -50,7 +64,7 @@ for FILE in "$LOCAL_DIRECTORY"/*; do
 done
 
 echo "All files uploaded successfully."
-az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Deny --public-network-access Disabled
+pubAccDisabled=$(az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Deny --public-network-access Disabled)
 
 
 # az container create \
