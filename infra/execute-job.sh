@@ -47,32 +47,36 @@ echo "Subnet ID: $subnetId"
 echo "Workspace ID: $workspaceId"
 echo "Workspace Key: $workspaceKey"
 
-# az container create \
-#     --resource-group $resourceGroupName \
-#     --name azure-lcm-$imageTag \
-#     --image $registryURI/$imageName:$imageTag \
-#     --assign-identity $uamiId \
-#     --acr-identity $uamiId \
-#     --ip-address Private \
-#     --restart-policy Never \
-#     --no-wait \
-#     --environment-variables \
-#     PROCESS_AZURE_SERVICE_HEALTH=true \
-#     PROCESS_AZURE_POLICY=false \
-#     PROCESS_AZURE_FEED=false \
-#     GITHUB_PAT="$GTIHUB_PAT" \
-#     AZURE_KEY_VAULT_URI="$keyvaultUri" \
-#     AZURE_POLICY_URI_BASE="https://api.github.com/repos/azure/azure-policy/contents/" \
-#     AZURE_POLICY_PATH="built-in-policies/policyDefinitions" \
-#     AZURE_UPDATE_FEED_URI="https://azurecomcdn.azureedge.net/en-us/updates/feed/" \
-#     AZURE_STORAGE_ACCOUNT_NAME="$STORAGE_ACCOUNT" \
-#     AZURE_STORAGE_FEED_TABLE_NAME="azupdatefeed" \
-#     AZURE_STORAGE_POLICY_TABLE_NAME="azpolicy" \
-#     AZURE_STORAGE_SVC_HEALTH_TABLE_NAME="azsvchealth" \
-#     AZURE_STORAGE_COFIG_CONTAINER=$containerName \
-#     AZURE_OPENAI_GPT_DEPLOYMENT_ID=gpt-4o \
-#     AZURE_DEVOPS_ORGNAME=$AZURE_DEVOPS_ORGNAME \
-#     AZURE_DEVOPS_USE_PAT=true \
-#     AZURE_DEVOPS_USE_MANAGED_IDENTITY=false \
-#     AZURE_DEVOPS_USE_SERVICE_PRINCIPAL=false \
-#     AZURE_DEVOPS_PAT="$AZURE_DEVOPS_PAT" 
+az container create \
+    --resource-group $resourceGroupName \
+    --name azure-lcm-$imageTag \
+    --image $registryURI/$imageName:$imageTag \
+    --assign-identity $uamiId \
+    --acr-identity $uamiId \
+    --vnet $vnetId \
+    --subnet $subnetId \
+    --log-analytics-workspace $workspaceId \
+    --log-analytics-workspace-key $workspaceKey \
+    --ip-address Private \
+    --restart-policy Never \
+    --no-wait \
+    --environment-variables \
+    PROCESS_AZURE_SERVICE_HEALTH=true \
+    PROCESS_AZURE_POLICY=false \
+    PROCESS_AZURE_FEED=false \
+    GITHUB_PAT="$GTIHUB_PAT" \
+    AZURE_KEY_VAULT_URI="$keyvaultUri" \
+    AZURE_POLICY_URI_BASE="https://api.github.com/repos/azure/azure-policy/contents/" \
+    AZURE_POLICY_PATH="built-in-policies/policyDefinitions" \
+    AZURE_UPDATE_FEED_URI="https://aztty.azurewebsites.net/rss/updates" \
+    AZURE_STORAGE_ACCOUNT_NAME="$STORAGE_ACCOUNT" \
+    AZURE_STORAGE_FEED_TABLE_NAME="azupdatefeed" \
+    AZURE_STORAGE_POLICY_TABLE_NAME="azpolicy" \
+    AZURE_STORAGE_SVC_HEALTH_TABLE_NAME="azsvchealth" \
+    AZURE_STORAGE_COFIG_CONTAINER=$containerName \
+    AZURE_OPENAI_GPT_DEPLOYMENT_ID=gpt-4o \
+    AZURE_DEVOPS_ORGNAME=$AZURE_DEVOPS_ORGNAME \
+    AZURE_DEVOPS_USE_PAT=true \
+    AZURE_DEVOPS_USE_MANAGED_IDENTITY=false \
+    AZURE_DEVOPS_USE_SERVICE_PRINCIPAL=false \
+    AZURE_DEVOPS_PAT="$AZURE_DEVOPS_PAT"
