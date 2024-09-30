@@ -18,7 +18,7 @@ echo "Starting Configuration Blob Uploading..."
 echo "Resource Group: $resourceGroupName"
 echo "Location: $location"
 echo "Workload Name: $workloadName"
-echo "Workload Environment: $workload"
+echo "Workload Environment: $workloadEnv"
 echo "Container Name: $containerName"
 echo "Key Vault URI: $keyvaultUri"
 echo "Registry URI: $registryURI"
@@ -33,7 +33,7 @@ uamiId=$(az identity show --resource-group $resourceGroupName --name ${workloadN
 echo "UAMI ID: $uamiId"
 
 # Temporarily allowing access to storage account from all networks
-pubacc=$(az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Allow --public-network-access Enabled)
+#pubacc=$(az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Allow --public-network-access Enabled)
 
 CONNECTION_STRING=$(az storage account show-connection-string --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --query connectionString --output tsv)
 
@@ -64,7 +64,7 @@ for FILE in "$LOCAL_DIRECTORY"/*; do
 done
 
 echo "All files uploaded successfully."
-pubAccDisabled=$(az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Deny --public-network-access Disabled)
+#pubAccDisabled=$(az storage account update --resource-group $resourceGroupName --name $STORAGE_ACCOUNT --default-action Deny --public-network-access Disabled)
 
 
 # az container create \
