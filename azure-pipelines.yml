@@ -86,7 +86,8 @@ stages:
         inputs:
           azureSubscription: $(serviceConnectionName)
           scriptType: bash
-          script: |
+          scriptLocation: inlineScript
+          inlineScript: |
             az storage account update \
               --resource-group $resourceGroupName \
               --name $STORAGE_ACCOUNT \
@@ -125,7 +126,8 @@ stages:
         inputs:
           azureSubscription: $(serviceConnectionName)
           scriptType: bash
-          script: |
+          scriptLocation: inlineScript
+          inlineScript: |
             az storage account update \
               --resource-group $resourceGroupName \
               --name $STORAGE_ACCOUNT \
