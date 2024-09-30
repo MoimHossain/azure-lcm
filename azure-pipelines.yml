@@ -74,11 +74,29 @@ stages:
   #       env:
   #         resourceGroupName: $(resourceGroupName)
 
-  - stage: ExecuteJob
-    displayName: 'Execute container'
+  - stage: UploadConfigFiles
+    displayName: 'Upload configuration files to the Storage container'
     jobs:
-    - job: ExecuteJob
-      displayName: 'Execute container'
+    - job: TemporarilyAllowPublicAccess
+      displayName: 'Temporarily allow public access to the storage container'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Open Firewall temporarily'
+        inputs:
+          azureSubscription: $(serviceConnectionName)
+          scriptType: bash
+          script: |
+            az storage account update \
+              --resource-group $resourceGroupName \
+              --name $STORAGE_ACCOUNT \
+              --default-action Allow \
+              --public-network-access Enabled          
+        env:
+          resourceGroupName: $(resourceGroupName)
+          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
+    - job: UploadConfigFiles
+      displayName: 'Upload configuration files to the Storage container'
       steps:
       - checkout: self
       - task: AzureCLI@2
@@ -86,18 +104,57 @@ stages:
         inputs:
           azureSubscription: $(serviceConnectionName)
           scriptType: bash
-          scriptPath: 'infra/execute-job.sh'
+          scriptPath: 'infra/upload-config-files.sh'
         env:
           resourceGroupName: $(resourceGroupName)
           location: $(location)
           workloadName: $(workloadName)
           workloadEnv: $(workloadEnv)
-          keyvaultUri: $(keyvaultUri)
-          registryURI: $(registryURI)
+          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
           containerName : $(containerName)
-          imageName: $(imageName)
-          imageTag: $(Build.BuildId)
-          GTIHUB_PAT: $(GTIHUB_PAT)
-          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)  
-          AZURE_DEVOPS_ORGNAME: $(azureDevOpsOrgName)
-          AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
+    - job: DisablePublicAccess
+      displayName: 'Disable public access to the storage container'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Close Firewall'
+        inputs:
+          azureSubscription: $(serviceConnectionName)
+          scriptType: bash
+          script: |
+            az storage account update \
+              --resource-group $resourceGroupName \
+              --name $STORAGE_ACCOUNT \
+              --default-action Allow \
+              --public-network-access Disabled
+        env:
+          resourceGroupName: $(resourceGroupName)
+          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
+
+  # - stage: ExecuteJob
+  #   displayName: 'Execute container'
+  #   jobs:
+  #   - job: ExecuteJob
+  #     displayName: 'Execute container'
+  #     steps:
+  #     - checkout: self
+  #     - task: AzureCLI@2
+  #       displayName: 'Run-Job'
+  #       inputs:
+  #         azureSubscription: $(serviceConnectionName)
+  #         scriptType: bash
+  #         scriptPath: 'infra/execute-job.sh'
+  #       env:
+  #         resourceGroupName: $(resourceGroupName)
+  #         location: $(location)
+  #         workloadName: $(workloadName)
+  #         workloadEnv: $(workloadEnv)
+  #         keyvaultUri: $(keyvaultUri)
+  #         registryURI: $(registryURI)
+  #         containerName : $(containerName)
+  #         imageName: $(imageName)
+  #         imageTag: $(Build.BuildId)
+  #         GTIHUB_PAT: $(GTIHUB_PAT)
+  #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)  
+  #         AZURE_DEVOPS_ORGNAME: $(azureDevOpsOrgName)
+  #         AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
