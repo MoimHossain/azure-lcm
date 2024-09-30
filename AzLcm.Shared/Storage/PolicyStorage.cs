@@ -2,6 +2,7 @@
 
 using AzLcm.Shared.Policy.Models;
 using Azure.Data.Tables;
+using Azure.Identity;
 using System.Collections.Immutable;
 using System.ServiceModel.Syndication;
 
@@ -9,7 +10,7 @@ namespace AzLcm.Shared.Storage
 {
     public class PolicyStorage(DaemonConfig daemonConfig)
     {
-        private readonly TableClient tableClient = new(daemonConfig.StorageConnectionString, daemonConfig.PolicyTableName);
+        private readonly TableClient tableClient = new(new Uri($"https://{daemonConfig.StorageAccountName}.table.core.windows.net"), daemonConfig.PolicyTableName, new DefaultAzureCredential());
 
         public async Task EnsureTableExistsAsync()
         {

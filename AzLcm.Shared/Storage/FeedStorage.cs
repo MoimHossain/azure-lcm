@@ -2,13 +2,14 @@
 
 
 using Azure.Data.Tables;
+using Azure.Identity;
 using System.ServiceModel.Syndication;
 
 namespace AzLcm.Shared.Storage
 {
     public class FeedStorage(DaemonConfig daemonConfig)
     {
-        private readonly TableClient tableClient = new(daemonConfig.StorageConnectionString, daemonConfig.FeedTableName);
+        private readonly TableClient tableClient = new(new Uri($"https://{daemonConfig.StorageAccountName}.table.core.windows.net"), daemonConfig.FeedTableName, new DefaultAzureCredential());
 
         public async Task EnsureTableExistsAsync()
         {

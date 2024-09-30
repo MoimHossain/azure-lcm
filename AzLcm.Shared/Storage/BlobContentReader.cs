@@ -1,5 +1,6 @@
 ﻿
 
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
@@ -11,7 +12,7 @@ namespace AzLcm.Shared.Storage
         JsonSerializerOptions jsonSerializerOptions,
         ILogger<BlobContentReader> logger)
     {
-        private readonly BlobServiceClient blobServiceClient = new BlobServiceClient(daemonConfig.StorageConnectionString);
+        private readonly BlobServiceClient blobServiceClient = new(new Uri($"https://{daemonConfig.StorageAccountName}.blob.core.windows.net"), new DefaultAzureCredential());
 
         public static class ConfigBlobs
         {

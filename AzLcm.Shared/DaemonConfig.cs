@@ -35,7 +35,7 @@ namespace AzLcm.Shared
                 usePat, pat);
         }
 
-        public string StorageConnectionString => ReadEnvironmentKey("AZURE_STORAGE_CONNECTION");
+        public string StorageAccountName => ReadEnvironmentKey("AZURE_STORAGE_ACCOUNT_NAME");
         public string FeedTableName => ReadEnvironmentKey("AZURE_STORAGE_FEED_TABLE_NAME");
         public string PolicyTableName => ReadEnvironmentKey("AZURE_STORAGE_POLICY_TABLE_NAME");
         public string ServiceHealthTableName => ReadEnvironmentKey("AZURE_STORAGE_SVC_HEALTH_TABLE_NAME");
@@ -44,7 +44,7 @@ namespace AzLcm.Shared
         public string AzureOpenAIUrl => ReadEnvironmentKey("AZURE_OPENAI_ENDPOINT");
         public string AzureOpenAIKey => ReadEnvironmentKey("AZURE_OPENAI_API_KEY");
         public string AzureOpenAIGPTDeploymentId => ReadEnvironmentKey("AZURE_OPENAI_GPT_DEPLOYMENT_ID");
-        public string AzureOpenAIDavinciDeploymentId => ReadEnvironmentKey("AZURE_OPENAI_DAVINCI_DEPLOYMENT_ID");
+        
         public string AzureUpdateFeedUri => ReadEnvironmentKey("AZURE_UPDATE_FEED_URI");
         public string AzurePolicyGitHubBaseURI => ReadEnvironmentKey("AZURE_POLICY_URI_BASE");
         public string AzurePolicyPath => ReadEnvironmentKey("AZURE_POLICY_PATH");

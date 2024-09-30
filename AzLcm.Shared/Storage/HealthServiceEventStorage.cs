@@ -3,12 +3,13 @@
 
 using AzLcm.Shared.ServiceHealth;
 using Azure.Data.Tables;
+using Azure.Identity;
 
 namespace AzLcm.Shared.Storage
 {
     public class HealthServiceEventStorage(DaemonConfig daemonConfig)
     {
-        private readonly TableClient tableClient = new(daemonConfig.StorageConnectionString, daemonConfig.ServiceHealthTableName);
+        private readonly TableClient tableClient = new(new Uri($"https://{daemonConfig.StorageAccountName}.table.core.windows.net"), daemonConfig.ServiceHealthTableName, new DefaultAzureCredential());
 
         public async Task EnsureTableExistsAsync()
         {
