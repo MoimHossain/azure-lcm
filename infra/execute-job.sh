@@ -61,9 +61,9 @@ az container create \
     --restart-policy Never \
     --no-wait \
     --environment-variables \
-    PROCESS_AZURE_SERVICE_HEALTH=true \
+    PROCESS_AZURE_SERVICE_HEALTH=false \
     PROCESS_AZURE_POLICY=false \
-    PROCESS_AZURE_FEED=false \
+    PROCESS_AZURE_FEED=true \
     GITHUB_PAT="$GTIHUB_PAT" \
     AZURE_KEY_VAULT_URI="$keyvaultUri" \
     AZURE_POLICY_URI_BASE="https://api.github.com/repos/azure/azure-policy/contents/" \
