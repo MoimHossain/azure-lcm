@@ -43,39 +43,7 @@ namespace AzLcm.Shared
             return services;
         }
 
-        public async static Task<(Uri, string, bool)> GetOpenAIConfigFromKeyVaultAsync(DaemonConfig config)
-        {
-            try
-            {
-                if (config != null && !string.IsNullOrWhiteSpace(config.KeyVaultURI))
-                {
-                    SecretClientOptions options = new()
-                    {
-                        Retry =
-                        {
-                             Delay= TimeSpan.FromSeconds(2),
-                             MaxDelay = TimeSpan.FromSeconds(16),
-                             MaxRetries = 5,
-                             Mode = RetryMode.Exponential
-                        }
-                    };
-                    var kvClient = new SecretClient(new Uri(config.KeyVaultURI), new DefaultAzureCredential(), options);
-                    KeyVaultSecret openAIEndpoint = await kvClient.GetSecretAsync("AOIEndpoint");
-                    KeyVaultSecret openAiKey = await kvClient.GetSecretAsync("AOIKey");
-                    if (openAIEndpoint != null)
-                    {
-                        return new(new Uri(openAIEndpoint.Value), openAiKey.Value, true);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // log the exception
-                Console.WriteLine("Failed to read the key vault");
-                Console.WriteLine(ex.Message);
-            }
-            return new(new Uri("https://microsoft.com"), string.Empty, false);
-        }
+
 
         public static IServiceCollection AddRequiredServices(this IServiceCollection services)
         {   
@@ -91,14 +59,6 @@ namespace AzLcm.Shared
             services.AddSingleton<ServiceHealthConfigReader>();
             services.AddSingleton<ServiceHealthReader>();
             services.AddSingleton<HtmlExtractor>();
-
-            services.AddSingleton(async (services) => {
-                var config = services.GetRequiredService<DaemonConfig>();
-                // From now, the open AI config should be read from Key vault with a managed identity
-                // assuming the key vault and open AI both are accessed via Private endpoints
-                var (openAIEndpoint, openAIKey, readSucceeded ) = await GetOpenAIConfigFromKeyVaultAsync(config);
-                return new OpenAIClient(openAIEndpoint, new AzureKeyCredential(openAIKey));
-            });
             services.AddSingleton<CognitiveService>();
             services.AddAzureDevOpsClientServices();
             return services;

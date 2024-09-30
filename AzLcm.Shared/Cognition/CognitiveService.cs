@@ -2,9 +2,12 @@
 
 
 using AzLcm.Shared.Cognition.Models;
-using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Storage;
+using Azure;
 using Azure.AI.OpenAI;
+using Azure.Core;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Logging;
 using System.ServiceModel.Syndication;
 using System.Text;
@@ -15,13 +18,12 @@ namespace AzLcm.Shared.Cognition
     public class CognitiveService(
         JsonSerializerOptions jsonSerializerOptions,
         ILogger<CognitiveService> logger,
-        DaemonConfig daemonConfig,
-        OpenAIClient openAIClient)
+        DaemonConfig daemonConfig)
     {
         private ChatCompletionsOptions GetChatCompletionsOptions(float temperature = (float)1) => new()
         {
             DeploymentName = daemonConfig.AzureOpenAIGPTDeploymentId,
-            ChoiceCount = 1,            
+            ChoiceCount = 1,
             MaxTokens = 4000,
             FrequencyPenalty = (float)0,
             PresencePenalty = (float)0,
@@ -29,9 +31,11 @@ namespace AzLcm.Shared.Cognition
         };
 
         public async Task<Verdict?> AnalyzeV2Async(
-            SyndicationItem feedItem,  string promptTemplate, CancellationToken stoppingToken)
+            SyndicationItem feedItem, string promptTemplate, CancellationToken stoppingToken)
         {
             ArgumentNullException.ThrowIfNull(nameof(feedItem));
+
+            var openAIClient = await GetOpenAIClient(stoppingToken);
 
             var thread = GetChatCompletionsOptions((float)0.7);
 
@@ -67,14 +71,16 @@ namespace AzLcm.Shared.Cognition
         {
             ArgumentNullException.ThrowIfNull(nameof(areaPathServiceMapConfig));
 
+            var openAIClient = await GetOpenAIClient(stoppingToken);
+
             var thread = GetChatCompletionsOptions((float)1);
             thread.Messages.Add(new ChatRequestSystemMessage(
 """
 You have a map of services to area paths. Your task is to map the service name to the area path.
 """));
-            
+
             var mapInfoBuilder = new StringBuilder();
-            foreach(var mapItem in areaPathServiceMapConfig.Map)
+            foreach (var mapItem in areaPathServiceMapConfig.Map)
             {
                 mapInfoBuilder.AppendLine($"[");
                 mapInfoBuilder.AppendLine($" Service: {string.Join(", ", mapItem.Services)}");
@@ -123,10 +129,10 @@ Response should be:
                     {
                         return new AreaPathMapResponse { AreaPath = string.Empty };
                     }
-                    else 
+                    else
                     {
                         return mapResponse;
-                    }                    
+                    }
                 }
             }
             catch (Exception ex)
@@ -135,6 +141,60 @@ Response should be:
             }
             return null;
         }
+
+
+        
+
+        public async Task<OpenAIClient> GetOpenAIClient(CancellationToken cancellationToken)
+        {
+            if (_openAIClient == null)
+            {
+                var (openAIEndpoint, openAIKey, readSucceeded ) = await GetOpenAIConfigFromKeyVaultAsync(cancellationToken);
+
+                if(!readSucceeded)
+                {
+                    throw new InvalidOperationException("Failed to read the OpenAI config from KeyVault");
+                }
+                return new OpenAIClient(openAIEndpoint, new AzureKeyCredential(openAIKey));
+            }
+            return _openAIClient;
+        }
+
+        public async Task<(Uri, string, bool)> GetOpenAIConfigFromKeyVaultAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Reading OpenAI URI and Key from {KeyVaultURI} ", daemonConfig.KeyVaultURI);
+                if (daemonConfig != null && !string.IsNullOrWhiteSpace(daemonConfig.KeyVaultURI))
+                {
+                    SecretClientOptions options = new()
+                    {
+                        Retry =
+                        {
+                             Delay= TimeSpan.FromSeconds(2),
+                             MaxDelay = TimeSpan.FromSeconds(16),
+                             MaxRetries = 5,
+                             Mode = RetryMode.Exponential
+                        }
+                    };
+                    var kvClient = new SecretClient(new Uri(daemonConfig.KeyVaultURI), new DefaultAzureCredential(), options);
+                    KeyVaultSecret openAIEndpoint = await kvClient.GetSecretAsync("AOIEndpoint");
+                    KeyVaultSecret openAiKey = await kvClient.GetSecretAsync("AOIKey");
+                    if (openAIEndpoint != null)
+                    {
+                        logger.LogInformation("OpenAI URI: {OpenAIEndpoint}", openAIEndpoint.Value);
+                        return new(new Uri(openAIEndpoint.Value), openAiKey.Value, true);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, message: "Failed to read OpenAI config from KeyVault");
+            }
+            return new(new Uri("https://microsoft.com"), string.Empty, false);
+        }
+
+        private OpenAIClient? _openAIClient = null;
     }
 }
 
