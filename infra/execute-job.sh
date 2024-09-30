@@ -14,6 +14,9 @@
 # export AZURE_DEVOPS_ORGNAME=$AZURE_DEVOPS_ORGNAME
 # export AZURE_DEVOPS_PAT=$AZURE_DEVOPS_PAT
 
+vnetName=${workloadName}vnet${workloadEnv}
+workspaceName=${workloadName}-log-analytics-${workloadEnv}
+
 echo "Starting Configuration Blob Uploading..."
 echo "Resource Group: $resourceGroupName"
 echo "Location: $location"
@@ -28,16 +31,21 @@ echo "Storage Account: $STORAGE_ACCOUNT"
 echo "Azure DevOps Organization Name: $AZURE_DEVOPS_ORGNAME"
 echo "Azure DevOps PAT: $AZURE_DEVOPS_PAT"
 echo "GitHub PAT: $GTIHUB_PAT"
-
-vnetName=${workloadName}vnet${workloadEnv}
+echo "VNET Name: $vnetName"
 
 uamiId=$(az identity show --resource-group $resourceGroupName --name ${workloadName}-uami-${workloadEnv} | jq -r '.id')
 vnetId=$(az network vnet show --resource-group $resourceGroupName --name $vnetName  --query id --output tsv)
 subnetId=$(az network vnet subnet show --resource-group $resourceGroupName --vnet-name $vnetName --name containergroup --query id --output tsv)
+workspaceId=$(az monitor log-analytics workspace show --resource-group $resourceGroupName --workspace-name $workspaceName --query customerId --output tsv)
+workspaceKey=$(az monitor log-analytics workspace get-shared-keys --resource-group $resourceGroupName --workspace-name $workspaceName --query primarySharedKey --output tsv)
+
+
 
 echo "UAMI ID: $uamiId"
 echo "VNET ID: $vnetId"
 echo "Subnet ID: $subnetId"
+echo "Workspace ID: $workspaceId"
+echo "Workspace Key: $workspaceKey"
 
 # az container create \
 #     --resource-group $resourceGroupName \
