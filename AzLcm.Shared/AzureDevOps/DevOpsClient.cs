@@ -211,7 +211,10 @@ namespace AzLcm.Shared.AzureDevOps
                 }
                 else 
                 {
-                    logger.LogWarning("Failed to map area path for service {serviceName}. Skipping Work item creation.", verdict.AzureServiceNames);
+                    if(verdict != null )
+                    {
+                        logger.LogWarning("Couldn't map area path for service '{serviceName}'. Skipping Work item creation.", verdict.AzureServiceNames);
+                    }                    
                 }
             }
         }
