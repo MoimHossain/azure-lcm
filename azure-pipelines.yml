@@ -16,28 +16,30 @@ variables:
   keyvaultUri: "https://$(workloadName)keyvault$(workloadEnv).vault.azure.net/"
 
 stages:
-  # - stage: CreateInfrastructure
-  #   displayName: 'Create Infrastructure'
-  #   jobs:
-  #   - job: CreateInfra
-  #     displayName: 'Create infrastructure'
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Deploy infrastructure'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptPath: 'infra/build-infra.sh'
-  #         workingDirectory: infra
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-  #         location: $(location)
-  #         workloadName: $(workloadName)
-  #         workloadEnv: $(workloadEnv)
+  - stage: CreateInfrastructure
+    displayName: 'Create Infrastructure'    
+    jobs:
+    - job: CreateInfra
+      displayName: 'Create infrastructure'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Deploy infrastructure'
+        inputs:
+          azureSubscription: $(serviceConnectionName)
+          scriptType: bash
+          scriptPath: 'infra/build-infra.sh'
+          workingDirectory: infra
+        env:
+          resourceGroupName: $(resourceGroupName)
+          location: $(location)
+          workloadName: $(workloadName)
+          workloadEnv: $(workloadEnv)
 
   - stage: BuildContainerImage
     displayName: 'Build Container image'
+    dependsOn: CreateInfrastructure
+    condition: succeeded()
     jobs:
     - job: BuildContainer
       displayName: 'Build Container image'
@@ -58,87 +60,93 @@ stages:
           imageName: $(imageName)
           imageTag: $(Build.BuildId)
 
-  # - stage: DeleteOldContainers
-  #   displayName: 'Delete old containers'
-  #   jobs:
-  #   - job: DeleteOldContainers
-  #     displayName: 'Delete old containers'
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Delete-Old-Job'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptPath: 'infra/delete-old-containers.sh'
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
+  - stage: DeleteOldContainers
+    displayName: 'Delete old containers'
+    dependsOn: BuildContainerImage
+    condition: succeeded()
+    jobs:
+    - job: DeleteOldContainers
+      displayName: 'Delete old containers'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Delete-Old-Job'
+        inputs:
+          azureSubscription: $(serviceConnectionName)
+          scriptType: bash
+          scriptPath: 'infra/delete-old-containers.sh'
+        env:
+          resourceGroupName: $(resourceGroupName)
 
-  # - stage: UploadConfigFiles
-  #   displayName: 'Upload configuration files to the Storage container'
-  #   jobs:
-  #   - job: TemporarilyAllowPublicAccess
-  #     displayName: 'Temporarily allow public access to the storage container'
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Open Firewall temporarily'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptLocation: inlineScript
-  #         inlineScript: |
-  #           az storage account update \
-  #             --resource-group $resourceGroupName \
-  #             --name $STORAGE_ACCOUNT \
-  #             --default-action Allow \
-  #             --public-network-access Enabled          
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-  #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
-  #   - job: UploadConfigFiles
-  #     displayName: 'Upload configuration files to the Storage container'
-  #     dependsOn: TemporarilyAllowPublicAccess
-  #     condition: succeeded()
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Run-Job'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptPath: 'infra/upload-config-files.sh'
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-  #         location: $(location)
-  #         workloadName: $(workloadName)
-  #         workloadEnv: $(workloadEnv)
-  #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
-  #         containerName : $(containerName)
-  #   - job: DisablePublicAccess
-  #     displayName: 'Disable public access to the storage container'
-  #     dependsOn: UploadConfigFiles
-  #     condition: always()
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Close Firewall'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptLocation: inlineScript
-  #         inlineScript: |
-  #           az storage account update \
-  #             --resource-group $resourceGroupName \
-  #             --name $STORAGE_ACCOUNT \
-  #             --default-action Allow \
-  #             --public-network-access Disabled
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-  #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
+  - stage: UploadConfigFiles
+    displayName: 'Upload configuration files to the Storage container'
+    dependsOn: DeleteOldContainers
+    condition: succeeded()
+    jobs:
+    - job: TemporarilyAllowPublicAccess
+      displayName: 'Temporarily allow public access to the storage container'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Open Firewall temporarily'
+        inputs:
+          azureSubscription: $(serviceConnectionName)
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            az storage account update \
+              --resource-group $resourceGroupName \
+              --name $STORAGE_ACCOUNT \
+              --default-action Allow \
+              --public-network-access Enabled          
+        env:
+          resourceGroupName: $(resourceGroupName)
+          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
+    - job: UploadConfigFiles
+      displayName: 'Upload configuration files to the Storage container'
+      dependsOn: TemporarilyAllowPublicAccess
+      condition: succeeded()
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Run-Job'
+        inputs:
+          azureSubscription: $(serviceConnectionName)
+          scriptType: bash
+          scriptPath: 'infra/upload-config-files.sh'
+        env:
+          resourceGroupName: $(resourceGroupName)
+          location: $(location)
+          workloadName: $(workloadName)
+          workloadEnv: $(workloadEnv)
+          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
+          containerName : $(containerName)
+    - job: DisablePublicAccess
+      displayName: 'Disable public access to the storage container'
+      dependsOn: UploadConfigFiles
+      condition: always()
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Close Firewall'
+        inputs:
+          azureSubscription: $(serviceConnectionName)
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            az storage account update \
+              --resource-group $resourceGroupName \
+              --name $STORAGE_ACCOUNT \
+              --default-action Allow \
+              --public-network-access Disabled
+        env:
+          resourceGroupName: $(resourceGroupName)
+          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
 
   - stage: ExecuteJob
     displayName: 'Execute container'
+    dependsOn: UploadConfigFiles
+    condition: succeeded()
     jobs:
     - job: ExecuteJob
       displayName: 'Execute container'
