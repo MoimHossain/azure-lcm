@@ -171,7 +171,7 @@ stages:
           registryURI: $(registryURI)
           containerName : $(containerName)
           imageName: $(imageName)
-          imageTag: '1623' #$(Build.BuildId)
+          imageTag: $(Build.BuildId)
           GTIHUB_PAT: $(GTIHUB_PAT)
           STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)  
           AZURE_DEVOPS_ORGNAME: $(azureDevOpsOrgName)
