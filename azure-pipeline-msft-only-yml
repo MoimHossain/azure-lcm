@@ -38,30 +38,30 @@ stages:
   #         workloadEnv: $(workloadEnv)
 
 
-  - stage: BuildContainerImage
-    displayName: 'Build Container image'
-    #dependsOn: CreateInfrastructure
-    #condition: succeeded()
-    jobs:
-    - job: BuildContainer
-      displayName: 'Build Container image'
-      steps:
-      - checkout: self
-      - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
-        displayName: 'Login to Azure'
-      - task: Bash@3
-        displayName: 'Build-Container-Image'
-        inputs:          
-          targetType: filePath
-          filePath: 'infra/build-container.sh'
-        env:
-          resourceGroupName: $(resourceGroupName)
-          location: $(location)
-          workloadName: $(workloadName)
-          workloadEnv: $(workloadEnv)
-          registryURI: $(registryURI)
-          imageName: $(imageName)
-          imageTag: $(Build.BuildId)
+  # - stage: BuildContainerImage
+  #   displayName: 'Build Container image'
+  #   #dependsOn: CreateInfrastructure
+  #   #condition: succeeded()
+  #   jobs:
+  #   - job: BuildContainer
+  #     displayName: 'Build Container image'
+  #     steps:
+  #     - checkout: self
+  #     - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
+  #       displayName: 'Login to Azure'
+  #     - task: Bash@3
+  #       displayName: 'Build-Container-Image'
+  #       inputs:          
+  #         targetType: filePath
+  #         filePath: 'infra/build-container.sh'
+  #       env:
+  #         resourceGroupName: $(resourceGroupName)
+  #         location: $(location)
+  #         workloadName: $(workloadName)
+  #         workloadEnv: $(workloadEnv)
+  #         registryURI: $(registryURI)
+  #         imageName: $(imageName)
+  #         imageTag: $(Build.BuildId)
 
   # - stage: DeleteOldContainers
   #   displayName: 'Delete old containers'
@@ -146,32 +146,33 @@ stages:
   #         resourceGroupName: $(resourceGroupName)
   #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
 
-  # - stage: ExecuteJob
-  #   displayName: 'Execute container'
-  #   dependsOn: UploadConfigFiles
-  #   condition: succeeded()
-  #   jobs:
-  #   - job: ExecuteJob
-  #     displayName: 'Execute container'
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Run-Job'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptPath: 'infra/execute-job.sh'
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-  #         location: $(location)
-  #         workloadName: $(workloadName)
-  #         workloadEnv: $(workloadEnv)
-  #         keyvaultUri: $(keyvaultUri)
-  #         registryURI: $(registryURI)
-  #         containerName : $(containerName)
-  #         imageName: $(imageName)
-  #         imageTag: $(Build.BuildId)
-  #         GTIHUB_PAT: $(GTIHUB_PAT)
-  #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)  
-  #         AZURE_DEVOPS_ORGNAME: $(azureDevOpsOrgName)
-  #         AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
+  - stage: ExecuteJob
+    displayName: 'Execute container'
+    # dependsOn: UploadConfigFiles
+    # condition: succeeded()
+    jobs:
+    - job: ExecuteJob
+      displayName: 'Execute container'
+      steps:
+      - checkout: self
+      - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
+        displayName: 'Login to Azure'
+      - task: Bash@3
+        displayName: 'Run-Job'
+        inputs:          
+          targetType: filePath
+          filePath: 'infra/execute-job.sh'
+        env:
+          resourceGroupName: $(resourceGroupName)
+          location: $(location)
+          workloadName: $(workloadName)
+          workloadEnv: $(workloadEnv)
+          keyvaultUri: $(keyvaultUri)
+          registryURI: $(registryURI)
+          containerName : $(containerName)
+          imageName: $(imageName)
+          imageTag: '1623' #$(Build.BuildId)
+          GTIHUB_PAT: $(GTIHUB_PAT)
+          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)  
+          AZURE_DEVOPS_ORGNAME: $(azureDevOpsOrgName)
+          AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
