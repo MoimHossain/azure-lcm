@@ -38,30 +38,30 @@ stages:
   #         workloadEnv: $(workloadEnv)
 
 
-  # - stage: BuildContainerImage
-  #   displayName: 'Build Container image'
-  #   #dependsOn: CreateInfrastructure
-  #   #condition: succeeded()
-  #   jobs:
-  #   - job: BuildContainer
-  #     displayName: 'Build Container image'
-  #     steps:
-  #     - checkout: self
-  #     - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
-  #       displayName: 'Login to Azure'
-  #     - task: Bash@3
-  #       displayName: 'Build-Container-Image'
-  #       inputs:          
-  #         targetType: filePath
-  #         filePath: 'infra/build-container.sh'
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-  #         location: $(location)
-  #         workloadName: $(workloadName)
-  #         workloadEnv: $(workloadEnv)
-  #         registryURI: $(registryURI)
-  #         imageName: $(imageName)
-  #         imageTag: $(Build.BuildId)
+  - stage: BuildContainerImage
+    displayName: 'Build Container image'
+    #dependsOn: CreateInfrastructure
+    #condition: succeeded()
+    jobs:
+    - job: BuildContainer
+      displayName: 'Build Container image'
+      steps:
+      - checkout: self
+      - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
+        displayName: 'Login to Azure'
+      - task: Bash@3
+        displayName: 'Build-Container-Image'
+        inputs:          
+          targetType: filePath
+          filePath: 'infra/build-container.sh'
+        env:
+          resourceGroupName: $(resourceGroupName)
+          location: $(location)
+          workloadName: $(workloadName)
+          workloadEnv: $(workloadEnv)
+          registryURI: $(registryURI)
+          imageName: $(imageName)
+          imageTag: $(Build.BuildId)
 
   # - stage: DeleteOldContainers
   #   displayName: 'Delete old containers'
