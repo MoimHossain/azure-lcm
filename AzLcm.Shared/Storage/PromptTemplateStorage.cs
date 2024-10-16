@@ -1,12 +1,14 @@
 ﻿
 
+using AzLcm.Shared.Storage.EmbeddedResources;
+
 namespace AzLcm.Shared.Storage
 {
-    public class PromptTemplateStorage(BlobContentReader blobContentReader)
+    public class PromptTemplateStorage(EmbeddedResourceReader embeddedContentReader)
     {
         public async Task<string> GetFeedPromptAsync(CancellationToken stoppingToken)
         {
-            var prompt = await blobContentReader.ReadBlobContentAsync(BlobContentReader.ConfigBlobs.FeedPromptTemplate, stoppingToken);
+            var prompt = await embeddedContentReader.ReadEmbeddedResourceAsync(EmbeddedResourceReader.ConfigBlobs.FeedPromptTemplate, stoppingToken);
 
             return prompt;
         }

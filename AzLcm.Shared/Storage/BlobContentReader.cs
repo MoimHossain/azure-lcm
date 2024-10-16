@@ -7,6 +7,7 @@ using System.Text.Json;
 
 namespace AzLcm.Shared.Storage
 {
+    /*
     public class BlobContentReader(
         DaemonConfig daemonConfig,
         JsonSerializerOptions jsonSerializerOptions,
@@ -57,4 +58,6 @@ namespace AzLcm.Shared.Storage
             }
         }
     }
+
+    */
 }

@@ -25,7 +25,7 @@ namespace AzLcm.Shared.AzureDevOps
         IHttpClientFactory httpClientFactory,
         AuthorizationFactory identitySupport,
         ILogger<DevOpsClient> logger) : ClientBase(jsonSerializerOptions,
-            appConfiguration, identitySupport, logger, httpClientFactory)
+            appConfiguration, identitySupport, httpClientFactory)
     {
         public async Task<ConnectionDataPayload> GetConnectionDataAsync(
             string orgName, CancellationToken cancellationToken)
@@ -300,6 +300,14 @@ namespace AzLcm.Shared.AzureDevOps
                     }                    
                 }
             }
+        }
+
+        protected override void LogError(string? message, params object?[] args)
+        {
+            if(!string.IsNullOrWhiteSpace(message))
+            {
+                logger?.LogError(message, args);
+            }            
         }
     }
 

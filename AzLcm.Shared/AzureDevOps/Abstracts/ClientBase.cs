@@ -1,36 +1,23 @@
 ﻿
 
 using AzLcm.Shared.AzureDevOps.Authorizations;
-using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 
 namespace AzLcm.Shared.AzureDevOps.Abstracts
 {
-    public abstract class ClientBase
+    public abstract class ClientBase(
+        JsonSerializerOptions jsOptions,
+        AzureDevOpsClientConfig appConfig,
+        AuthorizationFactory idnSupport,
+        IHttpClientFactory httpClientFactory)
     {
-        private readonly JsonSerializerOptions jsonSerializerOptions;
-        private readonly AzureDevOpsClientConfig appConfiguration;
-        private readonly AuthorizationFactory identitySupport;
-        private readonly ILogger<DevOpsClient> logger;
-        private readonly IHttpClientFactory httpClientFactory;
-
-        protected ClientBase(
-            JsonSerializerOptions jsOptions,
-            AzureDevOpsClientConfig appConfig,
-            AuthorizationFactory idnSupport,
-            ILogger<DevOpsClient> logger,
-            IHttpClientFactory httpClientFactory)
-        {
-            this.jsonSerializerOptions = jsOptions;
-            this.appConfiguration = appConfig;
-            this.identitySupport = idnSupport;
-            this.logger = logger;
-            this.httpClientFactory = httpClientFactory;
-        }
+        private readonly JsonSerializerOptions jsonSerializerOptions = jsOptions;
+        private readonly AzureDevOpsClientConfig appConfiguration = appConfig;
+        private readonly AuthorizationFactory identitySupport = idnSupport;        
+        private readonly IHttpClientFactory httpClientFactory = httpClientFactory;
 
         protected async virtual Task<TResponsePayload> PostAsync<TRequestPayload, TResponsePayload>(
             string orgName, string apiPath, TRequestPayload payload, CancellationToken cancellationToken, 
@@ -188,9 +175,6 @@ namespace AzLcm.Shared.AzureDevOps.Abstracts
             return response.IsSuccessStatusCode;
         }
 
-        protected void LogError(string? message, params object?[] args)
-        {
-            logger?.LogError(message, args);
-        }
+        protected abstract void LogError(string? message, params object?[] args);
     }
 }

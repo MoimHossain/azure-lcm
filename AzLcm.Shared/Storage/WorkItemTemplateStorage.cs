@@ -1,35 +1,37 @@
 ﻿
 
+using AzLcm.Shared.Storage.EmbeddedResources;
+
 namespace AzLcm.Shared.Storage
 {
-    public class WorkItemTemplateStorage(BlobContentReader blobContentReader)
+    public class WorkItemTemplateStorage(EmbeddedResourceReader embeddedResourceReader)
     {
         public async Task<WorkItemTemplate?> GetFeedWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            return await blobContentReader
+            return await embeddedResourceReader
                 .ReadFromJsonAsync<WorkItemTemplate>(
-                BlobContentReader.ConfigBlobs.FeedWorkItemTemplate, stoppingToken);
+                EmbeddedResourceReader.ConfigBlobs.FeedWorkItemTemplate, stoppingToken);
         }
 
         public async Task<WorkItemTemplate?> GetPolicyWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            return await blobContentReader
+            return await embeddedResourceReader
                 .ReadFromJsonAsync<WorkItemTemplate>(
-                BlobContentReader.ConfigBlobs.PolicyWorkItemTemplate, stoppingToken);
+                EmbeddedResourceReader.ConfigBlobs.PolicyWorkItemTemplate, stoppingToken);
         }
 
         public async Task<WorkItemTemplate?> GetServiceHealthWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            return await blobContentReader
+            return await embeddedResourceReader
                 .ReadFromJsonAsync<WorkItemTemplate>(
-                BlobContentReader.ConfigBlobs.ServiceHealthWorkItemTemplate, stoppingToken);
+                EmbeddedResourceReader.ConfigBlobs.ServiceHealthWorkItemTemplate, stoppingToken);
         }
 
         public async Task<AreaPathMapConfig?> GetAreaPathMapConfigAsync(CancellationToken stoppingToken)
         {
-            return await blobContentReader
+            return await embeddedResourceReader
                 .ReadFromJsonAsync<AreaPathMapConfig>(
-                BlobContentReader.ConfigBlobs.AreaPathRouteTemplate, stoppingToken);
+                EmbeddedResourceReader.ConfigBlobs.AreaPathRouteTemplate, stoppingToken);
         }
     }
 

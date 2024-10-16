@@ -76,7 +76,10 @@ namespace AzLcm.Shared.PageScrapping
                                         if (anchor != null && anchor.HasAttribute("href"))
                                         {
                                             var href = anchor.GetAttribute("href");
-                                            links.Add(href);                                            
+                                            if(!string.IsNullOrWhiteSpace(href))
+                                            {
+                                                links.Add(href);
+                                            }
                                         }
                                     }
                                 }

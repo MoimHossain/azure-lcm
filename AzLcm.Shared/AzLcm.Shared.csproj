@@ -7,17 +7,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Storage\AreaPathRouteConfig.json" />
-		<None Remove="Storage\FeedWorkItemTemplate.json" />
-		<None Remove="Storage\PolicyWorkItemTemplate.json" />
-		<None Remove="Storage\ServiceHealthWorkItemTemplate.json" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Include="Storage\AreaPathRouteConfig.json" />
-		<EmbeddedResource Include="Storage\ServiceHealthWorkItemTemplate.json" />
-		<EmbeddedResource Include="Storage\PolicyWorkItemTemplate.json" />
-		<EmbeddedResource Include="Storage\FeedWorkItemTemplate.json" />
+	  <EmbeddedResource Include="..\infra\configurations\AreaPathRouteConfig.json" Link="Storage\EmbeddedResources\AreaPathRouteConfig.json" />
+	  <EmbeddedResource Include="..\infra\configurations\FeedPromptTemplate.txt" Link="Storage\EmbeddedResources\FeedPromptTemplate.txt" />
+	  <EmbeddedResource Include="..\infra\configurations\FeedWorkItemTemplate.json" Link="Storage\EmbeddedResources\FeedWorkItemTemplate.json" />
+	  <EmbeddedResource Include="..\infra\configurations\PolicyWorkItemTemplate.json" Link="Storage\EmbeddedResources\PolicyWorkItemTemplate.json" />
+	  <EmbeddedResource Include="..\infra\configurations\service-health-config.json" Link="Storage\EmbeddedResources\service-health-config.json" />
+	  <EmbeddedResource Include="..\infra\configurations\service-health-query.txt" Link="Storage\EmbeddedResources\service-health-query.txt" />
+	  <EmbeddedResource Include="..\infra\configurations\Service-health-workitem-template.json" Link="Storage\EmbeddedResources\Service-health-workitem-template.json" />
 	</ItemGroup>
 
 	<ItemGroup>

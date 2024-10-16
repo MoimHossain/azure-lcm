@@ -10,6 +10,7 @@ using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Policy;
 using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
+using AzLcm.Shared.Storage.EmbeddedResources;
 using Azure;
 using Azure.AI.OpenAI;
 using Azure.Core;
@@ -49,8 +50,8 @@ namespace AzLcm.Shared
         {   
             services.AddSingleton<DaemonConfig>();
             services.AddSingleton<WorkItemTemplateStorage>();
-            services.AddSingleton<PromptTemplateStorage>();
-            services.AddSingleton<BlobContentReader>();
+            services.AddSingleton<PromptTemplateStorage>();            
+            services.AddSingleton<EmbeddedResourceReader>();
             services.AddSingleton<FeedStorage>();
             services.AddSingleton<PolicyStorage>();
             services.AddSingleton<HealthServiceEventStorage>();
