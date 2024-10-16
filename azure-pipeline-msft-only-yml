@@ -16,51 +16,52 @@ variables:
   keyvaultUri: "https://$(workloadName)keyvault$(workloadEnv).vault.azure.net/"
 
 stages:
-  - stage: CreateInfrastructure
-    displayName: 'Create Infrastructure'    
-    jobs:
-    - job: CreateInfra
-      displayName: 'Create infrastructure'
-      steps:
-      - checkout: self
-      - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
-        displayName: 'Login to Azure'
-      - task: Bash@3
-        displayName: 'Deploy infrastructure'
-        inputs:
-          targetType: filePath
-          filePath: 'infra/build-infra.sh'
-          workingDirectory: infra
-        env:
-          resourceGroupName: $(resourceGroupName)
-          location: $(location)
-          workloadName: $(workloadName)
-          workloadEnv: $(workloadEnv)
-
-
-  # - stage: BuildContainerImage
-  #   displayName: 'Build Container image'
-  #   dependsOn: CreateInfrastructure
-  #   condition: succeeded()
+  # - stage: CreateInfrastructure
+  #   displayName: 'Create Infrastructure'    
   #   jobs:
-  #   - job: BuildContainer
-  #     displayName: 'Build Container image'
+  #   - job: CreateInfra
+  #     displayName: 'Create infrastructure'
   #     steps:
   #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Build-Container-Image'
+  #     - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
+  #       displayName: 'Login to Azure'
+  #     - task: Bash@3
+  #       displayName: 'Deploy infrastructure'
   #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptPath: 'infra/build-container.sh'
+  #         targetType: filePath
+  #         filePath: 'infra/build-infra.sh'
+  #         workingDirectory: infra
   #       env:
   #         resourceGroupName: $(resourceGroupName)
   #         location: $(location)
   #         workloadName: $(workloadName)
   #         workloadEnv: $(workloadEnv)
-  #         registryURI: $(registryURI)
-  #         imageName: $(imageName)
-  #         imageTag: $(Build.BuildId)
+
+
+  - stage: BuildContainerImage
+    displayName: 'Build Container image'
+    #dependsOn: CreateInfrastructure
+    #condition: succeeded()
+    jobs:
+    - job: BuildContainer
+      displayName: 'Build Container image'
+      steps:
+      - checkout: self
+      - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
+        displayName: 'Login to Azure'
+      - task: Bash@3
+        displayName: 'Build-Container-Image'
+        inputs:          
+          targetType: filePath
+          filePath: 'infra/build-container.sh'
+        env:
+          resourceGroupName: $(resourceGroupName)
+          location: $(location)
+          workloadName: $(workloadName)
+          workloadEnv: $(workloadEnv)
+          registryURI: $(registryURI)
+          imageName: $(imageName)
+          imageTag: $(Build.BuildId)
 
   # - stage: DeleteOldContainers
   #   displayName: 'Delete old containers'
