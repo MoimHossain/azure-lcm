@@ -63,93 +63,10 @@ stages:
           imageName: $(imageName)
           imageTag: $(Build.BuildId)
 
-  # - stage: DeleteOldContainers
-  #   displayName: 'Delete old containers'
-  #   dependsOn: BuildContainerImage
-  #   condition: succeeded()
-  #   jobs:
-  #   - job: DeleteOldContainers
-  #     displayName: 'Delete old containers'
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Delete-Old-Job'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptPath: 'infra/delete-old-containers.sh'
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-
-  # - stage: UploadConfigFiles
-  #   displayName: 'Upload configuration files to the Storage container'
-  #   dependsOn: DeleteOldContainers
-  #   condition: succeeded()
-  #   jobs:
-  #   - job: TemporarilyAllowPublicAccess
-  #     displayName: 'Temporarily allow public access to the storage container'
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Open Firewall temporarily'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptLocation: inlineScript
-  #         inlineScript: |
-  #           az storage account update \
-  #             --resource-group $resourceGroupName \
-  #             --name $STORAGE_ACCOUNT \
-  #             --default-action Allow \
-  #             --public-network-access Enabled          
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-  #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
-  #   - job: UploadConfigFiles
-  #     displayName: 'Upload configuration files to the Storage container'
-  #     dependsOn: TemporarilyAllowPublicAccess
-  #     condition: succeeded()
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Run-Job'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptPath: 'infra/upload-config-files.sh'
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-  #         location: $(location)
-  #         workloadName: $(workloadName)
-  #         workloadEnv: $(workloadEnv)
-  #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
-  #         containerName : $(containerName)
-  #   - job: DisablePublicAccess
-  #     displayName: 'Disable public access to the storage container'
-  #     dependsOn: UploadConfigFiles
-  #     condition: always()
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Close Firewall'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptLocation: inlineScript
-  #         inlineScript: |
-  #           az storage account update \
-  #             --resource-group $resourceGroupName \
-  #             --name $STORAGE_ACCOUNT \
-  #             --default-action Allow \
-  #             --public-network-access Disabled
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-  #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)
-
   - stage: ExecuteJob
     displayName: 'Execute container'
-    # dependsOn: UploadConfigFiles
-    # condition: succeeded()
+    dependsOn: BuildContainerImage
+    condition: succeeded()
     jobs:
     - job: ExecuteJob
       displayName: 'Execute container'
@@ -176,3 +93,22 @@ stages:
           STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)  
           AZURE_DEVOPS_ORGNAME: $(azureDevOpsOrgName)
           AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
+
+
+  - stage: DeleteOldContainers
+    displayName: 'Delete old containers'
+    dependsOn: ExecuteJob
+    condition: succeeded()
+    jobs:
+    - job: DeleteOldContainers
+      displayName: 'Delete old containers'
+      steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Delete-Old-Job'
+        inputs:
+          azureSubscription: $(serviceConnectionName)
+          scriptType: bash
+          scriptPath: 'infra/delete-old-containers.sh'
+        env:
+          resourceGroupName: $(resourceGroupName)
