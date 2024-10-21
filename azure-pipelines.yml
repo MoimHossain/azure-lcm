@@ -80,7 +80,7 @@ stages:
 
   - stage: ExecuteJob
     displayName: 'Execute container'
-    dependsOn: UploadConfigFiles
+    dependsOn: BuildContainerImage
     condition: succeeded()
     jobs:
     - job: ExecuteJob
