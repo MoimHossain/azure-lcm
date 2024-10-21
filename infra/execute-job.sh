@@ -38,14 +38,16 @@ vnetId=$(az network vnet show --resource-group $resourceGroupName --name $vnetNa
 subnetId=$(az network vnet subnet show --resource-group $resourceGroupName --vnet-name $vnetName --name containergroup --query id --output tsv)
 workspaceId=$(az monitor log-analytics workspace show --resource-group $resourceGroupName --workspace-name $workspaceName --query customerId --output tsv)
 workspaceKey=$(az monitor log-analytics workspace get-shared-keys --resource-group $resourceGroupName --workspace-name $workspaceName --query primarySharedKey --output tsv)
-
-
+uamiClientId=$(az identity show --resource-group $resourceGroupName --name ${workloadName}-uami-${workloadEnv} | jq -r '.clientId')
+uamiTenantId=$(az identity show --resource-group $resourceGroupName --name ${workloadName}-uami-${workloadEnv} | jq -r '.tenantId')
 
 echo "UAMI ID: $uamiId"
 echo "VNET ID: $vnetId"
 echo "Subnet ID: $subnetId"
 echo "Workspace ID: $workspaceId"
 echo "Workspace Key: $workspaceKey"
+echo "UAMI Client ID: $uamiClientId"
+echo "UAMI Tenant ID: $uamiTenantId"
 
 az container create \
     --resource-group $resourceGroupName \
@@ -79,4 +81,6 @@ az container create \
     AZURE_DEVOPS_USE_PAT=true \
     AZURE_DEVOPS_USE_MANAGED_IDENTITY=false \
     AZURE_DEVOPS_USE_SERVICE_PRINCIPAL=false \
-    AZURE_DEVOPS_PAT="$AZURE_DEVOPS_PAT"
+    AZURE_DEVOPS_PAT="$AZURE_DEVOPS_PAT" \
+    AZURE_DEVOPS_CLIENT_ID_OF_MANAGED_IDENTITY=$uamiClientId \
+    AZURE_DEVOPS_TENANT_ID_OF_MANAGED_IDENTITY=$uamiTenantId

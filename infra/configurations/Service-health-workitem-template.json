@@ -9,23 +9,8 @@
       },
       {
         "Op": "add",
-        "Path": "/fields/Custom.Resource",
-        "Value": "{SvcHealthEvent.Service}"
-      },
-      {
-        "Op": "add",
-        "Path": "/fields/Custom.PublishDate",
-        "Value": "{SvcHealthEvent.LastUpdate}"
-      },
-      {
-        "Op": "add",
-        "Path": "/fields/Custom.Reference",
-        "Value": "{SvcHealthEvent.Url}"
-      },
-      {
-        "Op": "add",
         "Path": "/fields/System.Description",
-        "Value": "<p>{SvcHealthEvent.Summary}</p>"
+        "Value": "<p>{SvcHealthEvent.Summary}</p><p>{SvcHealthEvent.Url}</p>"
       },
       {
         "Op": "add",
