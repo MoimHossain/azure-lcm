@@ -17,4 +17,4 @@ echo "Building Images with Tag '${imageName}:${imageTag}'"
 docker build -t ${registryURI}/${imageName}:${imageTag} -f Dockerfile .
 
 echo "Pushing to '$registryURI'"
-docker push ${registryURI}/${imageName}:${imageTag}
+#docker push ${registryURI}/${imageName}:${imageTag}
