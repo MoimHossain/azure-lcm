@@ -53,7 +53,7 @@ stages:
         displayName: 'Build-Container-Image'
         inputs:          
           targetType: filePath
-          filePath: 'infra/build-container.sh'
+          filePath: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra/build-container.sh'
           workingDirectory: CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard
         env:
           resourceGroupName: $(resourceGroupName)
