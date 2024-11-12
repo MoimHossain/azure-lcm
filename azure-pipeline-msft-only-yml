@@ -95,20 +95,20 @@ stages:
           AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
 
 
-  - stage: DeleteOldContainers
-    displayName: 'Delete old containers'
-    dependsOn: ExecuteJob
-    condition: succeeded()
-    jobs:
-    - job: DeleteOldContainers
-      displayName: 'Delete old containers'
-      steps:
-      - checkout: self
-      - task: AzureCLI@2
-        displayName: 'Delete-Old-Job'
-        inputs:
-          azureSubscription: $(serviceConnectionName)
-          scriptType: bash
-          scriptPath: 'infra/delete-old-containers.sh'
-        env:
-          resourceGroupName: $(resourceGroupName)
+# - stage: DeleteOldContainers
+#    displayName: 'Delete old containers'
+#    dependsOn: ExecuteJob
+#    condition: succeeded()
+#    jobs:
+#    - job: DeleteOldContainers
+#      displayName: 'Delete old containers'
+#      steps:
+#      - checkout: self
+#      - task: AzureCLI@2
+#        displayName: 'Delete-Old-Job'
+#        inputs:
+#          azureSubscription: $(serviceConnectionName)
+#          scriptType: bash
+#          scriptPath: 'infra/delete-old-containers.sh'
+#        env:
+#          resourceGroupName: $(resourceGroupName)
