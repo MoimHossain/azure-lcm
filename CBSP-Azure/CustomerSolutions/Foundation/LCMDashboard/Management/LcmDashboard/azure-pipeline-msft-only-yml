@@ -47,13 +47,14 @@ stages:
       displayName: 'Build Container image'
       steps:
       - checkout: self
-      - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
-        displayName: 'Login to Azure'
+      # - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
+      #   displayName: 'Login to Azure'
       - task: Bash@3
         displayName: 'Build-Container-Image'
         inputs:          
           targetType: filePath
           filePath: 'infra/build-container.sh'
+          workingDirectory: CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard
         env:
           resourceGroupName: $(resourceGroupName)
           location: $(location)
@@ -63,52 +64,35 @@ stages:
           imageName: $(imageName)
           imageTag: $(Build.BuildId)
 
-  - stage: ExecuteJob
-    displayName: 'Execute container'
-    dependsOn: BuildContainerImage
-    condition: succeeded()
-    jobs:
-    - job: ExecuteJob
-      displayName: 'Execute container'
-      steps:
-      - checkout: self
-      - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
-        displayName: 'Login to Azure'
-      - task: Bash@3
-        displayName: 'Run-Job'
-        inputs:          
-          targetType: filePath
-          filePath: 'infra/execute-job.sh'
-        env:
-          resourceGroupName: $(resourceGroupName)
-          location: $(location)
-          workloadName: $(workloadName)
-          workloadEnv: $(workloadEnv)
-          keyvaultUri: $(keyvaultUri)
-          registryURI: $(registryURI)
-          containerName : $(containerName)
-          imageName: $(imageName)
-          imageTag: $(Build.BuildId)
-          GTIHUB_PAT: $(GTIHUB_PAT)
-          STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)  
-          AZURE_DEVOPS_ORGNAME: $(azureDevOpsOrgName)
-          AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
+  # - stage: ExecuteJob
+  #   displayName: 'Execute container'
+  #   dependsOn: BuildContainerImage
+  #   condition: succeeded()
+  #   jobs:
+  #   - job: ExecuteJob
+  #     displayName: 'Execute container'
+  #     steps:
+  #     - checkout: self
+  #     - bash: 'az login --service-principal -u $(sp_client_id) -p $(sp_client_secret) --tenant $(sp_tenant_id)'
+  #       displayName: 'Login to Azure'
+  #     - task: Bash@3
+  #       displayName: 'Run-Job'
+  #       inputs:          
+  #         targetType: filePath
+  #         filePath: 'infra/execute-job.sh'
+  #       env:
+  #         resourceGroupName: $(resourceGroupName)
+  #         location: $(location)
+  #         workloadName: $(workloadName)
+  #         workloadEnv: $(workloadEnv)
+  #         keyvaultUri: $(keyvaultUri)
+  #         registryURI: $(registryURI)
+  #         containerName : $(containerName)
+  #         imageName: $(imageName)
+  #         imageTag: $(Build.BuildId)
+  #         GTIHUB_PAT: $(GTIHUB_PAT)
+  #         STORAGE_ACCOUNT: $(workloadName)storageacc$(workloadEnv)  
+  #         AZURE_DEVOPS_ORGNAME: $(azureDevOpsOrgName)
+  #         AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
 
 
-  - stage: DeleteOldContainers
-    displayName: 'Delete old containers'
-    dependsOn: ExecuteJob
-    condition: succeeded()
-    jobs:
-    - job: DeleteOldContainers
-      displayName: 'Delete old containers'
-      steps:
-      - checkout: self
-      - task: AzureCLI@2
-        displayName: 'Delete-Old-Job'
-        inputs:
-          azureSubscription: $(serviceConnectionName)
-          scriptType: bash
-          scriptPath: 'infra/delete-old-containers.sh'
-        env:
-          resourceGroupName: $(resourceGroupName)
