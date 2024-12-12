@@ -143,7 +143,27 @@ Response should be:
         }
 
 
-        
+        public async Task<bool> CheckOpenAIAccessAsync(CancellationToken stoppingToken)
+        {
+            var openAIClient = await GetOpenAIClient(stoppingToken);
+
+            var thread = GetChatCompletionsOptions((float)1);
+            thread.Messages.Add(new ChatRequestSystemMessage("""Reply with one word only."""));
+            thread.Messages.Add(new ChatRequestUserMessage($"How are you?"));
+
+            try
+            {
+                var response = await openAIClient.GetChatCompletionsAsync(thread, stoppingToken);
+                logger.LogInformation("OpenAI Access Check Response: {Response}", response.Value.Choices[0].Message.Content);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, message: "");
+            }
+            return false;
+        }
+
 
         public async Task<OpenAIClient> GetOpenAIClient(CancellationToken cancellationToken)
         {
@@ -172,8 +192,8 @@ Response should be:
                         Retry =
                         {
                              Delay= TimeSpan.FromSeconds(2),
-                             MaxDelay = TimeSpan.FromSeconds(16),
-                             MaxRetries = 5,
+                             MaxDelay = TimeSpan.FromSeconds(5),
+                             MaxRetries = 2,
                              Mode = RetryMode.Exponential
                         }
                     };

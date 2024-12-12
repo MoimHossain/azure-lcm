@@ -60,9 +60,7 @@ app.MapRazorPages();
 app.UseCors();
 
 var apiGroup = app.MapGroup("api");
-apiGroup.MapGet("/health", HealthEndpoint.Handler)
-    .WithName("Health API request")
-    .WithDisplayName("Service Health API")
-    .WithOpenApi();
+apiGroup.MapGet("/health", HealthEndpoint.Handler).WithName("Health API").WithDisplayName("Service Health API").WithOpenApi();
+apiGroup.MapGet("/live", LivenessEndpoint.Handler).WithName("Liveness API").WithDisplayName("Liveness API").WithOpenApi();
 
 app.Run();

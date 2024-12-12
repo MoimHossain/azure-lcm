@@ -27,8 +27,24 @@ namespace AzLcm.Shared
             var azdoResult = await CheckAzureDevOpsConnectionAsync(cancellationToken);
             var storageResult = await CheckStorageAccess(cancellationToken);
             var keyVaultResult = await CheckKeyVaultAccessAsync(cancellationToken);
+            var openAIResult = await CheckOpenAIAccessAsync(cancellationToken);
 
-            return [azdoResult, storageResult, keyVaultResult];
+            return [azdoResult, storageResult, keyVaultResult, openAIResult];
+        }
+
+
+        private async Task<ServiceDependencyTestResult> CheckOpenAIAccessAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var result = await cognitiveService.CheckOpenAIAccessAsync(cancellationToken);
+                return new ServiceDependencyTestResult("OpenAI", result, result ? "Connection is healthy.": "Connection is unhealthy");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to check OpenAI connection.");
+                return new ServiceDependencyTestResult("OpenAI", false, ex.Message);
+            }
         }
 
         private async Task<ServiceDependencyTestResult> CheckKeyVaultAccessAsync(CancellationToken cancellationToken)
