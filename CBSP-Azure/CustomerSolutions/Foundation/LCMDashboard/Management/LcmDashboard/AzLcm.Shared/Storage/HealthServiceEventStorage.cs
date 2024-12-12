@@ -3,18 +3,15 @@
 
 using AzLcm.Shared.ServiceHealth;
 using Azure.Data.Tables;
-using Azure.Identity;
 
 namespace AzLcm.Shared.Storage
 {
-    public class HealthServiceEventStorage(DaemonConfig daemonConfig)
+    public class HealthServiceEventStorage(DaemonConfig daemonConfig) : StorageBase
     {
-        private readonly TableClient tableClient = new(new Uri($"https://{daemonConfig.StorageAccountName}.table.core.windows.net"), daemonConfig.ServiceHealthTableName, new DefaultAzureCredential());
+        protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
 
-        public async Task EnsureTableExistsAsync()
-        {
-            await tableClient.CreateIfNotExistsAsync();
-        }
+        protected override string GetStorageTableName() => daemonConfig.ServiceHealthTableName;
+
 
         public async Task<bool> HasSeenAsync(ServiceHealthEvent svcHealthEvent, CancellationToken stoppingToken)
         {
@@ -22,7 +19,7 @@ namespace AzLcm.Shared.Storage
 
             var (partitionKey, rowKey) = svcHealthEvent.GetKeyPair();
 
-            var existingEntity = await tableClient.GetEntityIfExistsAsync<TableEntity>(partitionKey, rowKey, null, stoppingToken);
+            var existingEntity = await TableClient.GetEntityIfExistsAsync<TableEntity>(partitionKey, rowKey, null, stoppingToken);
             return existingEntity.HasValue;
         }
 
@@ -32,7 +29,7 @@ namespace AzLcm.Shared.Storage
 
             var (partitionKey, rowKey) = svcHealthEvent.GetKeyPair();
 
-            await tableClient.UpsertEntityAsync(new TableEntity(partitionKey, rowKey)
+            await TableClient.UpsertEntityAsync(new TableEntity(partitionKey, rowKey)
                 {
                     { "Name", svcHealthEvent.Name },
                     { "Service", svcHealthEvent.Service },

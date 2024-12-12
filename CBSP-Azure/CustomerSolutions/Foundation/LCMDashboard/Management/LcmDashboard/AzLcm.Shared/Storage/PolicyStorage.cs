@@ -2,20 +2,15 @@
 
 using AzLcm.Shared.Policy.Models;
 using Azure.Data.Tables;
-using Azure.Identity;
 using System.Collections.Immutable;
-using System.ServiceModel.Syndication;
 
 namespace AzLcm.Shared.Storage
 {
-    public class PolicyStorage(DaemonConfig daemonConfig)
+    public class PolicyStorage(DaemonConfig daemonConfig) : StorageBase
     {
-        private readonly TableClient tableClient = new(new Uri($"https://{daemonConfig.StorageAccountName}.table.core.windows.net"), daemonConfig.PolicyTableName, new DefaultAzureCredential());
+        protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
 
-        public async Task EnsureTableExistsAsync()
-        {
-            await tableClient.CreateIfNotExistsAsync();
-        }
+        protected override string GetStorageTableName() => daemonConfig.PolicyTableName;
 
         public async Task<PolicyModelChange> HasSeenAsync(PolicyModel policy)
         {
@@ -24,7 +19,7 @@ namespace AzLcm.Shared.Storage
             var latestChanges = policy.ToTableEntity().ToImmutableDictionary();
 
             var (partitionKey, rowKey) = policy.GetKeyPair();
-            var existingEntity = await tableClient.GetEntityIfExistsAsync<TableEntity>(partitionKey, rowKey);
+            var existingEntity = await TableClient.GetEntityIfExistsAsync<TableEntity>(partitionKey, rowKey);
 
             if (!existingEntity.HasValue)
             {
@@ -50,7 +45,7 @@ namespace AzLcm.Shared.Storage
         {
             ArgumentNullException.ThrowIfNull(policy, nameof(policy));
 
-            await tableClient.UpsertEntityAsync(policy.ToTableEntity(), TableUpdateMode.Merge, stoppingToken);
+            await TableClient.UpsertEntityAsync(policy.ToTableEntity(), TableUpdateMode.Merge, stoppingToken);
         }
     }
 }

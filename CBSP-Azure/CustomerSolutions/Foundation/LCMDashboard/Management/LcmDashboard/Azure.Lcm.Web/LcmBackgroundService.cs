@@ -1,55 +1,44 @@
+﻿
 
-
-using AzLcm.Shared;
 using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.AzureUpdates;
 using AzLcm.Shared.Cognition;
-using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Policy;
 using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
+using AzLcm.Shared;
 
-namespace AzLcm.Daemon
+namespace Azure.Lcm.Web
 {
-    public class Worker(
+    public class LcmBackgroundService(
         DaemonConfig config,
+        LcmHealthService lcmHealthService,
         FeedStorage feedStorage,
         PolicyStorage policyStorage,
         HealthServiceEventStorage healthServiceEventStorage,
         DevOpsClient devOpsClient,
-        CognitiveService cognitiveService,        
+        CognitiveService cognitiveService,
         PolicyReader policyReader,
         ServiceHealthReader serviceHealthReader,
-        AzUpdateSyndicationFeed azUpdateSyndicationFeed,        
+        AzUpdateSyndicationFeed azUpdateSyndicationFeed,
         PromptTemplateStorage promptTemplateStorage,
         WorkItemTemplateStorage workItemTemplateStorage,
-        ILogger<Worker> logger) : BackgroundService
+        ILogger<LcmBackgroundService> logger) : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var azdoConfig = config.GetAzureDevOpsClientConfig();
-            var connectionData = await devOpsClient.GetConnectionDataAsync(azdoConfig.orgName, stoppingToken);
+            logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-            if (connectionData.AuthenticatedUser == null ||
-                string.IsNullOrWhiteSpace(connectionData.AuthenticatedUser.SubjectDescriptor))
-            {
-                logger.LogError("Failed to connect to Azure DevOps.");
-                return;
-            }
-
-            await feedStorage.EnsureTableExistsAsync();
-            await policyStorage.EnsureTableExistsAsync();
-            await healthServiceEventStorage.EnsureTableExistsAsync();
-                        
             while (!stoppingToken.IsCancellationRequested)
             {
-                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-
-                await ProcessServiceHealthAsync(stoppingToken);
-                await ProcessPolicyAsync(stoppingToken);
-                await ProcessFeedAsync(stoppingToken);                
-                
-                await Task.Delay(5000, stoppingToken);
+                var allOk = await lcmHealthService.IsAllServicesUpAndHealthyAsync(stoppingToken);
+                if (allOk)
+                {
+                    await ProcessServiceHealthAsync(stoppingToken);
+                    await ProcessPolicyAsync(stoppingToken);
+                    await ProcessFeedAsync(stoppingToken);
+                }
+                await Task.Delay(1_000 * 60 * 5, stoppingToken); // 5 minutes
             }
         }
 
@@ -64,7 +53,7 @@ namespace AzLcm.Daemon
                 var processedCount = 0;
                 var totalEventCount = 0;
 
-                await serviceHealthReader.ProcessAsync(async serviceHealthEvent => 
+                await serviceHealthReader.ProcessAsync(async serviceHealthEvent =>
                 {
                     ++totalEventCount;
                     var seen = await healthServiceEventStorage.HasSeenAsync(serviceHealthEvent, stoppingToken);
@@ -74,13 +63,13 @@ namespace AzLcm.Daemon
                         ++processedCount;
 
                         await devOpsClient.CreateWorkItemFromServiceHealthAsync(
-                            azDevOpsConfig.orgName, template, areaPathMapConfig, 
+                            azDevOpsConfig.orgName, template, areaPathMapConfig,
                             serviceHealthEvent, stoppingToken);
 
                         await healthServiceEventStorage.MarkAsSeenAsync(serviceHealthEvent, stoppingToken);
                     }
                 }, stoppingToken);
-                logger.LogInformation("Process {processedCount} items, out of {totalEventCount} service health events.", 
+                logger.LogInformation("Process {processedCount} items, out of {totalEventCount} service health events.",
                     processedCount, totalEventCount);
             }
         }
@@ -98,11 +87,11 @@ namespace AzLcm.Daemon
                 await policyReader.ReadPoliciesAsync(async policy =>
                 {
                     ++totalPolicyCount;
-                    
+
                     var difference = await policyStorage.HasSeenAsync(policy);
                     logger.LogInformation("Evaluated Policy changes, id={policyId}, change kind={changeKind}", policy.Id, difference.ChangeKind);
 
-                    if (difference.ChangeKind != Shared.Policy.Models.ChangeKind.None)
+                    if (difference.ChangeKind != AzLcm.Shared.Policy.Models.ChangeKind.None)
                     {
                         ++processedCount;
                         await devOpsClient.CreateWorkItemFromPolicyAsync(
@@ -115,7 +104,7 @@ namespace AzLcm.Daemon
         }
 
         private async Task ProcessFeedAsync(CancellationToken stoppingToken)
-        {   
+        {
             if (config.ProcessFeed)
             {
                 var azDevOpsConfig = config.GetAzureDevOpsClientConfig();

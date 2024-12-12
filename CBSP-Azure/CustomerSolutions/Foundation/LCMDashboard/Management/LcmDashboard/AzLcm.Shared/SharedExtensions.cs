@@ -11,13 +11,7 @@ using AzLcm.Shared.Policy;
 using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
 using AzLcm.Shared.Storage.EmbeddedResources;
-using Azure;
-using Azure.AI.OpenAI;
-using Azure.Core;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.WebSockets;
 
 namespace AzLcm.Shared
 {
@@ -61,6 +55,7 @@ namespace AzLcm.Shared
             services.AddSingleton<ServiceHealthReader>();
             services.AddSingleton<HtmlExtractor>();
             services.AddSingleton<CognitiveService>();
+            services.AddSingleton<LcmHealthService>();
             services.AddAzureDevOpsClientServices();
             return services;
         }

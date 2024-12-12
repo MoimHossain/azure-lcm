@@ -5,7 +5,7 @@ VisualStudioVersion = 17.10.34607.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzLcm.Shared", "AzLcm.Shared\AzLcm.Shared.csproj", "{A48D81EB-D649-4BCD-BA42-43A3A31C2789}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzLcm.Daemon", "AzLcm.Daemon\AzLcm.Daemon.csproj", "{BB26B7D6-89F3-4634-BD1A-5F83F8CCF882}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Lcm.Web", "Azure.Lcm.Web\Azure.Lcm.Web.csproj", "{9A2D158C-9A16-423F-8C43-7612BE16B65B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{A48D81EB-D649-4BCD-BA42-43A3A31C2789}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A48D81EB-D649-4BCD-BA42-43A3A31C2789}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A48D81EB-D649-4BCD-BA42-43A3A31C2789}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BB26B7D6-89F3-4634-BD1A-5F83F8CCF882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BB26B7D6-89F3-4634-BD1A-5F83F8CCF882}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BB26B7D6-89F3-4634-BD1A-5F83F8CCF882}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BB26B7D6-89F3-4634-BD1A-5F83F8CCF882}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A2D158C-9A16-423F-8C43-7612BE16B65B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A2D158C-9A16-423F-8C43-7612BE16B65B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A2D158C-9A16-423F-8C43-7612BE16B65B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A2D158C-9A16-423F-8C43-7612BE16B65B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

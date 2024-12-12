@@ -2,19 +2,15 @@
 
 
 using Azure.Data.Tables;
-using Azure.Identity;
 using System.ServiceModel.Syndication;
 
 namespace AzLcm.Shared.Storage
 {
-    public class FeedStorage(DaemonConfig daemonConfig)
+    public class FeedStorage(DaemonConfig daemonConfig) : StorageBase
     {
-        private readonly TableClient tableClient = new(new Uri($"https://{daemonConfig.StorageAccountName}.table.core.windows.net"), daemonConfig.FeedTableName, new DefaultAzureCredential());
+        protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
 
-        public async Task EnsureTableExistsAsync()
-        {
-            await tableClient.CreateIfNotExistsAsync();
-        }
+        protected override string GetStorageTableName() => daemonConfig.FeedTableName;
 
         public async Task<bool> HasSeenAsync(SyndicationItem feed, CancellationToken stoppingToken)
         {
@@ -22,7 +18,7 @@ namespace AzLcm.Shared.Storage
 
             var (partitionKey, rowKey) = feed.GetKeyPair();
 
-            var existingEntity = await tableClient.GetEntityIfExistsAsync<TableEntity>(partitionKey, rowKey, null, stoppingToken);
+            var existingEntity = await TableClient.GetEntityIfExistsAsync<TableEntity>(partitionKey, rowKey, null, stoppingToken);
             return existingEntity.HasValue;
         }
 
@@ -32,11 +28,12 @@ namespace AzLcm.Shared.Storage
 
             var (partitionKey, rowKey) = feed.GetKeyPair();
 
-            await tableClient.UpsertEntityAsync(new TableEntity(partitionKey, rowKey)
+            await TableClient.UpsertEntityAsync(new TableEntity(partitionKey, rowKey)
                 {
                     { "FeedId", feed.Id },
                     { "Title", feed.Title.Text }
                 }, TableUpdateMode.Merge, stoppingToken);
         }
+
     }
 }
