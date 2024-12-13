@@ -93,7 +93,7 @@ namespace AzLcm.Shared
                 var connectionData = await devOpsClient.GetConnectionDataAsync(azdoConfig.orgName, cancellationToken);
 
                 if (connectionData.AuthenticatedUser != null &&
-                    string.IsNullOrWhiteSpace(connectionData.AuthenticatedUser.SubjectDescriptor))
+                    !string.IsNullOrWhiteSpace(connectionData.AuthenticatedUser.SubjectDescriptor))
                 {
                     return new ServiceDependencyTestResult("Azure DevOps", true, "Connection is healthy.");
                 }
