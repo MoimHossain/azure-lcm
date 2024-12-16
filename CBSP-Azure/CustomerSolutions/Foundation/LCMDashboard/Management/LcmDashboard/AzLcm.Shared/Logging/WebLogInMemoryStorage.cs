@@ -13,9 +13,6 @@ namespace AzLcm.Shared.Logging
                 webLogEntries.Dequeue();
             }
         }
-        public IEnumerable<WebLogEntry> GetLogEntries()
-        {
-            return webLogEntries;
-        }
+        public IEnumerable<WebLogEntry> GetLogEntries() => webLogEntries;
     }
 }

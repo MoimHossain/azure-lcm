@@ -27,7 +27,7 @@ public sealed class InMemoryLogger(
             return;
         }
 
-        webLogInMemoryStorage.AddLogEntry(new WebLogEntry(name, logLevel, formatter(state, exception)));
+        webLogInMemoryStorage.AddLogEntry(new WebLogEntry(name, DateTimeOffset.UtcNow, logLevel, formatter(state, exception)));
     }
 }
 
