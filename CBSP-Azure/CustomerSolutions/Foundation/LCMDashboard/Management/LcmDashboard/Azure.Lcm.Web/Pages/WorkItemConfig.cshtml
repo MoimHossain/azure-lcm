@@ -1,0 +1,223 @@
+﻿@page
+@model Azure.Lcm.Web.Pages.WorkItemConfigModel
+@{
+    ViewData["Title"] = "Azure DevOps Work item config";
+}
+
+<form method="post" id="workItemConfigForm">
+    <div class="form-group">
+        <label for="ProjectID">Project ID(Azure DevOps)</label>
+        <input type="text" id="ProjectID" name="ProjectID" class="form-control" value="@Model?.WorkItemTempates?.FeedWorkItemTemplate?.ProjectId" />
+        <small class="form-text text-muted">Azure DevOps project ID.</small>
+    </div>
+
+    <div class="form-group">
+        <label for="WIType">Work item type</label>
+        <input type="text" id="WIType" name="WIType" class="form-control" value="@Model?.WorkItemTempates?.FeedWorkItemTemplate?.Type" />
+    </div>
+
+    <h4 class="config-section">Service health work item config</h4>
+    <table id="health-table">
+        <thead>
+            <tr>
+                <th style="width: 400px;">Field name (e.g. /fields/System.Title)</th>
+                <th style="width: 600px;">Value (e.g. {SvcHealthEvent.Title})</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate != null)
+            {
+                @for (int i = 0; i < Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate?.Fields?.Count; i++)
+                {
+                    var fieldInfo = Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate?.Fields[i];
+                    <tr>
+                        <td>
+                            <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary config-section" onclick="addRow('health-table')">Add New Row</button>
+
+
+    <p></p>
+
+    <h4 class="config-section">Policy work item config</h4>
+    <table id="policy-table">
+        <thead>
+            <tr>
+                <th style="width: 400px;">Field name (e.g. /fields/System.Title)</th>
+                <th style="width: 600px;">Value (e.g. {Policy.DisplayName})</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model?.WorkItemTempates?.PolicyWorkItemTemplate != null)
+            {
+                @for (int i = 0; i < Model?.WorkItemTempates?.PolicyWorkItemTemplate?.Fields?.Count; i++)
+                {
+                    var fieldInfo = Model?.WorkItemTempates?.PolicyWorkItemTemplate?.Fields[i];
+                    <tr>
+                        <td>
+                            <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary config-section" onclick="addRow('policy-table')">Add New Row</button>
+
+
+
+    <p></p>
+
+    <h4 class="config-section">Feed (Azure Updates) work item config</h4>
+    <table id="feed-table">
+        <thead>
+            <tr>
+                <th style="width: 400px;">Field name (e.g. /fields/System.Title)</th>
+                <th style="width: 600px;">Value (e.g. {Feed.Title})</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model?.WorkItemTempates?.FeedWorkItemTemplate != null)
+            {
+                @for (int i = 0; i < Model?.WorkItemTempates?.FeedWorkItemTemplate?.Fields?.Count; i++)
+                {
+                    var fieldInfo = Model?.WorkItemTempates?.FeedWorkItemTemplate?.Fields[i];
+                    <tr>
+                        <td>
+                            <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary config-section" onclick="addRow('feed-table')">Add New Row</button>
+
+    <p>
+        <button type="submit" class="btn btn-primary config-section">Save</button>
+    </p>
+</form>
+
+
+<script>
+
+        document.getElementById('workItemConfigForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var projectId = document.getElementById('ProjectID').value;
+            var workItemType = document.getElementById('WIType').value;
+            
+
+            var data = {
+                FeedWorkItemTemplate: {
+                    ProjectId: projectId,
+                    Type: workItemType,
+                    Fields: readDataFromTable('feed-table')
+                },
+                PolicyWorkItemTemplate: {
+                    ProjectId: projectId,
+                    Type: workItemType,
+                    Fields: readDataFromTable('policy-table')
+                },
+                ServiceHealthWorkItemTemplate: {
+                    ProjectId: projectId,
+                    Type: workItemType,
+                    Fields: readDataFromTable('health-table')
+                }
+            };
+
+
+            console.log(data);
+
+
+
+            fetch('/api/wi-templates', { // Replace with your save endpoint URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Configuration saved successfully!');
+                    document.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred.');
+                });
+        });
+
+    function readDataFromTable(tableId) {
+        const fieldColl = [];
+        const tableBody = document.querySelector(`#${tableId} tbody`);
+        const rows = tableBody.querySelectorAll("tr");
+
+
+        rows.forEach(row => {
+            const inputBoxes = row.querySelectorAll("input");
+
+            if(inputBoxes.length > 1) {
+                const fieldItem = {
+                    Op: 'add',
+                    Path: inputBoxes[0].value,
+                    Value: inputBoxes[1].value
+                };
+                fieldColl.push(fieldItem);
+            }
+        });
+        return fieldColl;
+    }
+
+    function addRow(tableId) {
+        const tableBody = document.querySelector(`#${tableId} tbody`);
+        const newRow = document.createElement("tr");
+
+        newRow.innerHTML = `
+            <td>
+                <input type="text" name="fieldName" value="...?" class="form-control" />
+            </td>
+            <td>
+                <input type="text" name="fieldValue" value="..?" class="form-control" />
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+            </td>
+        `;
+
+        tableBody.appendChild(newRow);
+    }
+
+    function removeRow(button) {
+
+        const parentRow = $(button).closest("tr");
+         parentRow.remove();
+    }
+</script>
