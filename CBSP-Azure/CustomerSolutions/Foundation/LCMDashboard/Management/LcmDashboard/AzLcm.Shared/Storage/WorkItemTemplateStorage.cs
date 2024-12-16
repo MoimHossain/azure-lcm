@@ -1,37 +1,33 @@
 ﻿
 
-using AzLcm.Shared.Storage.EmbeddedResources;
+
 
 namespace AzLcm.Shared.Storage
 {
-    public class WorkItemTemplateStorage(EmbeddedResourceReader embeddedResourceReader)
+    public class WorkItemTemplateStorage(ConfigurationStorage ConfigurationStorage)
     {
         public async Task<WorkItemTemplate?> GetFeedWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            return await embeddedResourceReader
-                .ReadFromJsonAsync<WorkItemTemplate>(
-                EmbeddedResourceReader.ConfigBlobs.FeedWorkItemTemplate, stoppingToken);
+            var templates = await ConfigurationStorage.GetWorkItemTemplatesAsync(stoppingToken);
+
+            return templates.FeedWorkItemTemplate;
         }
 
         public async Task<WorkItemTemplate?> GetPolicyWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            return await embeddedResourceReader
-                .ReadFromJsonAsync<WorkItemTemplate>(
-                EmbeddedResourceReader.ConfigBlobs.PolicyWorkItemTemplate, stoppingToken);
+            var templates = await ConfigurationStorage.GetWorkItemTemplatesAsync(stoppingToken);
+            return templates.PolicyWorkItemTemplate;
         }
 
         public async Task<WorkItemTemplate?> GetServiceHealthWorkItemTemplateAsync(CancellationToken stoppingToken)
         {
-            return await embeddedResourceReader
-                .ReadFromJsonAsync<WorkItemTemplate>(
-                EmbeddedResourceReader.ConfigBlobs.ServiceHealthWorkItemTemplate, stoppingToken);
+            var templates = await ConfigurationStorage.GetWorkItemTemplatesAsync(stoppingToken);
+            return templates.ServiceHealthWorkItemTemplate;
         }
 
         public async Task<AreaPathMapConfig?> GetAreaPathMapConfigAsync(CancellationToken stoppingToken)
         {
-            return await embeddedResourceReader
-                .ReadFromJsonAsync<AreaPathMapConfig>(
-                EmbeddedResourceReader.ConfigBlobs.AreaPathRouteTemplate, stoppingToken);
+            return await ConfigurationStorage.LoadConfigAsync(stoppingToken);
         }
     }
 

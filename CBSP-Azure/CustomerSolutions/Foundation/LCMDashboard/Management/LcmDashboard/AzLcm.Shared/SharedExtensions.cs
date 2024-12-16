@@ -10,7 +10,7 @@ using AzLcm.Shared.PageScrapping;
 using AzLcm.Shared.Policy;
 using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
-using AzLcm.Shared.Storage.EmbeddedResources;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AzLcm.Shared
@@ -45,7 +45,6 @@ namespace AzLcm.Shared
             services.AddSingleton<DaemonConfig>();
             services.AddSingleton<WorkItemTemplateStorage>();
             services.AddSingleton<PromptTemplateStorage>();            
-            services.AddSingleton<EmbeddedResourceReader>();
             services.AddSingleton<ConfigurationStorage>();
             services.AddSingleton<FeedStorage>();
             services.AddSingleton<PolicyStorage>();

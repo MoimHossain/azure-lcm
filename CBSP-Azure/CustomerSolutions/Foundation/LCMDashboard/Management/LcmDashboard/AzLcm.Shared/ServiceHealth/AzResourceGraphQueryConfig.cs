@@ -1,26 +1,19 @@
-﻿using AzLcm.Shared.Storage.EmbeddedResources;
+﻿
+using AzLcm.Shared.Storage;
 using System.Text.Json.Serialization;
 
 namespace AzLcm.Shared.ServiceHealth
 {
-    public class ServiceHealthConfigReader(EmbeddedResourceReader embeddedResourceReader)
+    public class ServiceHealthConfigReader(ConfigurationStorage ConfigurationStorage )
     {
-        public async Task<AzResourceGraphQueryConfig?> GetResourceGraphQueryConfig(
+        public async Task<ServiceHealthConfig?> GetResourceGraphQueryConfig(
             CancellationToken stoppingToken)
         {
-            return await embeddedResourceReader
-                .ReadFromJsonAsync<AzResourceGraphQueryConfig>(
-                EmbeddedResourceReader.ConfigBlobs.ServiceHealthConfig, stoppingToken);
-        }
-
-        public async Task<string?> GetKustoQueryAsync(CancellationToken stoppingToken)
-        {
-            return await embeddedResourceReader.ReadEmbeddedResourceAsync(
-                EmbeddedResourceReader.ConfigBlobs.ServiceHealthQuery, stoppingToken);
+            return await ConfigurationStorage.LoadServiceHealthConfigAsync(stoppingToken);
         }
     }
 
-    public record AzResourceGraphQueryConfig(string[] Subscriptions, string Uri);
+    //public record AzResourceGraphQueryConfig(string[] Subscriptions, string Uri);
 
     public class ServiceHealthConfig
     {

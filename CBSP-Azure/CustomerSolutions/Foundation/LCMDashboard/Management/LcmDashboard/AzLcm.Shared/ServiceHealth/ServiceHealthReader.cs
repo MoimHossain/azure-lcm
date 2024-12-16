@@ -25,7 +25,8 @@ namespace AzLcm.Shared.ServiceHealth
                 logger.LogWarning("No health configuration found");
                 return;
             }
-            var queryText = await serviceHealthConfigReader.GetKustoQueryAsync(cancellationToken);
+            var scConfig = await serviceHealthConfigReader.GetResourceGraphQueryConfig(cancellationToken);
+            var queryText = scConfig?.KustoQuery;
             var resourceGraphUri = "https://management.azure.com/providers/Microsoft.ResourceGraph/resources?api-version=2021-03-01";
             if(!string.IsNullOrWhiteSpace(healthConfig.Uri))
             {
