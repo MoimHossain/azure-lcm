@@ -31,13 +31,21 @@ namespace Azure.Lcm.Web
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var allOk = await lcmHealthService.IsAllServicesUpAndHealthyAsync(stoppingToken);
-                if (allOk)
+                try
                 {
-                    await ProcessServiceHealthAsync(stoppingToken);
-                    await ProcessPolicyAsync(stoppingToken);
-                    await ProcessFeedAsync(stoppingToken);
+                    var allOk = await lcmHealthService.IsAllServicesUpAndHealthyAsync(stoppingToken);
+                    if (allOk)
+                    {
+                        await ProcessServiceHealthAsync(stoppingToken);
+                        await ProcessPolicyAsync(stoppingToken);
+                        await ProcessFeedAsync(stoppingToken);
+                    }
                 }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to process service health, policy, or feed.");
+                }
+  
                 await Task.Delay(1_000 * 60 * 5, stoppingToken); // 5 minutes
             }
         }

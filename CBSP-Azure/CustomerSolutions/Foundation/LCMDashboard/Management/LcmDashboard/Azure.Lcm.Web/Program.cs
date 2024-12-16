@@ -6,6 +6,7 @@ using Azure.Lcm.Web.Endpoints;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using Azure.Lcm.Web;
+using AzLcm.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,13 +28,35 @@ builder.Services.Configure<Microsoft.ApplicationInsights.Extensibility.Telemetry
 {
     config.SetAzureTokenCredential(new DefaultAzureCredential());
 });
-builder.Services.AddLogging(logging =>
-{
-    logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
-    logging.AddConsole();
-    logging.AddApplicationInsights();
-    logging.AddDebug();
+//builder.Services.AddLogging(logging =>
+//{
+//    logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+//    logging.AddConsole();
+//    logging.AddApplicationInsights();
+//    logging.AddDebug();
+//});
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Services.AddSingleton<WebLogInMemoryStorage>();
+builder.Logging.AddInMemoryLogger(configuration =>
+{    
+    configuration.LogLevelToColorMap[LogLevel.Warning] = ConsoleColor.DarkCyan; 
+    configuration.LogLevelToColorMap[LogLevel.Error] = ConsoleColor.DarkRed;
 });
+
+
+if (!string.IsNullOrWhiteSpace(DaemonConfig.AppInsightConnectionString))
+{
+    builder.Logging.AddApplicationInsights(
+        configureTelemetryConfiguration: (config) =>
+            config.ConnectionString = DaemonConfig.AppInsightConnectionString,
+            configureApplicationInsightsLoggerOptions: (options) => { }
+    );
+}
+
+
+
 builder.Services.AddSingleton(services =>
 {
     var jsonSerializerOptions = new JsonSerializerOptions
@@ -62,5 +85,6 @@ app.UseCors();
 var apiGroup = app.MapGroup("api");
 apiGroup.MapGet("/health", HealthEndpoint.Handler).WithName("Health API").WithDisplayName("Service Health API").WithOpenApi();
 apiGroup.MapGet("/live", LivenessEndpoint.Handler).WithName("Liveness API").WithDisplayName("Liveness API").WithOpenApi();
+apiGroup.MapGet("/traces", TraceEndpoint.Handler).WithName("Tracing API").WithDisplayName("Tracing API").WithOpenApi();
 
 app.Run();

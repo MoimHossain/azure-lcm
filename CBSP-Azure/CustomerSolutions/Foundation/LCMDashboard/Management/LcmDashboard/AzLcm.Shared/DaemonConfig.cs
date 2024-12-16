@@ -35,6 +35,8 @@ namespace AzLcm.Shared
                 usePat, pat);
         }
 
+        public static string AppInsightConnectionString => ReadEnvironmentKey("APPLICATION_INSIGHT_CONNECTION_STRING");
+
         public string StorageAccountName => ReadEnvironmentKey("AZURE_STORAGE_ACCOUNT_NAME");
         public string FeedTableName => ReadEnvironmentKey("AZURE_STORAGE_FEED_TABLE_NAME");
         public string PolicyTableName => ReadEnvironmentKey("AZURE_STORAGE_POLICY_TABLE_NAME");
@@ -69,10 +71,19 @@ namespace AzLcm.Shared
 
         private static string ReadEnvironmentKey(string key)
         {
-            var value = Environment.GetEnvironmentVariable(key);
+            var value = string.Empty;
+            try 
+            {
+                value = Environment.GetEnvironmentVariable(key);
+            }
+            catch 
+            {
+              
+            }
+           
             if (string.IsNullOrEmpty(value))
             {
-                throw new InvalidOperationException($"Environment variable {key} is not set");
+                value = string.Empty;
             }
             return value;
         }
