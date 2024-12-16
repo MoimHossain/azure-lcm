@@ -87,4 +87,14 @@ apiGroup.MapGet("/health", HealthEndpoint.Handler).WithName("Health API").WithDi
 apiGroup.MapGet("/live", LivenessEndpoint.Handler).WithName("Liveness API").WithDisplayName("Liveness API").WithOpenApi();
 apiGroup.MapGet("/traces", TraceEndpoint.Handler).WithName("Tracing API").WithDisplayName("Tracing API").WithOpenApi();
 
+apiGroup.MapGet("/config-map", ConfigMapEndpoint.LoadAsync).WithName("Config Map Get API").WithDisplayName("Config Map API").WithOpenApi();
+apiGroup.MapPost("/config-map", ConfigMapEndpoint.SaveAsync).WithName("Config Map Post API").WithDisplayName("Config Map API").WithOpenApi();
+
+apiGroup.MapGet("/svc-health-config", ConfigMapEndpoint.LoadServiceHealthAsync).WithName("SVC Health Get API").WithDisplayName("Config Map API").WithOpenApi();
+apiGroup.MapPost("/svc-health-config", ConfigMapEndpoint.SaveServiceHealthAsync).WithName("SVC Health Post API").WithDisplayName("Config Map API").WithOpenApi();
+
+
+apiGroup.MapGet("/wi-templates", ConfigMapEndpoint.LoadWorkItemTemplatesAsync).WithName("Templates Get API").WithDisplayName("Config Map API").WithOpenApi();
+apiGroup.MapPost("/wi-templates", ConfigMapEndpoint.SaveWorkItemTemplatesAsync).WithName("Templates Post API").WithDisplayName("Config Map API").WithOpenApi();
+
 app.Run();

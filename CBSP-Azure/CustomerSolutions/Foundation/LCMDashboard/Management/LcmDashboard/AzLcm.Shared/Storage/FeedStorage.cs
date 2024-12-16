@@ -34,6 +34,5 @@ namespace AzLcm.Shared.Storage
                     { "Title", feed.Title.Text }
                 }, TableUpdateMode.Merge, stoppingToken);
         }
-
     }
 }

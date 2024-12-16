@@ -71,8 +71,3 @@ const runTraceLoopAsync = async () => {
 }
 
 
-
-$(document).ready(function () {
-    console.log("Document ready");
-    runTraceLoopAsync();
-});

@@ -37,6 +37,7 @@ namespace AzLcm.Shared
 
         public static string AppInsightConnectionString => ReadEnvironmentKey("APPLICATION_INSIGHT_CONNECTION_STRING");
 
+        public string ConfigTableName => "configs";
         public string StorageAccountName => ReadEnvironmentKey("AZURE_STORAGE_ACCOUNT_NAME");
         public string FeedTableName => ReadEnvironmentKey("AZURE_STORAGE_FEED_TABLE_NAME");
         public string PolicyTableName => ReadEnvironmentKey("AZURE_STORAGE_POLICY_TABLE_NAME");

@@ -20,3 +20,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.config-section {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

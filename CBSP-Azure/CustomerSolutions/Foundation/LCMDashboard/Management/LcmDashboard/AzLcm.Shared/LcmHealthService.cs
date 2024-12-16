@@ -11,6 +11,7 @@ namespace AzLcm.Shared
         FeedStorage feedStorage,
         PolicyStorage policyStorage,
         HealthServiceEventStorage healthServiceEventStorage,
+        ConfigurationStorage configurationStorage,
         DevOpsClient devOpsClient,
         CognitiveService cognitiveService,
         ILogger<LcmHealthService> logger)
@@ -76,6 +77,7 @@ namespace AzLcm.Shared
                 await feedStorage.EnsureTableExistsAsync(cancellationToken);
                 await policyStorage.EnsureTableExistsAsync(cancellationToken);
                 await healthServiceEventStorage.EnsureTableExistsAsync(cancellationToken);
+                await configurationStorage.EnsureTableExistsAsync(cancellationToken);
                 return new ServiceDependencyTestResult("Storage", true, "Connection is healthy.");
             }
             catch (Exception ex)

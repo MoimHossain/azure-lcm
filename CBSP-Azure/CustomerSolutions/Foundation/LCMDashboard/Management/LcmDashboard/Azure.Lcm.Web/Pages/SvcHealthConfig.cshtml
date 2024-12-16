@@ -1,0 +1,63 @@
+﻿@page
+@model Azure.Lcm.Web.Pages.SvcHealthConfigModel
+@{
+    ViewData["Title"] = "Service Health Config";
+}
+
+
+
+<form method="post" id="serviceHealthForm">
+    <div class="form-group">
+        <label for="Subscriptions">Subscriptions</label>
+        <input type="text" id="Subscriptions" name="Subscriptions" class="form-control" value="@string.Join(", ", Model.ServiceHealthConfig.Subscriptions ?? new string[0])" />
+        <small class="form-text text-muted">Comma separated list of subscriptions.</small>
+    </div>
+
+    <div class="form-group">
+        <label for="Uri">URI</label>
+        <input type="text" id="Uri" name="Uri" class="form-control" value="@Model.ServiceHealthConfig.Uri" />
+    </div>
+
+    <div class="form-group">
+        <label for="KustoQuery">Kusto Query</label>
+        <textarea id="KustoQuery" name="KustoQuery" class="form-control">@Model.ServiceHealthConfig.KustoQuery</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary config-section">Save</button>
+</form>
+
+
+@section Scripts {
+    <script>
+        
+        document.getElementById('serviceHealthForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var subscriptions = document.getElementById('Subscriptions').value.split(',').map(sub => sub.trim());
+            var uri = document.getElementById('Uri').value;
+            var kustoQuery = document.getElementById('KustoQuery').value;
+
+            var data = {
+                subscriptions: subscriptions,
+                uri: uri,
+                kustoQuery: kustoQuery
+            };
+
+            fetch('/api/svc-health-config', { // Replace with your save endpoint URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Configuration saved successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred.');
+                });
+        });
+    </script>
+}

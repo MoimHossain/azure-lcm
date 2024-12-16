@@ -23,7 +23,7 @@ namespace AzLcm.Shared.Storage
 
         protected virtual TableClient GetTableClientCore()
         {
-            return new(new Uri($"https://{GetStorageAccountName()}.table.core.windows.net"), GetStorageTableName(), new DefaultAzureCredential());
+            return new(new Uri($"https://{GetStorageAccountName()}.table.core.windows.net"), GetStorageTableName(), new DefaultAzureCredential());            
         }
 
         public async Task EnsureTableExistsAsync(CancellationToken cancellationToken)

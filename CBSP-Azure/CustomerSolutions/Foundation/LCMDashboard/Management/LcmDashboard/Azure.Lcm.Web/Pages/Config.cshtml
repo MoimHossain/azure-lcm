@@ -1,0 +1,250 @@
+﻿@page
+@model Azure.Lcm.Web.Pages.ConfigModel
+@{
+    ViewData["Title"] = "Azure DevOps Area path maps";
+}
+
+<form method="post">
+    <div class="status-message">
+        @Model.StatusMessage
+    </div>
+
+    <h3 class="config-section">Service Health Map</h3>
+    <div>
+        <label>Default Area Path:</label>
+        <input type="text" asp-for="Config.ServiceHealthMap.DefaultAreaPath" class="form-control" />
+    </div>
+    <div>
+        <label>Ignore When No Match Found:</label>
+        <input type="checkbox" asp-for="Config.ServiceHealthMap.IgnoreWhenNoMatchFound" />
+    </div>
+    <h4 class="config-section">Services Map</h4>
+    <table id="health-table">
+        <thead>
+            <tr>
+                <th style="width: 400px;">Services (comma sep.)</th>
+                <th style="width: 600px;">Route To Area Path</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ServiceHealthMap != null)
+            {
+                @for (int i = 0; i < Model.ServiceHealthMap.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="text" asp-for="ServiceHealthMap[i].CommaSeparatedServices" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="text" asp-for="ServiceHealthMap[i].RouteToAreaPath" class="form-control" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary config-section" onclick="addRow('health-table')">Add New Row</button>
+
+    <!-- Repeat for PolicyMap and AzureUpdatesMap -->
+
+    <h3 class="config-section">Azure update/feed  Map</h3>
+    <div>
+        <label>Default Area Path:</label>
+        <input type="text" asp-for="Config.AzureUpdatesMap.DefaultAreaPath" class="form-control" />
+    </div>
+    <div>
+        <label>Ignore When No Match Found:</label>
+        <input type="checkbox" asp-for="Config.AzureUpdatesMap.IgnoreWhenNoMatchFound" />
+    </div>
+    <h4 class="config-section">Services Map</h4>
+    <table id="feed-table">
+        <thead>
+            <tr>
+                <th style="width: 400px;">Services (comma sep.)</th>
+                <th style="width: 600px;">Route To Area Path</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.FeedMap != null)
+            {
+                @for (int i = 0; i < Model.FeedMap.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="text" asp-for="FeedMap[i].CommaSeparatedServices" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="text" asp-for="FeedMap[i].RouteToAreaPath" class="form-control" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary config-section" onclick="addRow('feed-table')">Add New Row</button>
+
+
+
+    <!-- Repeat for PolicyMap and AzureUpdatesMap -->
+
+    <h3 class="config-section">Azure Policy  Map</h3>
+    <div>
+        <label>Default Area Path:</label>
+        <input type="text" asp-for="Config.PolicyMap.DefaultAreaPath" class="form-control" />
+    </div>
+    <div>
+        <label>Ignore When No Match Found:</label>
+        <input type="checkbox" asp-for="Config.PolicyMap.IgnoreWhenNoMatchFound" />
+    </div>
+    <h4 class="config-section">Services Map</h4>
+    <table id="policy-table">
+        <thead>
+            <tr>
+                <th style="width: 400px;">Services (comma sep.)</th>
+                <th style="width: 600px;">Route To Area Path</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.PolicyMap != null)
+            {
+                @for (int i = 0; i < Model.PolicyMap.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="text" asp-for="PolicyMap[i].CommaSeparatedServices" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="text" asp-for="PolicyMap[i].RouteToAreaPath" class="form-control" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary config-section" onclick="addRow('policy-table')">Add New Row</button>
+
+
+    <p>
+
+        <button type="button" class="btn btn-primary" onclick="readDataFromUI()">Save Configuration</button>
+    </p>
+
+
+</form>
+
+<script>
+
+  
+    function readDataFromUI() {
+        const payload = {
+            ServiceHealthMap: {
+                DefaultAreaPath: $('#Config_ServiceHealthMap_DefaultAreaPath').val(),
+                IgnoreWhenNoMatchFound: $('#Config_ServiceHealthMap_IgnoreWhenNoMatchFound').val() === 'true',
+                Map: readDataFromTable('health-table')
+            },
+            PolicyMap: {
+                DefaultAreaPath: $('#Config_PolicyMap_DefaultAreaPath').val(),
+                IgnoreWhenNoMatchFound: $('#Config_PolicyMap_IgnoreWhenNoMatchFound').val() === 'true',
+                Map: readDataFromTable('policy-table')
+            },
+            AzureUpdatesMap: {
+                DefaultAreaPath: $('#Config_AzureUpdatesMap_DefaultAreaPath').val(),
+                IgnoreWhenNoMatchFound: $('#Config_AzureUpdatesMap_IgnoreWhenNoMatchFound').val() === 'true',
+                Map: readDataFromTable('feed-table')
+            }
+        };
+        console.log(payload);
+        fetch('/api/config-map', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Changes are saved!');
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
+    function readDataFromTable(tableId) {
+        const maps = [];
+        const tableBody = document.querySelector(`#${tableId} tbody`);
+        const rows = tableBody.querySelectorAll("tr");
+
+
+        rows.forEach(row => {
+            const inputBoxes = row.querySelectorAll("input");
+
+            if(inputBoxes.length > 1) {
+                const map = {
+                    Services: splitByComma(inputBoxes[0].value),
+                    RouteToAreaPath: inputBoxes[1].value
+                };
+                maps  .push(map);
+            }
+        });
+        return maps;
+    }
+
+    function splitByComma(value) {
+        var items = [];
+        try
+        {
+            const arr = value.split(",");
+            arr.forEach(serviceName => {
+                const sname = serviceName.trim();
+                items.push(sname);
+            });
+        }
+        catch(err)  {
+            console.log(err);
+        }
+        return items;
+    }
+
+    function addRow(tableId) {
+        const tableBody = document.querySelector(`#${tableId} tbody`);
+        const newRow = document.createElement("tr");
+
+        newRow.innerHTML = `
+            <td>
+                <input type="text" name="PolicyMap[].ServicesCommaSeparated" value="Comma sep. service names.." class="form-control" />
+            </td>
+            <td>
+                <input type="text" name="PolicyMap[].RouteToAreaPath" value="Area Path (single slash \\ works)" class="form-control" />
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+            </td>
+        `;
+
+        tableBody.appendChild(newRow);
+    }
+
+    function removeRow(button) {
+
+        const parentRow = $(button).closest("tr");
+         parentRow.remove();
+    }
+</script>
