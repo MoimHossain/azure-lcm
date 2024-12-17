@@ -147,25 +147,25 @@
 <script>
 
   
-    function readDataFromUI() {
+    function readDataFromUI() {        
+
         const payload = {
             ServiceHealthMap: {
                 DefaultAreaPath: $('#Config_ServiceHealthMap_DefaultAreaPath').val(),
-                IgnoreWhenNoMatchFound: $('#Config_ServiceHealthMap_IgnoreWhenNoMatchFound').val() === 'true',
+                IgnoreWhenNoMatchFound: $('#Config_ServiceHealthMap_IgnoreWhenNoMatchFound').val() === true,
                 Map: readDataFromTable('health-table')
             },
             PolicyMap: {
                 DefaultAreaPath: $('#Config_PolicyMap_DefaultAreaPath').val(),
-                IgnoreWhenNoMatchFound: $('#Config_PolicyMap_IgnoreWhenNoMatchFound').val() === 'true',
+                IgnoreWhenNoMatchFound: $('#Config_PolicyMap_IgnoreWhenNoMatchFound').val() === true,
                 Map: readDataFromTable('policy-table')
             },
             AzureUpdatesMap: {
                 DefaultAreaPath: $('#Config_AzureUpdatesMap_DefaultAreaPath').val(),
-                IgnoreWhenNoMatchFound: $('#Config_AzureUpdatesMap_IgnoreWhenNoMatchFound').val() === 'true',
+                IgnoreWhenNoMatchFound: $('#Config_AzureUpdatesMap_IgnoreWhenNoMatchFound').val() === true,
                 Map: readDataFromTable('feed-table')
             }
         };
-        console.log(payload);
         fetch('/api/config-map', {
                 method: 'POST',
                 headers: {

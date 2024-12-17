@@ -38,18 +38,18 @@ namespace AzLcm.Shared.ServiceHealth
             TokenCredential? cred;
             if (!string.IsNullOrWhiteSpace(config.ClientId) && !string.IsNullOrWhiteSpace(config.ClientSecret))
             {
-                logger.LogInformation("Using client secret for authentication");
+                logger.LogInformation("Azure Service Health Query:: Using client secret for authentication");
                 cred = new ClientSecretCredential(config.TenantId, config.ClientId, config.ClientSecret);
             }
             else 
             {
-                logger.LogInformation("Using default Azure credential for authentication");
+                logger.LogInformation("Azure Service Health Query:: Using default Azure credential for authentication");
                 cred = new DefaultAzureCredential();
             }            
             
             var accessToken = await cred.GetTokenAsync(
                 new TokenRequestContext(["https://management.azure.com/.default"]), cancellationToken);
-            logger.LogInformation("Access token acquired for {clientId}", config.ClientId);
+            logger.LogInformation("Azure Service Health Query:: Access token acquired for {clientId}", config.ClientId);
 
             var httpClient = httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Token);            
@@ -66,26 +66,26 @@ namespace AzLcm.Shared.ServiceHealth
 
             if (response.IsSuccessStatusCode)
             {
-                logger.LogInformation("Successfully queried Azure Resource Graph with status code {StatusCode}", response.StatusCode);
+                logger.LogInformation("Azure Service Health Query:: Successfully queried Azure Resource Graph with status code {StatusCode}", response.StatusCode);
                 var content = await response.Content.ReadFromJsonAsync<ServiceHealthCollection>(cancellationToken);
 
                 if (content != null)
                 {
-                    logger.LogInformation("Received {Count} health items", content.Count);
+                    logger.LogInformation("Azure Service Health Query::Received {Count} health items", content.Count);
                     foreach (var item in content.Events)
                     {
-                        logger.LogInformation("Health item: {Item}", item.Name);
+                        logger.LogInformation("Azure Service Health Query::Health item: {Item}", item.Name);
                         await work(item);
                     }
                 }
                 else
                 {
-                    logger.LogWarning("No health items received");
+                    logger.LogWarning("Azure Service Health Query::No health items received");
                 }
             }
             else
             {
-                logger.LogError("Failed to query Azure Resource Graph with status code {StatusCode}", response.StatusCode);
+                logger.LogError("Azure Service Health Query::Failed to query Azure Resource Graph with status code {StatusCode}", response.StatusCode);
             }
         }
     }

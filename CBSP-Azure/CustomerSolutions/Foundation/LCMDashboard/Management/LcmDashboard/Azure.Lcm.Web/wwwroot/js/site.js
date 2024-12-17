@@ -1,22 +1,23 @@
 ﻿
+
 const getLogLevel = (logLevel) => {
     switch (logLevel) {
         case 0:
-            return "Trace";
+            return { text: "Trace", trCls: '', badgeCls: 'text-bg-light' };
         case 1:
-            return "Debug";
+            return { text: "Debug", trCls: '', badgeCls: 'text-bg-light' };
         case 2:
-            return "Information";
+            return { text: "Info", trCls: '', badgeCls: 'text-bg-info' };
         case 3:
-            return "Warning";
+            return { text: "Warning", trCls: 'table-warning', badgeCls: 'text-bg-warning' };
         case 4:
-            return "Error";
+            return { text: "Error", trCls: 'table-danger', badgeCls: 'text-bg-danger' };
         case 5:
-            return "Critical";
+            return { text: "Critical", trCls: 'table-danger', badgeCls: 'text-bg-danger' };
         case 6:
-            return "None";
+            return { text: "None", trCls: 'table-dark', badgeCls: 'text-bg-secondary' };
         default:
-            return "Unknown";
+            return { text: "Unknown", trCls: 'table-dark', badgeCls: 'text-bg-secondary' };
     }
 }
 
@@ -46,11 +47,12 @@ const pollStatus = async () => {
         const logEntries = await readLogEntries();
         console.log("loaded logs", logEntries);
         logEntries.forEach(logEntry => {
+            const llSpec = getLogLevel(logEntry.logLevel);
             const rowHtml = [];
             var textKind = logEntry.logLevel > 2 ? "bi bi-exclamation-circle text-danger" : "bi bi-cpu-fill";
-            rowHtml.push(`<tr>`);
-            rowHtml.push(` <td>${logEntry.timestamp}</td>`);
-            rowHtml.push(` <th scope="row"><i class="${textKind}">${getLogLevel(logEntry.logLevel)}</i></th>`);            
+            rowHtml.push(`<tr class="${llSpec.trCls}">`);
+            rowHtml.push(` <th scope="row" style="width: 100px; text-align: center;"><span class="${textKind}">${llSpec.text}</i></th>`);
+            rowHtml.push(` <td style="width: 160px; text-align: center;" title="${dayjs(logEntry.timestamp)}">${dayjs(logEntry.timestamp).fromNow()}</td>`);                        
             rowHtml.push(` <td class="${textKind}">${logEntry.message}</td>`);
             rowHtml.push(`</tr>`);
             htmlLines.push(rowHtml.join(''));
@@ -66,7 +68,8 @@ const pollStatus = async () => {
 
 
 
-const runTraceLoopAsync = async () => {    
+const runTraceLoopAsync = async () => {
+    dayjs.extend(window.dayjs_plugin_relativeTime);
     setInterval(pollStatus, 1000);
 }
 
