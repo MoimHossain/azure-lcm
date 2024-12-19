@@ -7,6 +7,7 @@ using AzLcm.Shared.Policy;
 using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
 using AzLcm.Shared;
+using System.Threading;
 
 namespace Azure.Lcm.Web
 {
@@ -23,6 +24,7 @@ namespace Azure.Lcm.Web
         AzUpdateSyndicationFeed azUpdateSyndicationFeed,
         PromptTemplateStorage promptTemplateStorage,
         WorkItemTemplateStorage workItemTemplateStorage,
+        ConfigurationStorage configurationStorage,
         ILogger<LcmBackgroundService> logger) : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -46,13 +48,33 @@ namespace Azure.Lcm.Web
                     logger.LogError(ex, "Failed to process service health, policy, or feed.");
                 }
   
-                await Task.Delay(1_000 * 60 * 5, stoppingToken); // 5 minutes
+                var amount = await GetDelayAmountAsync(stoppingToken);
+                await Task.Delay(amount, stoppingToken); 
             }
         }
 
+
+        private async Task<int> GetDelayAmountAsync(CancellationToken cancellationToken)
+        {
+            try 
+            {
+                var generalConfig = await configurationStorage.LoadGeneralConfigAsync(cancellationToken);
+                return generalConfig.DelayMilliseconds;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to get delay amount.");
+            }
+
+            return 1_000 * 60 * 5; // 5 minutes
+        } 
+
+
         private async Task ProcessServiceHealthAsync(CancellationToken stoppingToken)
         {
-            if (config.ProcessServiceHealth)
+            var generalConfig = await configurationStorage.LoadGeneralConfigAsync(stoppingToken);
+
+            if (generalConfig.ProcessServiceHealth)
             {
                 var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
                 var areaPathMapConfig = await workItemTemplateStorage.GetAreaPathMapConfigAsync(stoppingToken);
@@ -84,7 +106,9 @@ namespace Azure.Lcm.Web
 
         private async Task ProcessPolicyAsync(CancellationToken stoppingToken)
         {
-            if (config.ProcessPolicy)
+            var generalConfig = await configurationStorage.LoadGeneralConfigAsync(stoppingToken);
+
+            if (generalConfig.ProcessPolicy)
             {
                 var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
                 var areaPathMapConfig = await workItemTemplateStorage.GetAreaPathMapConfigAsync(stoppingToken);
@@ -113,7 +137,9 @@ namespace Azure.Lcm.Web
 
         private async Task ProcessFeedAsync(CancellationToken stoppingToken)
         {
-            if (config.ProcessFeed)
+            var generalConfig = await configurationStorage.LoadGeneralConfigAsync(stoppingToken);
+
+            if (generalConfig.ProcessFeed)
             {
                 var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
                 var areaPathMapConfig = await workItemTemplateStorage.GetAreaPathMapConfigAsync(stoppingToken);

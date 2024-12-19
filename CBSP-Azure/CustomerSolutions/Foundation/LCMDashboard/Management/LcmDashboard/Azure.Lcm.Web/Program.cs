@@ -97,4 +97,8 @@ apiGroup.MapPost("/svc-health-config", ConfigMapEndpoint.SaveServiceHealthAsync)
 apiGroup.MapGet("/wi-templates", ConfigMapEndpoint.LoadWorkItemTemplatesAsync).WithName("Templates Get API").WithDisplayName("Config Map API").WithOpenApi();
 apiGroup.MapPost("/wi-templates", ConfigMapEndpoint.SaveWorkItemTemplatesAsync).WithName("Templates Post API").WithDisplayName("Config Map API").WithOpenApi();
 
+
+apiGroup.MapGet("/settings", ConfigMapEndpoint.LoadGeneralConfigAsync).WithName("Settings Get API").WithDisplayName("Settings Map API").WithOpenApi();
+apiGroup.MapPost("/settings", ConfigMapEndpoint.SaveGeneralConfigAsync).WithName("Settings Post API").WithDisplayName("Settings Map API").WithOpenApi();
+
 app.Run();

@@ -12,6 +12,24 @@ public class ConfigurationStorage(DaemonConfig daemonConfig, ILogger<Configurati
 
     protected override string GetStorageTableName() => daemonConfig.ConfigTableName;
 
+    public async Task<GeneralConfig> LoadGeneralConfigAsync(CancellationToken stoppingToken)
+    {
+        var defaultValue = new GeneralConfig
+        {
+            DelayMilliseconds = 1000 * 60 * 5,
+            ProcessServiceHealth = daemonConfig.ProcessServiceHealth,
+            ProcessPolicy = daemonConfig.ProcessPolicy,
+            ProcessFeed = daemonConfig.ProcessFeed
+        };
+        return await LoadSegmentAsync(CONFIG_TABLE.GENERIC_CONFIG, defaultValue, stoppingToken);
+    }
+
+    public async Task SaveGeneralConfigAsync(GeneralConfig config, CancellationToken stoppingToken)
+    {
+        ArgumentNullException.ThrowIfNull(config, nameof(config));
+        await UpdateSegmentAsync(config, CONFIG_TABLE.GENERIC_CONFIG, stoppingToken);
+    }
+
 
     public async Task<WorkItemTempates> GetWorkItemTemplatesAsync(CancellationToken cancellationToken)
     {
@@ -172,5 +190,7 @@ servicehealthresources
         public const string KIND_WI_FEED = "Feed_WI_Config";
         public const string KIND_WI_HEALTH = "Health_WI_Config";
         public const string KIND_WI_POLICY = "Policy_WI_Config";
+
+        public const string GENERIC_CONFIG = "GenericConfig";
     }
 }

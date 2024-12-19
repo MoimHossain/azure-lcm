@@ -8,6 +8,23 @@ namespace Azure.Lcm.Web.Endpoints;
 
 public class ConfigMapEndpoint
 {
+    public static async Task<IResult> LoadGeneralConfigAsync(
+        [FromServices] ConfigurationStorage configurationStorage,
+        CancellationToken cancellationToken)
+    {
+        var config = await configurationStorage.LoadGeneralConfigAsync(cancellationToken);
+        return Results.Ok(config);
+    }
+
+    public static async Task<IResult> SaveGeneralConfigAsync(
+        [FromBody] GeneralConfig config,
+        [FromServices] ConfigurationStorage configurationStorage,
+        CancellationToken cancellationToken)
+    {
+        await configurationStorage.SaveGeneralConfigAsync(config, cancellationToken);
+        return Results.Ok(config);
+    }
+
     public static async Task<IResult> LoadAsync(
         [FromServices] ConfigurationStorage configurationStorage,
         CancellationToken cancellationToken)

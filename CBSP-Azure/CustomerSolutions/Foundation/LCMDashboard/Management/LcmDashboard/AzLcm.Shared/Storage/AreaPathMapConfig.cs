@@ -1,12 +1,20 @@
-﻿using System.Text.Json;
+﻿
+
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace AzLcm.Shared.Storage
 {
-    //public record AreaPathServiceMap(
-    //    [property: JsonPropertyName("Services")] List<string> Services,
-    //    [property: JsonPropertyName("RouteToAreaPath")] string RouteToAreaPath
-    //);
+    public class GeneralConfig
+    {
+        [property: JsonPropertyName("delayMilliseconds")] public int DelayMilliseconds { get; set; } = 1000 * 60 * 5;
+
+        [property: JsonPropertyName("processServiceHealth")] public bool ProcessServiceHealth { get; set; } = true;
+        [property: JsonPropertyName("processPolicy")] public bool ProcessPolicy { get; set; } = true;
+        [property: JsonPropertyName("processFeed")] public bool ProcessFeed { get; set; } = true;
+
+        public GeneralConfig() { }
+    }
 
     public class AreaPathServiceMap
     {
@@ -21,12 +29,6 @@ namespace AzLcm.Shared.Storage
 
         public AreaPathServiceMap() { }
     }
-
-    //public record AreaPathServiceMapConfig(
-    //    [property: JsonPropertyName("Map")] List<AreaPathServiceMap> Map,        
-    //    [property: JsonPropertyName("DefaultAreaPath")] string DefaultAreaPath,
-    //    [property: JsonPropertyName("IgnoreWhenNoMatchFound")] bool IgnoreWhenNoMatchFound
-    //);
 
     public class AreaPathServiceMapConfig
     {

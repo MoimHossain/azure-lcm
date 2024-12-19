@@ -1,0 +1,78 @@
+﻿@page
+@model Azure.Lcm.Web.Pages.GeneralConfigModel
+@{
+    ViewData["Title"] = "Application Settings";
+}
+
+
+<form method="post" id="generalConfigForm">
+    <div class="alert alert-primary" role="alert">
+        Changes affect only the next run of the process loop. Current execution will not be affected.
+    </div>
+
+    <h4 class="config-section">Application Settings</h4>   
+
+    <p></p>
+
+
+    <div class="config-section">
+        <label>Delay in Milliseconds: (time to sleep before running the next processing event)</label>
+        <input type="text" asp-for="GeneralConfigObject.DelayMilliseconds" class="form-control" />
+    </div>
+
+    <div class="config-section">
+        <label>Process Service Health:</label>
+        <input type="checkbox" asp-for="ProcessServiceHealth" />
+    </div>
+    <div class="config-section">
+        <label>Process Feed (Azure Updates):</label>
+        <input type="checkbox" asp-for="ProcessFeed" />
+    </div>
+    <div >
+        <label>Process Policy (Azure Policy):</label>
+        <input type="checkbox" asp-for="ProcessPolicy" />
+    </div>
+
+    
+    
+
+    <p>
+        <button type="submit" class="btn btn-primary config-section">Save</button>
+    </p>
+</form>
+
+
+<script>
+
+        document.getElementById('generalConfigForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            
+            var data = {
+                delayMilliseconds: $('#GeneralConfigObject_DelayMilliseconds').val(),
+                processServiceHealth: $('#ProcessServiceHealth').is(':checked'),
+                processFeed: $('#ProcessFeed').is(':checked'),
+                processPolicy: $('#ProcessPolicy').is(':checked'),
+            };
+
+
+            console.log(data);
+
+
+            fetch('/api/settings', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Configuration saved successfully!');
+                    document.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred.');
+                });
+        });
+</script>
