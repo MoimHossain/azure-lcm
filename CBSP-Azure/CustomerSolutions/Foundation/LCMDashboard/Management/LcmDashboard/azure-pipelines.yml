@@ -20,6 +20,7 @@ stages:
       steps:
       - checkout: self
       - task: DotNetCoreCLI@2
+        displayName: 'Build application'
         inputs:
           azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
           command: 'publish'
@@ -30,7 +31,10 @@ stages:
 # run a bash scropt to print the current directory
       - script: |
           pwd
-          ls -al CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish
+          ls -al  /home/vsts/work/1/s/CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish/
+
+          cs  /home/vsts/work/1/s/CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish/
+          ls -al
         displayName: 'Print current directory'
 
       - task: ArchiveFiles@2
