@@ -6,8 +6,9 @@ using System.Collections.Immutable;
 
 namespace AzLcm.Shared.Storage
 {
-    public class PolicyStorage(DaemonConfig daemonConfig) : StorageBase
+    public class PolicyStorage(DaemonConfig daemonConfig, AzureCredentialProvider azureCredentialProvider) : StorageBase
     {
+        protected override AzureCredentialProvider GetAzureCredentialProvider() => azureCredentialProvider;
         protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
 
         protected override string GetStorageTableName() => daemonConfig.PolicyTableName;

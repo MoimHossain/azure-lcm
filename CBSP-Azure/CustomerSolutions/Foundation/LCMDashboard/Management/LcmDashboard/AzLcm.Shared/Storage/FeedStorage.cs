@@ -6,8 +6,9 @@ using System.ServiceModel.Syndication;
 
 namespace AzLcm.Shared.Storage
 {
-    public class FeedStorage(DaemonConfig daemonConfig) : StorageBase
+    public class FeedStorage(DaemonConfig daemonConfig, AzureCredentialProvider azureCredentialProvider) : StorageBase
     {
+        protected override AzureCredentialProvider GetAzureCredentialProvider() => azureCredentialProvider;
         protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
 
         protected override string GetStorageTableName() => daemonConfig.FeedTableName;

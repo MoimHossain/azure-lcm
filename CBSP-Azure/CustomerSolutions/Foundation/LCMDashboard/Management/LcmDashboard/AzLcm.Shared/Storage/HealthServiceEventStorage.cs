@@ -6,8 +6,9 @@ using Azure.Data.Tables;
 
 namespace AzLcm.Shared.Storage
 {
-    public class HealthServiceEventStorage(DaemonConfig daemonConfig) : StorageBase
+    public class HealthServiceEventStorage(DaemonConfig daemonConfig, AzureCredentialProvider azureCredentialProvider) : StorageBase
     {
+        protected override AzureCredentialProvider GetAzureCredentialProvider() => azureCredentialProvider;
         protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
 
         protected override string GetStorageTableName() => daemonConfig.ServiceHealthTableName;

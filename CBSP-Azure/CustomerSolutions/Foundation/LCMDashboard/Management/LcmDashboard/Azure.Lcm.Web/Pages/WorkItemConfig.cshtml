@@ -31,17 +31,21 @@
                 @for (int i = 0; i < Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate?.Fields?.Count; i++)
                 {
                     var fieldInfo = Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate?.Fields[i];
-                    <tr>
-                        <td>
-                            <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
-                        </td>
-                        <td>
-                            <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
-                        </td>
-                    </tr>
+                    @if(fieldInfo != null)
+                    {
+                        <tr>
+                            <td>
+                                <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
+                            </td>
+                            <td>
+                                <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                            </td>
+                        </tr>
+                    }
+
                 }
             }
         </tbody>
@@ -66,17 +70,21 @@
                 @for (int i = 0; i < Model?.WorkItemTempates?.PolicyWorkItemTemplate?.Fields?.Count; i++)
                 {
                     var fieldInfo = Model?.WorkItemTempates?.PolicyWorkItemTemplate?.Fields[i];
-                    <tr>
-                        <td>
-                            <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
-                        </td>
-                        <td>
-                            <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
-                        </td>
-                    </tr>
+                    @if (fieldInfo != null)
+                    {
+                        <tr>
+                            <td>
+                                <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
+                            </td>
+                            <td>
+                                <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                            </td>
+                        </tr>
+                    }
+
                 }
             }
         </tbody>
@@ -102,17 +110,20 @@
                 @for (int i = 0; i < Model?.WorkItemTempates?.FeedWorkItemTemplate?.Fields?.Count; i++)
                 {
                     var fieldInfo = Model?.WorkItemTempates?.FeedWorkItemTemplate?.Fields[i];
-                    <tr>
-                        <td>
-                            <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
-                        </td>
-                        <td>
-                            <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
-                        </td>
-                    </tr>
+                    @if(fieldInfo != null)
+                    {
+                        <tr>
+                            <td>
+                                <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
+                            </td>
+                            <td>
+                                <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                            </td>
+                        </tr>
+                    }
                 }
             }
         </tbody>

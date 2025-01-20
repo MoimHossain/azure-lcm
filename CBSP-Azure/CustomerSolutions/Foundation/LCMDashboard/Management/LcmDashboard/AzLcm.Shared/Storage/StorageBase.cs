@@ -7,24 +7,29 @@ namespace AzLcm.Shared.Storage
 {
     public abstract class StorageBase
     {
+
+
         private TableClient? _tableClient = null;
 
-        protected TableClient TableClient 
+        protected TableClient TableClient
         {
-            get 
+            get
             {
                 _tableClient ??= GetTableClientCore();
                 return _tableClient;
             }
-        }  
+        }
 
         protected abstract string GetStorageAccountName();
         protected abstract string GetStorageTableName();
 
+        protected abstract AzureCredentialProvider GetAzureCredentialProvider();
+
         protected virtual TableClient GetTableClientCore()
         {
-            return new(new Uri($"https://{GetStorageAccountName()}.table.core.windows.net"), GetStorageTableName(), new DefaultAzureCredential());
-            
+            return new(new Uri($"https://{GetStorageAccountName()}.table.core.windows.net"),
+                GetStorageTableName(),
+                GetAzureCredentialProvider().GetCredentail());
         }
 
         public async Task EnsureTableExistsAsync(CancellationToken cancellationToken)

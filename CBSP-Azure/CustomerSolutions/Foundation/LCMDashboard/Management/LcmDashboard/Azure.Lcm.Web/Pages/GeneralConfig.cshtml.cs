@@ -7,14 +7,14 @@ namespace Azure.Lcm.Web.Pages
     public class GeneralConfigModel(ConfigurationStorage ConfigurationStorage) : PageModel
     {
         [BindProperty]
-        public GeneralConfig GeneralConfigObject { get; set; }
+        public GeneralConfig? GeneralConfigObject { get; set; }
 
         [BindProperty]
         public bool ProcessServiceHealth
         {
             get
             {
-                return GeneralConfigObject.ProcessServiceHealth;
+                return GeneralConfigObject != null && GeneralConfigObject.ProcessServiceHealth;
             }
         }
 
@@ -23,7 +23,7 @@ namespace Azure.Lcm.Web.Pages
         {
             get
             {
-                return GeneralConfigObject.ProcessFeed;
+                return GeneralConfigObject != null && GeneralConfigObject.ProcessFeed;
             }
         }
 
@@ -32,7 +32,7 @@ namespace Azure.Lcm.Web.Pages
         {
             get
             {
-                return GeneralConfigObject.ProcessPolicy;
+                return GeneralConfigObject != null && GeneralConfigObject.ProcessPolicy;
             }
         }
 

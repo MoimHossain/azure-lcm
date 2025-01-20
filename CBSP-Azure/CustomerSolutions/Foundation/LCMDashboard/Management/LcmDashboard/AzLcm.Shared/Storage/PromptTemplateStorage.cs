@@ -8,6 +8,7 @@ namespace AzLcm.Shared.Storage
     {
         public async Task<string> GetFeedPromptAsync(CancellationToken stoppingToken)
         {
+            await Task.CompletedTask;
             return 
 """
 You are Product Owner for the Life Cycle management team. 

@@ -43,6 +43,7 @@ namespace AzLcm.Shared
         public static IServiceCollection AddRequiredServices(this IServiceCollection services)
         {   
             services.AddSingleton<DaemonConfig>();
+            services.AddSingleton<AzureCredentialProvider>();
             services.AddSingleton<WorkItemTemplateStorage>();
             services.AddSingleton<PromptTemplateStorage>();            
             services.AddSingleton<ConfigurationStorage>();

@@ -6,8 +6,13 @@ using System.Text.Json;
 
 namespace AzLcm.Shared.Storage;
 
-public class ConfigurationStorage(DaemonConfig daemonConfig, ILogger<ConfigurationStorage> Logger) : StorageBase
+public class ConfigurationStorage(
+    DaemonConfig daemonConfig, 
+    ILogger<ConfigurationStorage> Logger, 
+    AzureCredentialProvider azureCredentialProvider) : StorageBase
 {
+    protected override AzureCredentialProvider GetAzureCredentialProvider() => azureCredentialProvider;
+
     protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
 
     protected override string GetStorageTableName() => daemonConfig.ConfigTableName;
