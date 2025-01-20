@@ -24,8 +24,14 @@ stages:
           azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
           command: 'publish'
           publishWebProjects: true
+          zipAfterPublish: true          
           workingDirectory: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web'
 
+# run a bash scropt to print the current directory
+      - script: |
+          pwd
+          ls -al CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish
+        displayName: 'Print current directory'
 
       - task: ArchiveFiles@2
         inputs:
