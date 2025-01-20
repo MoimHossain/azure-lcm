@@ -19,26 +19,15 @@ stages:
       displayName: 'Create infrastructure'
       steps:
       - checkout: self
-      - task: DotNetCoreCLI@2
-        displayName: 'Build application'
+      - task: UseDotNet@2
+        displayName: 'Install .NET SDK'
         inputs:
-          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
-          command: 'publish'
-          publishWebProjects: true
-          zipAfterPublish: true          
-          workingDirectory: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web'
+          packageType: 'sdk'
+          version: '8.0.x'
 
-# run a bash scropt to print the current directory
       - script: |
-          pwd
-          echo "Current directory"
-          ls -al
-          echo "specific directory"
-          ls -al  /home/vsts/work/1/s/CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish/
-
-          echo "Inside publish"
-          cd  /home/vsts/work/1/s/CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish/
-          ls -al
+          cd  /home/vsts/work/1/s/CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/
+          dotnet publish "Azure.Lcm.Web.csproj" -c "Release" -o "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
         displayName: 'Print current directory'
 
       - task: ArchiveFiles@2
