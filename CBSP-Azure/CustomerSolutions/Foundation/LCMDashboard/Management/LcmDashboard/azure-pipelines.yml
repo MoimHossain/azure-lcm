@@ -12,11 +12,35 @@ variables:
   azureDevOpsOrgName: "moim"
 
 stages:
-  - stage: CreateInfrastructure
-    displayName: 'Create Infrastructure'    
+  # - stage: CreateInfrastructure
+  #   displayName: 'Create Infrastructure'    
+  #   jobs:
+  #   - job: CreateInfra
+  #     displayName: 'Create infrastructure'
+  #     steps:
+  #     - checkout: self
+  #     - task: AzureCLI@2
+  #       displayName: 'Deploy infrastructure'
+  #       inputs:
+  #         azureSubscription: $(serviceConnectionName)
+  #         scriptType: bash
+  #         scriptPath: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra/build-infra.sh'
+  #         workingDirectory: CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra
+  #       env:
+  #         resourceGroupName: $(resourceGroupName)
+  #         location: $(location)
+  #         workloadName: $(workloadName)
+  #         workloadEnv: $(workloadEnv)
+      
+
+
+  - stage: PublishApplication
+    displayName: 'Build and Publish Application'
+    dependsOn: CreateInfrastructure
+    condition: succeeded()
     jobs:
-    - job: CreateInfra
-      displayName: 'Create infrastructure'
+    - job: BuildAndPublish
+      displayName: 'Build and Publish Application'
       steps:
       - checkout: self
       - task: UseDotNet@2
@@ -40,58 +64,24 @@ stages:
           replaceExistingArchive: true 
  
       - task: PublishPipelineArtifact@1
+        displayName: 'Publish Artifact' 
         inputs:
           targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
           artifact: 'drop'
           publishLocation: 'pipeline'
 
       - task: AzureWebApp@1
+        displayName: 'Deploy web app'
         inputs:
           azureSubscription: $(serviceConnectionName)
           appType: 'webApp'
           appName: 'azlcmapput'
           package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-          configurationStrings: '-KEY_X "ValueKeyX" -KEY_Y "ValueKeyY"'
+          appSettings: '-KEY_X "ValueKeyX" -KEY_Y "ValueKeyY"'
           deploymentMethod: 'zipDeploy'
 
 
-      
-      # - task: AzureCLI@2
-      #   displayName: 'Deploy infrastructure'
-      #   inputs:
-      #     azureSubscription: $(serviceConnectionName)
-      #     scriptType: bash
-      #     scriptPath: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra/build-infra.sh'
-      #     workingDirectory: CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra
-      #   env:
-      #     resourceGroupName: $(resourceGroupName)
-      #     location: $(location)
-      #     workloadName: $(workloadName)
-      #     workloadEnv: $(workloadEnv)
 
-  # - stage: BuildContainerImage
-  #   displayName: 'Build Container image'
-  #   dependsOn: CreateInfrastructure
-  #   condition: succeeded()
-  #   jobs:
-  #   - job: BuildContainer
-  #     displayName: 'Build Container image'
-  #     steps:
-  #     - checkout: self
-  #     - task: AzureCLI@2
-  #       displayName: 'Build-Container-Image'
-  #       inputs:
-  #         azureSubscription: $(serviceConnectionName)
-  #         scriptType: bash
-  #         scriptPath: 'infra/build-container.sh'
-  #       env:
-  #         resourceGroupName: $(resourceGroupName)
-  #         location: $(location)
-  #         workloadName: $(workloadName)
-  #         workloadEnv: $(workloadEnv)
-  #         registryURI: $(registryURI)
-  #         imageName: $(imageName)
-  #         imageTag: $(Build.BuildId)
 
   # - stage: DeleteOldContainers
   #   displayName: 'Delete old containers'
