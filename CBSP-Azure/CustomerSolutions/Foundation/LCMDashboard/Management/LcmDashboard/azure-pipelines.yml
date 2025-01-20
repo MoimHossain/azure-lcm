@@ -28,7 +28,7 @@ stages:
       - script: |
           cd  /home/vsts/work/1/s/CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/
           dotnet publish "Azure.Lcm.Web.csproj" -c "Release" -o "$(Build.ArtifactStagingDirectory)/published-content-$(Build.BuildId)"
-        displayName: 'Print current directory'
+        displayName: 'Build application'
 
       - task: ArchiveFiles@2
         inputs:
@@ -37,6 +37,12 @@ stages:
           archiveType: 'zip'
           archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
           replaceExistingArchive: true 
+ 
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+          artifact: 'drop'
+          publishLocation: 'pipeline'  
 
       
       # - task: AzureCLI@2
