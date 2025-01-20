@@ -8,32 +8,32 @@ variables:
   location: "westeurope"
   workloadName: "azlcm"
   workloadEnv: "ut"
-  appServiceName: "$(workloadName)webapp$(workloadEnv)"
+  appServiceName: "$(workloadName)appservice$(workloadEnv)"
   keyvaultUri: "https://$(workloadName)keyvault$(workloadEnv).vault.azure.net/"
   storageAccountName: "$(workloadName)storageacc$(workloadEnv)"
   serviceConnectionName: "MCAPS-Hybrid-REQ-38041-2022-MoimHossain"
   azureDevOpsOrgName: "moim"
 
 stages:
-  - stage: CreateInfrastructure
-    displayName: 'Create Infrastructure'    
-    jobs:
-    - job: CreateInfra
-      displayName: 'Create infrastructure'
-      steps:
-      - checkout: self
-      - task: AzureCLI@2
-        displayName: 'Deploy infrastructure'
-        inputs:
-          azureSubscription: $(serviceConnectionName)
-          scriptType: bash
-          scriptPath: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra/build-infra.sh'
-          workingDirectory: CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra
-        env:
-          resourceGroupName: $(resourceGroupName)
-          location: $(location)
-          workloadName: $(workloadName)
-          workloadEnv: $(workloadEnv)
+  # - stage: CreateInfrastructure
+  #   displayName: 'Create Infrastructure'    
+  #   jobs:
+  #   - job: CreateInfra
+  #     displayName: 'Create infrastructure'
+  #     steps:
+  #     - checkout: self
+  #     - task: AzureCLI@2
+  #       displayName: 'Deploy infrastructure'
+  #       inputs:
+  #         azureSubscription: $(serviceConnectionName)
+  #         scriptType: bash
+  #         scriptPath: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra/build-infra.sh'
+  #         workingDirectory: CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra
+  #       env:
+  #         resourceGroupName: $(resourceGroupName)
+  #         location: $(location)
+  #         workloadName: $(workloadName)
+  #         workloadEnv: $(workloadEnv)
       
 
 
@@ -80,5 +80,5 @@ stages:
           appType: 'webApp'
           appName: $(appServiceName)
           package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-          appSettings: '-GITHUB_PAT "XXX" -AZURE_DEVOPS_ORGNAME "$(azureDevOpsOrgName)"'
+          # appSettings: '-GITHUB_PAT "XXX" -AZURE_DEVOPS_ORGNAME "$(azureDevOpsOrgName)"'
           deploymentMethod: 'zipDeploy'
