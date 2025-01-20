@@ -19,18 +19,24 @@ stages:
       displayName: 'Create infrastructure'
       steps:
       - checkout: self
-      - task: AzureCLI@2
-        displayName: 'Deploy infrastructure'
+      - task: DotNetCoreCLI@2
         inputs:
-          azureSubscription: $(serviceConnectionName)
-          scriptType: bash
-          scriptPath: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra/build-infra.sh'
-          workingDirectory: CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra
-        env:
-          resourceGroupName: $(resourceGroupName)
-          location: $(location)
-          workloadName: $(workloadName)
-          workloadEnv: $(workloadEnv)
+          azureSubscription: 'MCAPS-Hybrid-REQ-38041-2022-MoimHossain'
+          command: 'publish'
+          publishWebProjects: true
+          workingDirectory: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web'
+      # - task: AzureCLI@2
+      #   displayName: 'Deploy infrastructure'
+      #   inputs:
+      #     azureSubscription: $(serviceConnectionName)
+      #     scriptType: bash
+      #     scriptPath: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra/build-infra.sh'
+      #     workingDirectory: CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra
+      #   env:
+      #     resourceGroupName: $(resourceGroupName)
+      #     location: $(location)
+      #     workloadName: $(workloadName)
+      #     workloadEnv: $(workloadEnv)
 
   # - stage: BuildContainerImage
   #   displayName: 'Build Container image'
