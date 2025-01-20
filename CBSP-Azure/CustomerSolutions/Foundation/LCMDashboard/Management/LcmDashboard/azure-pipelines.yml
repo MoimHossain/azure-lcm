@@ -39,8 +39,8 @@ stages:
 
   - stage: PublishApplication
     displayName: 'Build and Publish Application'
-    dependsOn: CreateInfrastructure
-    condition: succeeded()
+    # dependsOn: CreateInfrastructure
+    # condition: succeeded()
     jobs:
     - job: BuildAndPublish
       displayName: 'Build and Publish Application'
