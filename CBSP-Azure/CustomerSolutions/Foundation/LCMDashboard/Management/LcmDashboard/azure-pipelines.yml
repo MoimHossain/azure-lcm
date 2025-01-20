@@ -25,6 +25,17 @@ stages:
           command: 'publish'
           publishWebProjects: true
           workingDirectory: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web'
+
+
+      - task: ArchiveFiles@2
+        inputs:
+          rootFolderOrFile: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+          replaceExistingArchive: true 
+
+      
       # - task: AzureCLI@2
       #   displayName: 'Deploy infrastructure'
       #   inputs:
