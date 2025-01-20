@@ -8,6 +8,7 @@ variables:
   location: "westeurope"
   workloadName: "azlcm"
   workloadEnv: "ut"
+  appServiceName: "azlcmapput"
   serviceConnectionName: "MCAPS-Hybrid-REQ-38041-2022-MoimHossain"
   azureDevOpsOrgName: "moim"
 
@@ -36,8 +37,8 @@ stages:
 
   - stage: PublishApplication
     displayName: 'Build and Publish Application'
-    dependsOn: CreateInfrastructure
-    condition: succeeded()
+    #dependsOn: CreateInfrastructure
+    #condition: succeeded()
     jobs:
     - job: BuildAndPublish
       displayName: 'Build and Publish Application'
@@ -75,7 +76,7 @@ stages:
         inputs:
           azureSubscription: $(serviceConnectionName)
           appType: 'webApp'
-          appName: 'azlcmapput'
+          appName: $(appServiceName)
           package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
           appSettings: '-KEY_X "ValueKeyX" -KEY_Y "ValueKeyY"'
           deploymentMethod: 'zipDeploy'
