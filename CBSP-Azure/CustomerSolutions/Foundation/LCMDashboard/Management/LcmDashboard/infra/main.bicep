@@ -47,6 +47,8 @@ module webapp 'modules/webApp.bicep' = {
     uamiId: uami.outputs.resourceId
     uamiClientId: uami.outputs.clientId
     delegatedSubnetId: vnet.outputs.delegatedSubnetId
+    keyVaultUri: keyvault.outputs.keyVaultUri
+    storageAccountName: storageAccountName
   }
 }
 

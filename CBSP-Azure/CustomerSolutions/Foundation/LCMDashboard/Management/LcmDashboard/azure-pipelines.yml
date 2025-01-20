@@ -8,7 +8,7 @@ variables:
   location: "westeurope"
   workloadName: "azlcm"
   workloadEnv: "ut"
-  appServiceName: "$(workloadName)app$(workloadEnv)"
+  appServiceName: "$(workloadName)webapp$(workloadEnv)"
   keyvaultUri: "https://$(workloadName)keyvault$(workloadEnv).vault.azure.net/"
   storageAccountName: "$(workloadName)storageacc$(workloadEnv)"
   serviceConnectionName: "MCAPS-Hybrid-REQ-38041-2022-MoimHossain"
