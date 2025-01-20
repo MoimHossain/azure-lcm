@@ -31,6 +31,7 @@ stages:
         displayName: 'Build application'
 
       - task: ArchiveFiles@2
+        displayName: 'Zip application'
         inputs:
           rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/published-content-$(Build.BuildId)"
           includeRootFolder: false
@@ -42,7 +43,17 @@ stages:
         inputs:
           targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
           artifact: 'drop'
-          publishLocation: 'pipeline'  
+          publishLocation: 'pipeline'
+
+      - task: AzureWebApp@1
+        inputs:
+          azureSubscription: $(serviceConnectionName)
+          appType: 'webApp'
+          appName: 'azlcmapput'
+          package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+          configurationStrings: '-KEY_X "ValueKeyX" -KEY_Y "ValueKeyY"'
+          deploymentMethod: 'zipDeploy'
+
 
       
       # - task: AzureCLI@2
