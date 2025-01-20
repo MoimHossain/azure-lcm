@@ -8,7 +8,8 @@ variables:
   location: "westeurope"
   workloadName: "azlcm"
   workloadEnv: "ut"
-  appServiceName: "azlcmapput"
+  appServiceName: "$(workloadName)app$(workloadEnv)"
+  keyvaultUri: "https://$(workloadName)keyvault$(workloadEnv).vault.azure.net/"
   serviceConnectionName: "MCAPS-Hybrid-REQ-38041-2022-MoimHossain"
   azureDevOpsOrgName: "moim"
 
@@ -78,7 +79,7 @@ stages:
           appType: 'webApp'
           appName: $(appServiceName)
           package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-          appSettings: '-KEY_X "ValueKeyX" -KEY_Y "ValueKeyY"'
+          appSettings: '-PROCESS_AZURE_FEED "true" -PROCESS_AZURE_POLICY "true" -PROCESS_AZURE_SERVICE_HEALTH "true"  -GITHUB_PAT "XXX" -AZURE_KEY_VAULT_URI "$(keyvaultUri)" -AZURE_POLICY_URI_BASE "https://api.github.com/repos/azure/azure-policy/contents/" -AZURE_POLICY_PATH "built-in-policies/policyDefinitions" -AZURE_UPDATE_FEED_URI "https://www.microsoft.com/releasecommunications/api/v2/azure/rss" -AZURE_STORAGE_ACCOUNT_NAME "XXX" -AZURE_STORAGE_FEED_TABLE_NAME "azupdatefeed" -AZURE_STORAGE_POLICY_TABLE_NAME "azpolicy" -AZURE_STORAGE_SVC_HEALTH_TABLE_NAME "azsvchealth" -AZURE_STORAGE_COFIG_CONTAINER "az-lcm-configs" -AZURE_OPENAI_GPT_DEPLOYMENT_ID "gpt-4o" -AZURE_DEVOPS_ORGNAME "$(azureDevOpsOrgName)" -AZURE_DEVOPS_USE_PAT "true" -AZURE_DEVOPS_PAT "XXX"'
           deploymentMethod: 'zipDeploy'
 
 
