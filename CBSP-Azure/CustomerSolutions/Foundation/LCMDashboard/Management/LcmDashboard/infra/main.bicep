@@ -4,11 +4,10 @@ param location string = resourceGroup().location
 param uamiName string 
 param logAnalyticsName string
 param storageAccountName string 
-param containerRegistryName string
 param openaiName string
 param vnetName string
 param keyvaultName string
-
+param webAppName string
 
 var privateEndpointNameOpenAI = 'privatelink-cognitiveservices'
 var privateEndpointNameKeyVault = 'privatelink-keyvault'
@@ -22,6 +21,14 @@ module uami 'modules/identity.bicep' = {
   }
 }
 
+module logAnalytics 'modules/log-analytics.bicep' = {
+  name: logAnalyticsName
+  params: {
+    logAnalyticsName: logAnalyticsName
+    localtion: location
+  }
+}
+
 module vnet 'modules/vnet.bicep'= {
   name: vnetName
   params: {
@@ -29,6 +36,19 @@ module vnet 'modules/vnet.bicep'= {
     location: location
   }
 }
+
+
+module webapp 'modules/webApp.bicep' = {
+  name: webAppName
+  params: {
+    webAppName: webAppName
+    location: location
+    logAnalyticsWorkspaceId: logAnalytics.outputs.laWorkspaceId
+    uamiId: uami.outputs.resourceId
+    delegatedSubnetId: vnet.outputs.delegatedSubnetId
+  }
+}
+
 
 
 module privateDnsZoneKeyVault 'modules/privateDnsKeyVault.bicep' = {
@@ -153,24 +173,8 @@ resource privateDnsZoneGroupsOpenAI 'Microsoft.Network/privateEndpoints/privateD
   }
 }
 
-module containerRegistry  'modules/registry.bicep' = {
-  name: containerRegistryName
-  params: {
-    location: location
-    registryName: containerRegistryName
-    skuName: 'Basic'
-    userAssignedIdentityPrincipalId: uami.outputs.principalId
-    adminUserEnabled: false
-  }
-}
 
-module logAnalytics 'modules/log-analytics.bicep' = {
-  name: logAnalyticsName
-  params: {
-    logAnalyticsName: logAnalyticsName
-    localtion: location
-  }
-}
+
 
 module storageAccount 'modules/storageAccount.bicep' = {
   name: storageAccountName

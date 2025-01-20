@@ -8,7 +8,7 @@ resource uami 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
   location: location
 }
 
-
+output resourceId string = uami.id
 output principalId string = uami.properties.principalId
 output tenantId string = uami.properties.tenantId
 output clientId string = uami.properties.clientId

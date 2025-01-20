@@ -2,10 +2,10 @@
 param location string = resourceGroup().location
 param vnetName string
 param defaultSubnetName string = 'default' // do NOT change this name
-param containerGroupSubnetName string = 'containergroup' 
+param webAppSubnetName string = 'appservice' 
 param addressPrefix string = '10.0.0.0/16'
 param defaultSubnetAddressPrefix string = '10.0.2.0/23'
-param containerGroupSubnetAddressPrefix string = '10.0.1.0/27'
+param appServiceSubnetAddressPrefix string = '10.0.1.0/27'
 
 
 var defaultNsgName = 'nsg-${vnetName}-${defaultSubnetName}'
@@ -57,17 +57,17 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-05-01' = {
         }
       }
       {
-        name: containerGroupSubnetName
+        name: webAppSubnetName
         properties: {
-          addressPrefix: containerGroupSubnetAddressPrefix
+          addressPrefix: appServiceSubnetAddressPrefix
           networkSecurityGroup: {
             id: nsgContainerGroup.outputs.nsgId
           }
           delegations: [
             {
-              name: 'Microsoft.ContainerInstance/containerGroups'
+              name: 'Microsoft.Web/serverFarms'
               properties: {
-                serviceName: 'Microsoft.ContainerInstance/containerGroups'
+                serviceName: 'Microsoft.Web/serverFarms'
               }
             }
           ]
@@ -88,8 +88,16 @@ resource defaultSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-02-01' ex
   name: defaultSubnetName
 }
 
+resource delegatedSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-02-01' existing = {
+  parent: vnet
+  name: webAppSubnetName
+}
+
 
 output vnetId string = vnet.id
 output vnetName string = vnet.name
 output defaultSubnetName string = defaultSubnet.name
 output defaultSubnetId string = defaultSubnet.id
+output delegatedSubnetName string = delegatedSubnet.name
+output delegatedSubnetId string = delegatedSubnet.id
+
