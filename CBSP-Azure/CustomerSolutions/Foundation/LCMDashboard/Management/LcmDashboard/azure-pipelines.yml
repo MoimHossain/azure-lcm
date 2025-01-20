@@ -27,12 +27,12 @@ stages:
 
       - script: |
           cd  /home/vsts/work/1/s/CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/
-          dotnet publish "Azure.Lcm.Web.csproj" -c "Release" -o "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+          dotnet publish "Azure.Lcm.Web.csproj" -c "Release" -o "$(Build.ArtifactStagingDirectory)/published-content-$(Build.BuildId)"
         displayName: 'Print current directory'
 
       - task: ArchiveFiles@2
         inputs:
-          rootFolderOrFile: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish'
+          rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/published-content-$(Build.BuildId)"
           includeRootFolder: false
           archiveType: 'zip'
           archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
