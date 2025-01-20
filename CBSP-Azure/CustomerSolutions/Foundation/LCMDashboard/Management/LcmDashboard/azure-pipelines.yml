@@ -25,7 +25,7 @@ stages:
           azureSubscription: $(serviceConnectionName)
           scriptType: bash
           scriptPath: 'CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra/build-infra.sh'
-          workingDirectory: CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard
+          workingDirectory: CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/infra
         env:
           resourceGroupName: $(resourceGroupName)
           location: $(location)
