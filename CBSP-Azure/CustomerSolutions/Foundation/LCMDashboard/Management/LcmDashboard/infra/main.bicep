@@ -45,6 +45,7 @@ module webapp 'modules/webApp.bicep' = {
     location: location
     logAnalyticsWorkspaceId: logAnalytics.outputs.laWorkspaceId
     uamiId: uami.outputs.resourceId
+    uamiClientId: uami.outputs.clientId
     delegatedSubnetId: vnet.outputs.delegatedSubnetId
   }
 }

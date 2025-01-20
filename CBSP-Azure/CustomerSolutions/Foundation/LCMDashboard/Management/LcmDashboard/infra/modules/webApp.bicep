@@ -4,9 +4,11 @@ param webAppName string
 param location string = resourceGroup().location
 param logAnalyticsWorkspaceId string
 param uamiId string
+param uamiClientId string
 param delegatedSubnetId string
 
 var appServicePlanName = '${webAppName}svcPlan'
+var appInsightName = '${webAppName}insight'
 
 
 module serverPlan './webAppPlan.bicep' = {
@@ -17,6 +19,21 @@ module serverPlan './webAppPlan.bicep' = {
     logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
   }
 }
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: appInsightName
+  location: location
+  kind: 'string'
+  tags: {
+    displayName: 'AppInsight'
+    ProjectName: webAppName
+  }
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: logAnalyticsWorkspaceId
+  }
+}
+
 
 resource webApp 'Microsoft.Web/sites@2024-04-01' = {
   name: webAppName
@@ -43,7 +60,7 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
       alwaysOn: true
       http20Enabled: true
       functionAppScaleLimit: 0
-      minimumElasticInstanceCount: 1
+      minimumElasticInstanceCount: 1  
     }
     scmSiteAlsoStopped: false
     clientAffinityEnabled: true
@@ -65,7 +82,29 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
 }
 
 
-// add diagnostic settings
+resource appServiceSiteExtension 'Microsoft.Web/sites/siteextensions@2020-06-01' = {
+  parent: webApp
+  name: 'Microsoft.ApplicationInsights.AzureWebSites'
+  dependsOn: [
+    appInsights
+  ]
+}
+
+resource siteConfigs 'Microsoft.Web/sites/config@2022-09-01' = {
+  name: 'appsettings'  
+  kind: 'app'
+  parent: webApp
+  properties: {
+    APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
+    USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID: uamiClientId
+  }
+  dependsOn: [
+    appServiceSiteExtension
+  ]
+}
+
+
+
 resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   name: '${webAppName}-diagnostics'
   scope: webApp
