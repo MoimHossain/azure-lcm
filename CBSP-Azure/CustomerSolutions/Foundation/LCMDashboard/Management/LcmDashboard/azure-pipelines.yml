@@ -31,9 +31,13 @@ stages:
 # run a bash scropt to print the current directory
       - script: |
           pwd
+          echo "Current directory"
+          ls -al
+          echo "specific directory"
           ls -al  /home/vsts/work/1/s/CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish/
 
-          cs  /home/vsts/work/1/s/CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish/
+          echo "Inside publish"
+          cd  /home/vsts/work/1/s/CBSP-Azure/CustomerSolutions/Foundation/LCMDashboard/Management/LcmDashboard/Azure.Lcm.Web/bin/Release/net8.0/publish/
           ls -al
         displayName: 'Print current directory'
 
