@@ -17,6 +17,7 @@ namespace AzLcm.Shared.Cognition
 {
     public class CognitiveService(
         JsonSerializerOptions jsonSerializerOptions,
+        AzureCredentialProvider azureCredentialProvider,
         ILogger<CognitiveService> logger,
         DaemonConfig daemonConfig)
     {
@@ -197,7 +198,7 @@ Response should be:
                              Mode = RetryMode.Exponential
                         }
                     };
-                    var kvClient = new SecretClient(new Uri(daemonConfig.KeyVaultURI), new DefaultAzureCredential(), options);
+                    var kvClient = new SecretClient(new Uri(daemonConfig.KeyVaultURI), azureCredentialProvider.GetCredentail(), options);
                     KeyVaultSecret openAIEndpoint = await kvClient.GetSecretAsync("AOIEndpoint");
                     KeyVaultSecret openAiKey = await kvClient.GetSecretAsync("AOIKey");
                     if (openAIEndpoint != null)
