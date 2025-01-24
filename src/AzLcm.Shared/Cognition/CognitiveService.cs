@@ -198,7 +198,7 @@ Response should be:
                              Mode = RetryMode.Exponential
                         }
                     };
-                    var kvClient = new SecretClient(new Uri(daemonConfig.KeyVaultURI), azureCredentialProvider.GetCredentail(), options);
+                    var kvClient = new SecretClient(new Uri(daemonConfig.KeyVaultURI), azureCredentialProvider.GetKVCredential(), options);
                     KeyVaultSecret openAIEndpoint = await kvClient.GetSecretAsync("AOIEndpoint");
                     KeyVaultSecret openAiKey = await kvClient.GetSecretAsync("AOIKey");
                     if (openAIEndpoint != null)

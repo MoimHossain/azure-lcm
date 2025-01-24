@@ -29,7 +29,7 @@ namespace AzLcm.Shared.Storage
         {
             return new(new Uri($"https://{GetStorageAccountName()}.table.core.windows.net"),
                 GetStorageTableName(),
-                GetAzureCredentialProvider().GetCredentail());
+                GetAzureCredentialProvider().GetStorageCredential());
         }
 
         public async Task EnsureTableExistsAsync(CancellationToken cancellationToken)
