@@ -1,7 +1,6 @@
 ﻿
 
 using Azure.Core;
-using Azure.Identity;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -11,14 +10,13 @@ using System.Text.Json;
 namespace AzLcm.Shared.ServiceHealth
 {
     public class ServiceHealthReader(
-        ILogger<ServiceHealthReader> logger,
-        DaemonConfig daemonConfig,
+        ILogger<ServiceHealthReader> logger,        
         ServiceHealthConfigReader serviceHealthConfigReader,
+        AzureCredentialProvider azureCredentialProvider,
         IHttpClientFactory httpClientFactory)
     {
         public async Task ProcessAsync(Func<ServiceHealthEvent, Task> work, CancellationToken cancellationToken)
-        {
-            var config = daemonConfig.GetAzureConnectionConfig();            
+        {   
             var healthConfig = await serviceHealthConfigReader.GetResourceGraphQueryConfig(cancellationToken);
             if(healthConfig == null )
             {
@@ -35,21 +33,10 @@ namespace AzLcm.Shared.ServiceHealth
 
             logger.LogInformation("Querying Azure Resource Graph with query: {Query}", queryText);
 
-            TokenCredential? cred;
-            if (!string.IsNullOrWhiteSpace(config.ClientId) && !string.IsNullOrWhiteSpace(config.ClientSecret))
-            {
-                logger.LogInformation("Azure Service Health Query:: Using client secret for authentication");
-                cred = new ClientSecretCredential(config.TenantId, config.ClientId, config.ClientSecret);
-            }
-            else 
-            {
-                logger.LogInformation("Azure Service Health Query:: Using default Azure credential for authentication");
-                cred = new DefaultAzureCredential();
-            }            
-            
-            var accessToken = await cred.GetTokenAsync(
+            var tokenCredential = azureCredentialProvider.GetSvcHealthQueryCredential();            
+            var accessToken = await tokenCredential.GetTokenAsync(
                 new TokenRequestContext(["https://management.azure.com/.default"]), cancellationToken);
-            logger.LogInformation("Azure Service Health Query:: Access token acquired for {clientId}", config.ClientId);
+            logger.LogInformation("Azure Service Health Query:: Access token acquired");
 
             var httpClient = httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Token);            
