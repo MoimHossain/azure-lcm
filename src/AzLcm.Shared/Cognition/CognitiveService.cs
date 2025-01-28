@@ -11,7 +11,6 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using System.ServiceModel.Syndication;
 using System.Text;
-using System.Text.Json;
 using ChatMessage = Microsoft.Extensions.AI.ChatMessage;
 
 namespace AzLcm.Shared.Cognition
@@ -98,11 +97,10 @@ You have a map of services to area paths. Your task is to map the service name t
 
                 if (response.TryGetResult(out var orchestrationGroundedResponse) && orchestrationGroundedResponse != null)
                 {
-                    if (!validAreaPaths.Contains($"{orchestrationGroundedResponse.AreaPath}"))
-                    {
-                        return new AreaPathMapResponse { AreaPath = string.Empty };
-                    }
-                    else
+                    var suggestedPath = $"{orchestrationGroundedResponse.AreaPath}";
+                    bool contains = validAreaPaths.Any(vap => vap.Contains(suggestedPath, StringComparison.OrdinalIgnoreCase));
+
+                    if (contains)
                     {
                         return orchestrationGroundedResponse;
                     }
@@ -112,7 +110,7 @@ You have a map of services to area paths. Your task is to map the service name t
             {
                 logger.LogError(ex, message: $"Error in MapServiceToAreaPathAsync()");
             }
-            return null;
+            return new AreaPathMapResponse { AreaPath = string.Empty };
         }
 
 
