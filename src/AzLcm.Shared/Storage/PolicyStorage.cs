@@ -48,5 +48,37 @@ namespace AzLcm.Shared.Storage
 
             await TableClient.UpsertEntityAsync(policy.ToTableEntity(), TableUpdateMode.Merge, stoppingToken);
         }
+
+        internal class GitHubSHAMilestone
+        {
+            internal const string PartitionKey = "AZ-LCM";
+            internal const string RowKey = "GITHUB-AZPOLICY-LastCommitSHA";
+
+        }
+
+        public async Task<string> GetLastProcessedShaAsync(CancellationToken cancellationToken)
+        {   
+            var existingEntity = await TableClient
+                .GetEntityIfExistsAsync<TableEntity>(GitHubSHAMilestone.PartitionKey, GitHubSHAMilestone.RowKey, null, cancellationToken);
+
+            if (existingEntity.HasValue && existingEntity.Value != null)
+            {
+                var properties = existingEntity.Value.ToImmutableDictionary();
+                if (properties["SHA"] != null)
+                {
+                    return $"{properties["SHA"]}";
+                }
+            }
+            return "fd3caeca0adb57063a394904fe6f11a0759a1f18";
+        }
+
+        public async Task UpdateLastProcessedShaAsync(string sha, CancellationToken stoppingToken)
+        {
+            var entity = new TableEntity(GitHubSHAMilestone.PartitionKey, GitHubSHAMilestone.RowKey)
+            {
+                { "SHA", sha }
+            };
+            await TableClient.UpsertEntityAsync(entity, TableUpdateMode.Merge, stoppingToken);
+        }
     }
 }

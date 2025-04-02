@@ -131,7 +131,7 @@ namespace Azure.Lcm.Daemon
                             azDevOpsConfig.orgName, template, areaPathMapConfig, difference, stoppingToken);
                         await policyStorage.MarkAsSeenAsync(policy, stoppingToken);
                     }
-                }, stoppingToken);
+                }, policyStorage, stoppingToken);
                 logger.LogInformation("Process {processedPolicyCount} items, out of {totalPolicyCount} feeds.", processedCount, totalPolicyCount);
             }
         }

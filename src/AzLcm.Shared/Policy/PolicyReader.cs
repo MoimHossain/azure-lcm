@@ -1,6 +1,7 @@
 ﻿
 
 using AzLcm.Shared.Policy.Models;
+using AzLcm.Shared.Storage;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
@@ -12,70 +13,119 @@ namespace AzLcm.Shared.Policy
         ILogger<PolicyReader> logger,
         IHttpClientFactory httpClientFactory)
     {
-        public async Task ReadPoliciesAsync(Func<PolicyModel, Task> work, CancellationToken stoppingToken)
+        public async Task ReadPoliciesAsync(Func<PolicyModel, Task> work, PolicyStorage policyStorage, CancellationToken stoppingToken)
         {
-            await ExploreDirectoryAsync($"{GetBaseURI()}{GetPath()}", work, stoppingToken);
-        }
+            var lastProcessedGitHubCommitSha = await policyStorage.GetLastProcessedShaAsync(stoppingToken);
 
-        private async Task ExploreDirectoryAsync(string uri, Func<PolicyModel, Task> work, CancellationToken stoppingToken)
-        {
-            var httpClient = httpClientFactory.CreateClient();
-            var response = await httpClient.SendAsync(await CreateRequestBody(uri), stoppingToken);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var items = await response.Content.ReadFromJsonAsync<List<GitHubItem>>(stoppingToken);
-                if (items != null)
+            var recentCommits = await GetRecentCommitsAsync(maxCommitsToRead: 50, stoppingToken);
+
+            if (recentCommits != null && recentCommits.Count > 0)
+            {   
+                List<GitHubCommitSlim> unseenCommits = [];
+                foreach(var recentCommit in recentCommits)
                 {
-                    foreach (var item in items)
+                    if (!string.IsNullOrWhiteSpace(lastProcessedGitHubCommitSha)
+                        && lastProcessedGitHubCommitSha.Equals(recentCommit.Sha, StringComparison.Ordinal))
                     {
-                        if(item.Path.Contains("Azure Government", StringComparison.OrdinalIgnoreCase))
-                        {
-                            continue;
-                        }
+                        break; // we will skip the rest of the commits
+                    }
+                    else 
+                    {
+                        unseenCommits.Add(recentCommit);
+                    }
+                }
 
-                        if (item.IsFile())
+                var changedFiles = new Dictionary<string, GitHubCommittedFile>();
+                foreach (var commit in unseenCommits.Reverse<GitHubCommitSlim>())
+                {
+                    var commitDetails = await GetCommitDetailsAsync(commit.Sha, stoppingToken);
+                    if (commitDetails != null && commitDetails.Files != null)
+                    {
+                        foreach (var file in commitDetails.Files)
                         {
-                            await ProcessPolicyFileAsync(work, item, stoppingToken);
-                        }
-                        else
-                        {
-                            await Task.Delay(1000, stoppingToken); // Avoid throttling by GitHub
-                            await ExploreDirectoryAsync($"{GetBaseURI()}{item.Path}", work, stoppingToken);
+                            if (file.Filename.Contains("Azure Government", StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
+                            if (file.Filename.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                            {
+                                changedFiles[file.Filename] = file;
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                var failedResponse = await response.Content.ReadAsStringAsync(stoppingToken);
-                logger.LogError("URI {uri} failed with reason {failedResponse}", uri, failedResponse);
-            }
-        }
 
-        private async Task ProcessPolicyFileAsync(Func<PolicyModel, Task> work, GitHubItem item, CancellationToken stoppingToken)
-        {
-            if (!string.IsNullOrWhiteSpace(item.DownloadUrl))
-            {
-                try
+                foreach(var changedFile in changedFiles.Values)
                 {
-                    var httpClient = httpClientFactory.CreateClient();
-                    var policy = await httpClient.GetFromJsonAsync<PolicyModel>(item.DownloadUrl, stoppingToken);
-                    if (work != null && policy != null)
+                    try
                     {
-                        await work(policy);
+                        var policy = await httpClientFactory.CreateClient().GetFromJsonAsync<PolicyModel>(changedFile.RawUrl, stoppingToken);
+                        if (work != null && policy != null)
+                        {
+                            await work(policy);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Failed to read file {fileName}", changedFile.Filename);
                     }
                 }
-                catch (Exception ex)
+
+                var mostRecentCommit = recentCommits[0];
+                if(mostRecentCommit != null )
                 {
-                    logger.LogError(ex, "Failed to read file {fileName}", item.Path);
-                }
+                    await policyStorage.UpdateLastProcessedShaAsync(mostRecentCommit.Sha, stoppingToken);
+                }                
             }
         }
 
-        private async Task<HttpRequestMessage> CreateRequestBody(string uri)
+        private async Task<GitHubCommitDetails?> GetCommitDetailsAsync(string sha, CancellationToken stoppingToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            GitHubCommitDetails? ghCommitDetails = null;
+            try
+            {
+                var request = await CreateRequestObject(HttpMethod.Get, $"{GitHubAzurePolicyRepoURI}/commits/{sha}", stoppingToken);
+                var gitHubResponse = await httpClientFactory.CreateClient().SendAsync(request, stoppingToken);
+                if (gitHubResponse.IsSuccessStatusCode)
+                {
+                    ghCommitDetails = await gitHubResponse.Content.ReadFromJsonAsync<GitHubCommitDetails>(stoppingToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to get commit details");
+            }
+            return ghCommitDetails;
+        }
+
+        private async Task<List<GitHubCommitSlim>> GetRecentCommitsAsync(int maxCommitsToRead, CancellationToken stoppingToken)
+        {
+            List<GitHubCommitSlim> ghCommits = [];
+            try 
+            {
+                var request = await CreateRequestObject(HttpMethod.Get, $"{GitHubAzurePolicyRepoURI}/commits?per_page={maxCommitsToRead}", stoppingToken);
+                var gitHubResponse = await httpClientFactory.CreateClient().SendAsync(request, stoppingToken);
+                if(gitHubResponse.IsSuccessStatusCode)
+                {
+                    var items  = await gitHubResponse.Content.ReadFromJsonAsync<List<GitHubCommitSlim>>(stoppingToken);                    
+                    if(items != null )
+                    {
+                        ghCommits = items;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to get recent commits");
+            }
+            return ghCommits;
+        }
+
+
+        private async Task<HttpRequestMessage> CreateRequestObject(HttpMethod method, string uri, CancellationToken cancellationToken)
+        {
+            var request = new HttpRequestMessage(method, uri);
             request.Headers.Accept.ParseAdd("application/vnd.github+json");
             request.Headers.UserAgent.ParseAdd("policy-daemon");
             if (!string.IsNullOrWhiteSpace(daemonConfig.GitHubPAT))
@@ -84,30 +134,13 @@ namespace AzLcm.Shared.Policy
             }
             else
             {
-                await Task.Delay(2000); // Avoid throttling by GitHub
+                await Task.Delay(2000, cancellationToken); // Avoid throttling by GitHub
             }
             return request;
         }
 
-        private string GetBaseURI()
-        {
-            var uri = "https://api.github.com/repos/azure/azure-policy/contents/";
-            if (!string.IsNullOrWhiteSpace(daemonConfig.AzurePolicyGitHubBaseURI))
-            {
-                uri = daemonConfig.AzurePolicyGitHubBaseURI;
-            }
-            return uri;
-        }
 
-        private string GetPath()
-        {
-            var path = "built-in-policies/policyDefinitions";
-            if (!string.IsNullOrWhiteSpace(daemonConfig.AzurePolicyPath))
-            {
-                path = daemonConfig.AzurePolicyPath;
-            }
-            return path;
-        }
+        private string GitHubAzurePolicyRepoURI => "https://api.github.com/repos/azure/azure-policy";
     }
 
     public record GitHubItem(
@@ -120,6 +153,43 @@ namespace AzLcm.Shared.Policy
         [property: JsonPropertyName("git_url")] string GitUrl,
         [property: JsonPropertyName("download_url")] string DownloadUrl,
         [property: JsonPropertyName("type")] string Type
+    );
+
+    public record GitHubCommitSlim(
+        [property: JsonPropertyName("sha")] string Sha,
+        [property: JsonPropertyName("url")] string Url,
+        [property: JsonPropertyName("html_url")] string HtmlUrl,
+        [property: JsonPropertyName("comments_url")] string CommentsUrl
+    );
+
+    
+    public record GitHubCommittedFile(
+        [property: JsonPropertyName("sha")] string Sha,
+        [property: JsonPropertyName("filename")] string Filename,
+        [property: JsonPropertyName("status")] string Status,
+        [property: JsonPropertyName("additions")] int Additions,
+        [property: JsonPropertyName("deletions")] int Deletions,
+        [property: JsonPropertyName("changes")] int Changes,
+        [property: JsonPropertyName("blob_url")] string BlobUrl,
+        [property: JsonPropertyName("raw_url")] string RawUrl,
+        [property: JsonPropertyName("contents_url")] string ContentsUrl,
+        [property: JsonPropertyName("patch")] string Patch
+    );
+
+    public record GitHubCommitDetails(
+        [property: JsonPropertyName("sha")] string Sha,
+        [property: JsonPropertyName("node_id")] string NodeId,
+        [property: JsonPropertyName("url")] string Url,
+        [property: JsonPropertyName("html_url")] string HtmlUrl,
+        [property: JsonPropertyName("comments_url")] string CommentsUrl,
+        [property: JsonPropertyName("stats")] GitHubCommittedFileStats Stats,
+        [property: JsonPropertyName("files")] IReadOnlyList<GitHubCommittedFile> Files
+    );
+
+    public record GitHubCommittedFileStats(
+        [property: JsonPropertyName("total")] int Total,
+        [property: JsonPropertyName("additions")] int Additions,
+        [property: JsonPropertyName("deletions")] int Deletions
     );
 
     public static class GitHubContentTypeExtensions
