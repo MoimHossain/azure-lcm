@@ -3,6 +3,7 @@
 using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.AzureUpdates;
 using AzLcm.Shared.Cognition;
+using AzLcm.Shared.Logging;
 using AzLcm.Shared.Policy;
 using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
@@ -29,7 +30,9 @@ namespace Azure.Lcm.Web
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            using var scope = logger.BeginOperationScope("ExecuteAsync", new { Service = "LcmBackgroundService" });
+            
+            logger.LogInformation("LcmBackgroundService running at: {time}", DateTimeOffset.Now);
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -38,17 +41,24 @@ namespace Azure.Lcm.Web
                     var allOk = await lcmHealthService.IsAllServicesUpAndHealthyAsync(stoppingToken);
                     if (allOk)
                     {
+                        logger.LogInformation("All services are healthy. Processing tasks...");
+                        
                         await ProcessServiceHealthAsync(stoppingToken);
                         await ProcessPolicyAsync(stoppingToken);
                         await ProcessFeedAsync(stoppingToken);
                     }
+                    else
+                    {
+                        logger.LogWarning("Some services are not healthy. Skipping processing tasks.");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Failed to process service health, policy, or feed.");
+                    logger.LogOperationFailure("ExecuteAsync", ex, new { Service = "LcmBackgroundService" });
                 }
   
                 var amount = await GetDelayAmountAsync(stoppingToken);
+                logger.LogDebug("Waiting {DelayMinutes} minutes before next processing cycle", amount / 60000);
                 await Task.Delay(amount, stoppingToken); 
             }
         }

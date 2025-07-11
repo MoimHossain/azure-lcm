@@ -1,0 +1,184 @@
+﻿
+
+using AzLcm.Shared.Logging;
+using AzLcm.Shared.ServiceHealth;
+using AzLcm.Shared.Storage;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Azure.Lcm.Web.Endpoints;
+
+public class ConfigMapEndpoint
+{
+    public static async Task<IResult> LoadGeneralConfigAsync(
+        [FromServices] ConfigurationStorage configurationStorage,
+        [FromServices] ILogger<ConfigMapEndpoint> logger,
+        CancellationToken cancellationToken)
+    {
+        using var scope = logger.BeginOperationScope("LoadGeneralConfig");
+        
+        try
+        {
+            logger.LogOperationStart("LoadGeneralConfig");
+            var config = await configurationStorage.LoadGeneralConfigAsync(cancellationToken);
+            logger.LogOperationSuccess("LoadGeneralConfig", TimeSpan.Zero, new { ConfigLoaded = config != null });
+            return Results.Ok(config);
+        }
+        catch (Exception ex)
+        {
+            logger.LogOperationFailure("LoadGeneralConfig", ex);
+            return Results.Problem(detail: ex.Message, statusCode: 500, title: "Failed to load general configuration");
+        }
+    }
+
+    public static async Task<IResult> SaveGeneralConfigAsync(
+        [FromBody] GeneralConfig config,
+        [FromServices] ConfigurationStorage configurationStorage,
+        [FromServices] ILogger<ConfigMapEndpoint> logger,
+        CancellationToken cancellationToken)
+    {
+        using var scope = logger.BeginOperationScope("SaveGeneralConfig", config);
+        
+        try
+        {
+            logger.LogOperationStart("SaveGeneralConfig", config);
+            await configurationStorage.SaveGeneralConfigAsync(config, cancellationToken);
+            logger.LogOperationSuccess("SaveGeneralConfig", TimeSpan.Zero, new { ConfigSaved = true });
+            return Results.Ok(config);
+        }
+        catch (Exception ex)
+        {
+            logger.LogOperationFailure("SaveGeneralConfig", ex, config);
+            return Results.Problem(detail: ex.Message, statusCode: 500, title: "Failed to save general configuration");
+        }
+    }
+
+    public static async Task<IResult> LoadAsync(
+        [FromServices] ConfigurationStorage configurationStorage,
+        [FromServices] ILogger<ConfigMapEndpoint> logger,
+        CancellationToken cancellationToken)
+    {
+        using var scope = logger.BeginOperationScope("LoadConfig");
+        
+        try
+        {
+            logger.LogOperationStart("LoadConfig");
+            var config = await configurationStorage.LoadConfigAsync(cancellationToken);
+            logger.LogOperationSuccess("LoadConfig", TimeSpan.Zero, new { ConfigLoaded = config != null });
+            return Results.Ok(config);
+        }
+        catch (Exception ex)
+        {
+            logger.LogOperationFailure("LoadConfig", ex);
+            return Results.Problem(detail: ex.Message, statusCode: 500, title: "Failed to load configuration");
+        }
+    }
+
+    public static async Task<IResult> SaveAsync(
+        [FromBody] AreaPathMapConfig config,
+        [FromServices] ConfigurationStorage configurationStorage,
+        [FromServices] ILogger<ConfigMapEndpoint> logger,
+        CancellationToken cancellationToken)
+    {
+        using var scope = logger.BeginOperationScope("SaveConfig", config);
+        
+        try
+        {
+            logger.LogOperationStart("SaveConfig", config);
+            await configurationStorage.SaveConfigAsync(config, cancellationToken);
+            logger.LogOperationSuccess("SaveConfig", TimeSpan.Zero, new { ConfigSaved = true });
+            return Results.Ok(config);
+        }
+        catch (Exception ex)
+        {
+            logger.LogOperationFailure("SaveConfig", ex, config);
+            return Results.Problem(detail: ex.Message, statusCode: 500, title: "Failed to save configuration");
+        }
+    }
+
+    public static async Task<IResult> LoadServiceHealthAsync(
+        [FromServices] ConfigurationStorage configurationStorage,
+        [FromServices] ILogger<ConfigMapEndpoint> logger,
+        CancellationToken cancellationToken)
+    {
+        using var scope = logger.BeginOperationScope("LoadServiceHealthConfig");
+        
+        try
+        {
+            logger.LogOperationStart("LoadServiceHealthConfig");
+            var config = await configurationStorage.LoadServiceHealthConfigAsync(cancellationToken);
+            logger.LogOperationSuccess("LoadServiceHealthConfig", TimeSpan.Zero, new { ConfigLoaded = config != null });
+            return Results.Ok(config);
+        }
+        catch (Exception ex)
+        {
+            logger.LogOperationFailure("LoadServiceHealthConfig", ex);
+            return Results.Problem(detail: ex.Message, statusCode: 500, title: "Failed to load service health configuration");
+        }
+    }
+    }
+
+    public static async Task<IResult> SaveServiceHealthAsync(
+        [FromBody] ServiceHealthConfig config,
+        [FromServices] ConfigurationStorage configurationStorage,
+        [FromServices] ILogger<ConfigMapEndpoint> logger,
+        CancellationToken cancellationToken)
+    {
+        using var scope = logger.BeginOperationScope("SaveServiceHealthConfig", config);
+        
+        try
+        {
+            logger.LogOperationStart("SaveServiceHealthConfig", config);
+            await configurationStorage.SaveServiceHealthConfigAsync(config, cancellationToken);
+            logger.LogOperationSuccess("SaveServiceHealthConfig", TimeSpan.Zero, new { ConfigSaved = true });
+            return Results.Ok(config);
+        }
+        catch (Exception ex)
+        {
+            logger.LogOperationFailure("SaveServiceHealthConfig", ex, config);
+            return Results.Problem(detail: ex.Message, statusCode: 500, title: "Failed to save service health configuration");
+        }
+    }
+
+    public static async Task<IResult> LoadWorkItemTemplatesAsync(
+        [FromServices] ConfigurationStorage configurationStorage,
+        [FromServices] ILogger<ConfigMapEndpoint> logger,
+        CancellationToken cancellationToken)
+    {
+        using var scope = logger.BeginOperationScope("LoadWorkItemTemplates");
+        
+        try
+        {
+            logger.LogOperationStart("LoadWorkItemTemplates");
+            var config = await configurationStorage.GetWorkItemTemplatesAsync(cancellationToken);
+            logger.LogOperationSuccess("LoadWorkItemTemplates", TimeSpan.Zero, new { ConfigLoaded = config != null });
+            return Results.Ok(config);
+        }
+        catch (Exception ex)
+        {
+            logger.LogOperationFailure("LoadWorkItemTemplates", ex);
+            return Results.Problem(detail: ex.Message, statusCode: 500, title: "Failed to load work item templates");
+        }
+    }
+
+    public static async Task<IResult> SaveWorkItemTemplatesAsync(
+        [FromBody] WorkItemTempates config,
+        [FromServices] ConfigurationStorage configurationStorage,
+        [FromServices] ILogger<ConfigMapEndpoint> logger,
+        CancellationToken cancellationToken)
+    {
+        using var scope = logger.BeginOperationScope("SaveWorkItemTemplates", config);
+        
+        try
+        {
+            logger.LogOperationStart("SaveWorkItemTemplates", config);
+            await configurationStorage.SaveWorkItemTemplateAsync(config, cancellationToken);
+            logger.LogOperationSuccess("SaveWorkItemTemplates", TimeSpan.Zero, new { ConfigSaved = true });
+            return Results.Ok(config);
+        }
+        catch (Exception ex)
+        {
+            logger.LogOperationFailure("SaveWorkItemTemplates", ex, config);
+            return Results.Problem(detail: ex.Message, statusCode: 500, title: "Failed to save work item templates");
+        }
+    }
+}
