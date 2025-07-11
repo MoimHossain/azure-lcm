@@ -6,6 +6,7 @@ using AzLcm.Shared.AzureDevOps.Authorizations;
 
 using AzLcm.Shared.Cognition;
 using AzLcm.Shared.Cognition.Models;
+using AzLcm.Shared.Logging;
 using AzLcm.Shared.Policy.Models;
 using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
@@ -30,10 +31,24 @@ namespace AzLcm.Shared.AzureDevOps
         public async Task<ConnectionDataPayload> GetConnectionDataAsync(
             string orgName, CancellationToken cancellationToken)
         {
-            var apiPath = $"_apis/ConnectionData";
-            var connectionData = await this.GetAsync<ConnectionDataPayload>(
-                orgName, apiPath, cancellationToken, false);
-            return connectionData;
+            using var scope = logger.BeginOperationScope("GetConnectionData", new { orgName });
+            
+            try
+            {
+                logger.LogOperationStart("GetConnectionData", new { orgName });
+                
+                var apiPath = $"_apis/ConnectionData";
+                var connectionData = await this.GetAsync<ConnectionDataPayload>(
+                    orgName, apiPath, cancellationToken, false);
+                
+                logger.LogOperationSuccess("GetConnectionData", TimeSpan.Zero, new { HasData = connectionData != null });
+                return connectionData;
+            }
+            catch (Exception ex)
+            {
+                logger.LogOperationFailure("GetConnectionData", ex, new { orgName });
+                throw;
+            }
         }
 
         private async Task<bool> MapAreaPathAsync(
@@ -42,42 +57,59 @@ namespace AzLcm.Shared.AzureDevOps
             List<PatchFragment> fields,
             CancellationToken cancellationToken)
         {
-            if(areaPathServiceMapConfig != null && !string.IsNullOrWhiteSpace(serviceName) && fields != null)
+            using var scope = logger.BeginOperationScope("MapAreaPath", new { serviceName });
+            
+            try
             {
-                var mapResponse = await cognitiveService
-                    .MapServiceToAreaPathAsync(serviceName, areaPathServiceMapConfig, cancellationToken);
-                if (mapResponse != null)
+                if(areaPathServiceMapConfig != null && !string.IsNullOrWhiteSpace(serviceName) && fields != null)
                 {
-                    fields.RemoveAll(f => f.Path == "/fields/System.AreaPath");
-
-                    if (!string.IsNullOrWhiteSpace(mapResponse.AreaPath))
+                    logger.LogOperationStart("MapAreaPath", new { serviceName, ConfigExists = areaPathServiceMapConfig != null });
+                    
+                    var mapResponse = await cognitiveService
+                        .MapServiceToAreaPathAsync(serviceName, areaPathServiceMapConfig, cancellationToken);
+                    if (mapResponse != null)
                     {
-                        fields.Add(new PatchFragment
-                        {
-                            Op = "add",
-                            Path = "/fields/System.AreaPath",
-                            Value = mapResponse.AreaPath
-                        });
+                        fields.RemoveAll(f => f.Path == "/fields/System.AreaPath");
 
-                        return true;
-                    }
-                    else 
-                    {
-                        if (!areaPathServiceMapConfig.IgnoreWhenNoMatchFound 
-                            && !string.IsNullOrWhiteSpace(areaPathServiceMapConfig.DefaultAreaPath))
+                        if (!string.IsNullOrWhiteSpace(mapResponse.AreaPath))
                         {
                             fields.Add(new PatchFragment
                             {
                                 Op = "add",
                                 Path = "/fields/System.AreaPath",
-                                Value = areaPathServiceMapConfig.DefaultAreaPath
+                                Value = mapResponse.AreaPath
                             });
+
+                            logger.LogOperationSuccess("MapAreaPath", TimeSpan.Zero, new { AreaPath = mapResponse.AreaPath });
                             return true;
+                        }
+                        else 
+                        {
+                            if (!areaPathServiceMapConfig.IgnoreWhenNoMatchFound 
+                                && !string.IsNullOrWhiteSpace(areaPathServiceMapConfig.DefaultAreaPath))
+                            {
+                                fields.Add(new PatchFragment
+                                {
+                                    Op = "add",
+                                    Path = "/fields/System.AreaPath",
+                                    Value = areaPathServiceMapConfig.DefaultAreaPath
+                                });
+                                
+                                logger.LogOperationSuccess("MapAreaPath", TimeSpan.Zero, new { DefaultAreaPath = areaPathServiceMapConfig.DefaultAreaPath });
+                                return true;
+                            }
                         }
                     }
                 }
+                
+                logger.LogOperationSuccess("MapAreaPath", TimeSpan.Zero, new { Result = false });
+                return false;
             }
-            return false;
+            catch (Exception ex)
+            {
+                logger.LogOperationFailure("MapAreaPath", ex, new { serviceName });
+                throw;
+            }
         }
 
         public async Task CreateWorkItemFromServiceHealthAsync(
@@ -91,45 +123,63 @@ namespace AzLcm.Shared.AzureDevOps
             ArgumentNullException.ThrowIfNull(healthEvent, nameof(healthEvent));
             ArgumentException.ThrowIfNullOrWhiteSpace(orgName, nameof(orgName));
 
-            var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";
-            if (healthEvent != null && template.Fields != null)
+            using var scope = logger.BeginOperationScope("CreateWorkItemFromServiceHealth", 
+                new { orgName, ServiceName = healthEvent.Service, EventName = healthEvent.Name });
+
+            try
             {
-                List<PatchFragment> fields = [];
-                List<string> tags = [ healthEvent.Service ];
-                string? workItemTags = string.Join(", ", tags);
-                
-                foreach (var tplField in template.Fields)
+                logger.LogServiceHealthEvent("CreateWorkItem", healthEvent.Service, 
+                    new { Title = healthEvent.Title, EventType = healthEvent.EventType });
+
+                var apiPath = $"{template.ProjectId}/_apis/wit/workitems/${template.Type}?api-version=7.1-preview.3";
+                if (healthEvent != null && template.Fields != null)
                 {
-                    var tplValue = $"{tplField.Value}";
-
-                    tplValue = tplValue.Replace("{SvcHealthEvent.Title}", healthEvent.Title);
-                    tplValue = tplValue.Replace("{SvcHealthEvent.Summary}", healthEvent.Summary);
-                    tplValue = tplValue.Replace("{SvcHealthEvent.Service}", healthEvent.Service);
-                    tplValue = tplValue.Replace("{SvcHealthEvent.Name}", healthEvent.Name);
-                    tplValue = tplValue.Replace("{SvcHealthEvent.Url}", healthEvent.Url);
-                    tplValue = tplValue.Replace("{SvcHealthEvent.LastUpdate}", healthEvent.LastUpdate.ToString());
-                    tplValue = tplValue.Replace("{SvcHealthEvent.Tags}", workItemTags);
-
-                    fields.Add(new PatchFragment
+                    List<PatchFragment> fields = [];
+                    List<string> tags = [ healthEvent.Service ];
+                    string? workItemTags = string.Join(", ", tags);
+                    
+                    foreach (var tplField in template.Fields)
                     {
-                        Op = tplField.Op,
-                        Path = tplField.Path,
-                        Value = tplValue
-                    });
-                }
+                        var tplValue = $"{tplField.Value}";
 
-                var proceedCreateWorkItem = await MapAreaPathAsync(
-                    healthEvent.Service, areaPathMapConfig.ServiceHealthMap, fields, cancellationToken);
+                        tplValue = tplValue.Replace("{SvcHealthEvent.Title}", healthEvent.Title);
+                        tplValue = tplValue.Replace("{SvcHealthEvent.Summary}", healthEvent.Summary);
+                        tplValue = tplValue.Replace("{SvcHealthEvent.Service}", healthEvent.Service);
+                        tplValue = tplValue.Replace("{SvcHealthEvent.Name}", healthEvent.Name);
+                        tplValue = tplValue.Replace("{SvcHealthEvent.Url}", healthEvent.Url);
+                        tplValue = tplValue.Replace("{SvcHealthEvent.LastUpdate}", healthEvent.LastUpdate.ToString());
+                        tplValue = tplValue.Replace("{SvcHealthEvent.Tags}", workItemTags);
 
-                if (proceedCreateWorkItem)
-                {
-                    await this.PostAsync<object, string>(orgName, apiPath,
-                        fields, cancellationToken, false, "application/json-patch+json");
+                        fields.Add(new PatchFragment
+                        {
+                            Op = tplField.Op,
+                            Path = tplField.Path,
+                            Value = tplValue
+                        });
+                    }
+
+                    var proceedCreateWorkItem = await MapAreaPathAsync(
+                        healthEvent.Service, areaPathMapConfig.ServiceHealthMap, fields, cancellationToken);
+
+                    if (proceedCreateWorkItem)
+                    {
+                        await this.PostAsync<object, string>(orgName, apiPath,
+                            fields, cancellationToken, false, "application/json-patch+json");
+                        
+                        logger.LogOperationSuccess("CreateWorkItemFromServiceHealth", TimeSpan.Zero, 
+                            new { ServiceName = healthEvent.Service, WorkItemCreated = true });
+                    }
+                    else 
+                    {
+                        logger.LogWarning("Failed to map area path for service {serviceName}. Skipping Work item creation.", healthEvent.Service);
+                    }
                 }
-                else 
-                {
-                    logger.LogWarning("Failed to map area path for service {serviceName}. Skipping Work item creation.", healthEvent.Service);
-                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogOperationFailure("CreateWorkItemFromServiceHealth", ex, 
+                    new { orgName, ServiceName = healthEvent.Service, EventName = healthEvent.Name });
+                throw;
             }
         }
 

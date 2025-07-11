@@ -2,6 +2,7 @@
 
 
 using AzLcm.Shared.Cognition.Models;
+using AzLcm.Shared.Logging;
 using AzLcm.Shared.Storage;
 using Azure;
 using Azure.AI.OpenAI;
@@ -30,35 +31,48 @@ namespace AzLcm.Shared.Cognition
         public async Task<Verdict?> AnalyzeV2Async(
             SyndicationItem feedItem, string promptTemplate, CancellationToken stoppingToken)
         {
-            ArgumentNullException.ThrowIfNull(nameof(feedItem));
+            ArgumentNullException.ThrowIfNull(feedItem, nameof(feedItem));
+            ArgumentException.ThrowIfNullOrWhiteSpace(promptTemplate, nameof(promptTemplate));
 
-            List<ChatMessage> messages = [new(ChatRole.System, promptTemplate)];
-            var tags = feedItem.Categories.Select(c => c.Name).ToList();
-            var feedDetails = new StringBuilder();
-            feedDetails.AppendLine($"<Update info BEGIN>");
-            feedDetails.AppendLine($"Title: {feedItem.Title.Text}");
-            feedDetails.AppendLine($"Summary: {feedItem.Summary.Text}");
-            feedDetails.AppendLine($"Tags: {string.Join(", ", tags)}");
-            feedDetails.AppendLine($"</Update info END>");            
-            messages.Add(new ChatMessage(ChatRole.User, feedDetails.ToString()));
+            using var scope = logger.BeginOperationScope("AnalyzeV2Async", 
+                new { FeedTitle = feedItem.Title?.Text, FeedId = feedItem.Id });
 
             try
             {
+                logger.LogOperationStart("AnalyzeV2Async", new { FeedTitle = feedItem.Title?.Text });
+
+                List<ChatMessage> messages = [new(ChatRole.System, promptTemplate)];
+                var tags = feedItem.Categories.Select(c => c.Name).ToList();
+                var feedDetails = new StringBuilder();
+                feedDetails.AppendLine($"<Update info BEGIN>");
+                feedDetails.AppendLine($"Title: {feedItem.Title.Text}");
+                feedDetails.AppendLine($"Summary: {feedItem.Summary.Text}");
+                feedDetails.AppendLine($"Tags: {string.Join(", ", tags)}");
+                feedDetails.AppendLine($"</Update info END>");            
+                messages.Add(new ChatMessage(ChatRole.User, feedDetails.ToString()));
+
                 var openAIClient = await GetOpenAIClient(stoppingToken);
                 var chatClient = openAIClient.AsChatClient(modelId: daemonConfig.AzureOpenAIGPTDeploymentId);
 
+                logger.LogExternalServiceCall("OpenAI", "CompleteAsync", new { ModelId = daemonConfig.AzureOpenAIGPTDeploymentId });
+
                 var response = await chatClient
                     .CompleteAsync<Verdict>(messages, GetChatOptions(), cancellationToken: stoppingToken);
+                
                 if (response.TryGetResult(out var orchestrationGroundedResponse) && orchestrationGroundedResponse != null)
                 {
+                    logger.LogOperationSuccess("AnalyzeV2Async", TimeSpan.Zero, new { Verdict = orchestrationGroundedResponse.UpdateKind });
                     return orchestrationGroundedResponse;
                 }
+
+                logger.LogOperationSuccess("AnalyzeV2Async", TimeSpan.Zero, new { Result = "No verdict generated" });
+                return null;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, message: "");
+                logger.LogOperationFailure("AnalyzeV2Async", ex, new { FeedTitle = feedItem.Title?.Text });
+                throw;
             }
-            return null;
         }
 
         public async Task<AreaPathMapResponse?> MapServiceToAreaPathAsync(
