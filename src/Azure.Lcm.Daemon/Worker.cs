@@ -4,6 +4,7 @@ using AzLcm.Shared;
 using AzLcm.Shared.AzureDevOps;
 using AzLcm.Shared.AzureUpdates;
 using AzLcm.Shared.Cognition;
+using AzLcm.Shared.Logging;
 using AzLcm.Shared.Policy;
 using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
@@ -30,6 +31,8 @@ namespace Azure.Lcm.Daemon
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            using var scope = logger.BeginOperationScope("ExecuteAsync", new { Worker = "BackgroundWorker" });
+            
             logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
             while (!stoppingToken.IsCancellationRequested)
@@ -39,17 +42,24 @@ namespace Azure.Lcm.Daemon
                     var allOk = await lcmHealthService.IsAllServicesUpAndHealthyAsync(stoppingToken);
                     if (allOk)
                     {
+                        logger.LogInformation("All services are healthy. Processing tasks...");
+                        
                         await ProcessServiceHealthAsync(stoppingToken);
                         await ProcessPolicyAsync(stoppingToken);
                         await ProcessFeedAsync(stoppingToken);
                     }
+                    else
+                    {
+                        logger.LogWarning("Some services are not healthy. Skipping processing tasks.");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Failed to process service health, policy, or feed.");
+                    logger.LogOperationFailure("ExecuteAsync", ex, new { Worker = "BackgroundWorker" });
                 }
 
                 var amount = await GetDelayAmountAsync(stoppingToken);
+                logger.LogDebug("Waiting {DelayMinutes} minutes before next processing cycle", amount / 60000);
                 await Task.Delay(amount, stoppingToken);
             }
         }
@@ -57,51 +67,76 @@ namespace Azure.Lcm.Daemon
 
         private async Task<int> GetDelayAmountAsync(CancellationToken cancellationToken)
         {
+            using var scope = logger.BeginOperationScope("GetDelayAmount");
+            
             try
             {
+                logger.LogOperationStart("GetDelayAmount");
                 var generalConfig = await configurationStorage.LoadGeneralConfigAsync(cancellationToken);
+                logger.LogOperationSuccess("GetDelayAmount", TimeSpan.Zero, new { DelayMs = generalConfig.DelayMilliseconds });
                 return generalConfig.DelayMilliseconds;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to get delay amount.");
+                logger.LogOperationFailure("GetDelayAmount", ex);
+                const int defaultDelay = 1_000 * 60 * 5; // 5 minutes
+                logger.LogWarning("Using default delay of {DelayMinutes} minutes", defaultDelay / 60000);
+                return defaultDelay;
             }
-
-            return 1_000 * 60 * 5; // 5 minutes
         }
 
 
         private async Task ProcessServiceHealthAsync(CancellationToken stoppingToken)
         {
-            var generalConfig = await configurationStorage.LoadGeneralConfigAsync(stoppingToken);
-
-            if (generalConfig.ProcessServiceHealth)
+            using var scope = logger.BeginOperationScope("ProcessServiceHealth");
+            
+            try
             {
-                var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
-                var areaPathMapConfig = await workItemTemplateStorage.GetAreaPathMapConfigAsync(stoppingToken);
-                var template = await workItemTemplateStorage.GetServiceHealthWorkItemTemplateAsync(stoppingToken);
+                logger.LogOperationStart("ProcessServiceHealth");
+                
+                var generalConfig = await configurationStorage.LoadGeneralConfigAsync(stoppingToken);
 
-                var processedCount = 0;
-                var totalEventCount = 0;
-
-                await serviceHealthReader.ProcessAsync(async serviceHealthEvent =>
+                if (generalConfig.ProcessServiceHealth)
                 {
-                    ++totalEventCount;
-                    var seen = await healthServiceEventStorage.HasSeenAsync(serviceHealthEvent, stoppingToken);
+                    var azDevOpsConfig = config.GetAzureDevOpsClientConfig();
+                    var areaPathMapConfig = await workItemTemplateStorage.GetAreaPathMapConfigAsync(stoppingToken);
+                    var template = await workItemTemplateStorage.GetServiceHealthWorkItemTemplateAsync(stoppingToken);
 
-                    if (!seen)
+                    var processedCount = 0;
+                    var totalEventCount = 0;
+
+                    await serviceHealthReader.ProcessAsync(async serviceHealthEvent =>
                     {
-                        ++processedCount;
+                        ++totalEventCount;
+                        var seen = await healthServiceEventStorage.HasSeenAsync(serviceHealthEvent, stoppingToken);
 
-                        await devOpsClient.CreateWorkItemFromServiceHealthAsync(
-                            azDevOpsConfig.orgName, template, areaPathMapConfig,
-                            serviceHealthEvent, stoppingToken);
+                        if (!seen)
+                        {
+                            ++processedCount;
+                            
+                            logger.LogServiceHealthEvent("ProcessingNew", serviceHealthEvent.Service, 
+                                new { Title = serviceHealthEvent.Title, EventType = serviceHealthEvent.EventType });
 
-                        await healthServiceEventStorage.MarkAsSeenAsync(serviceHealthEvent, stoppingToken);
-                    }
-                }, stoppingToken);
-                logger.LogInformation("Process {processedCount} items, out of {totalEventCount} service health events.",
-                    processedCount, totalEventCount);
+                            await devOpsClient.CreateWorkItemFromServiceHealthAsync(
+                                azDevOpsConfig.orgName, template, areaPathMapConfig,
+                                serviceHealthEvent, stoppingToken);
+
+                            await healthServiceEventStorage.MarkAsSeenAsync(serviceHealthEvent, stoppingToken);
+                        }
+                    }, stoppingToken);
+                    
+                    logger.LogOperationSuccess("ProcessServiceHealth", TimeSpan.Zero, 
+                        new { ProcessedCount = processedCount, TotalEventCount = totalEventCount });
+                }
+                else
+                {
+                    logger.LogInformation("Service health processing is disabled");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogOperationFailure("ProcessServiceHealth", ex);
+                throw;
             }
         }
 

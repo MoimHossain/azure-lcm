@@ -3,11 +3,13 @@
 
 using AzLcm.Shared.ServiceHealth;
 using Azure.Data.Tables;
+using Microsoft.Extensions.Logging;
 
 namespace AzLcm.Shared.Storage
 {
-    public class HealthServiceEventStorage(DaemonConfig daemonConfig, AzureCredentialProvider azureCredentialProvider) : StorageBase
+    public class HealthServiceEventStorage(DaemonConfig daemonConfig, AzureCredentialProvider azureCredentialProvider, ILogger<HealthServiceEventStorage> logger) : StorageBase
     {
+        protected override ILogger Logger => logger;
         protected override AzureCredentialProvider GetAzureCredentialProvider() => azureCredentialProvider;
         protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
 

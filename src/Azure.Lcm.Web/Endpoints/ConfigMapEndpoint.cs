@@ -1,5 +1,6 @@
 ﻿
 
+using AzLcm.Shared.Logging;
 using AzLcm.Shared.ServiceHealth;
 using AzLcm.Shared.Storage;
 using Microsoft.AspNetCore.Mvc;
@@ -10,19 +11,45 @@ public class ConfigMapEndpoint
 {
     public static async Task<IResult> LoadGeneralConfigAsync(
         [FromServices] ConfigurationStorage configurationStorage,
+        [FromServices] ILogger<ConfigMapEndpoint> logger,
         CancellationToken cancellationToken)
     {
-        var config = await configurationStorage.LoadGeneralConfigAsync(cancellationToken);
-        return Results.Ok(config);
+        using var scope = logger.BeginOperationScope("LoadGeneralConfig");
+        
+        try
+        {
+            logger.LogOperationStart("LoadGeneralConfig");
+            var config = await configurationStorage.LoadGeneralConfigAsync(cancellationToken);
+            logger.LogOperationSuccess("LoadGeneralConfig", TimeSpan.Zero, new { ConfigLoaded = config != null });
+            return Results.Ok(config);
+        }
+        catch (Exception ex)
+        {
+            logger.LogOperationFailure("LoadGeneralConfig", ex);
+            return Results.Problem(detail: ex.Message, statusCode: 500, title: "Failed to load general configuration");
+        }
     }
 
     public static async Task<IResult> SaveGeneralConfigAsync(
         [FromBody] GeneralConfig config,
         [FromServices] ConfigurationStorage configurationStorage,
+        [FromServices] ILogger<ConfigMapEndpoint> logger,
         CancellationToken cancellationToken)
     {
-        await configurationStorage.SaveGeneralConfigAsync(config, cancellationToken);
-        return Results.Ok(config);
+        using var scope = logger.BeginOperationScope("SaveGeneralConfig", config);
+        
+        try
+        {
+            logger.LogOperationStart("SaveGeneralConfig", config);
+            await configurationStorage.SaveGeneralConfigAsync(config, cancellationToken);
+            logger.LogOperationSuccess("SaveGeneralConfig", TimeSpan.Zero, new { ConfigSaved = true });
+            return Results.Ok(config);
+        }
+        catch (Exception ex)
+        {
+            logger.LogOperationFailure("SaveGeneralConfig", ex, config);
+            return Results.Problem(detail: ex.Message, statusCode: 500, title: "Failed to save general configuration");
+        }
     }
 
     public static async Task<IResult> LoadAsync(

@@ -10,6 +10,21 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using Azure.Lcm.Daemon;
 
+// Set up global exception handling
+AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+{
+    var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("GlobalExceptionHandler");
+    var exception = e.ExceptionObject as Exception;
+    logger.LogCritical(exception, "Unhandled exception occurred. IsTerminating: {IsTerminating}", e.IsTerminating);
+};
+
+TaskScheduler.UnobservedTaskException += (sender, e) =>
+{
+    var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("GlobalExceptionHandler");
+    logger.LogCritical(e.Exception, "Unobserved task exception occurred");
+    e.SetObserved();
+};
+
 
 
 var builder = Host.CreateApplicationBuilder(args);

@@ -2,12 +2,14 @@
 
 using AzLcm.Shared.Policy.Models;
 using Azure.Data.Tables;
+using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
 
 namespace AzLcm.Shared.Storage
 {
-    public class PolicyStorage(DaemonConfig daemonConfig, AzureCredentialProvider azureCredentialProvider) : StorageBase
+    public class PolicyStorage(DaemonConfig daemonConfig, AzureCredentialProvider azureCredentialProvider, ILogger<PolicyStorage> logger) : StorageBase
     {
+        protected override ILogger Logger => logger;
         protected override AzureCredentialProvider GetAzureCredentialProvider() => azureCredentialProvider;
         protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
 

@@ -2,12 +2,14 @@
 
 
 using Azure.Data.Tables;
+using Microsoft.Extensions.Logging;
 using System.ServiceModel.Syndication;
 
 namespace AzLcm.Shared.Storage
 {
-    public class FeedStorage(DaemonConfig daemonConfig, AzureCredentialProvider azureCredentialProvider) : StorageBase
+    public class FeedStorage(DaemonConfig daemonConfig, AzureCredentialProvider azureCredentialProvider, ILogger<FeedStorage> logger) : StorageBase
     {
+        protected override ILogger Logger => logger;
         protected override AzureCredentialProvider GetAzureCredentialProvider() => azureCredentialProvider;
         protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
 

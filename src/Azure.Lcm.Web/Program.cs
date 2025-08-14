@@ -2,6 +2,7 @@
 
 using Azure.Identity;
 using AzLcm.Shared;
+using AzLcm.Shared.Middleware;
 using Azure.Lcm.Web.Endpoints;
 using System.Text.Json.Serialization;
 using System.Text.Json;
@@ -74,6 +75,9 @@ builder.Services.AddRequiredServices();
 builder.Services.AddHostedService<LcmBackgroundService>();
 
 var app = builder.Build();
+
+// Add global exception handling
+app.UseGlobalExceptionHandling();
 
 app.UseSwagger();
 app.UseSwaggerUI();

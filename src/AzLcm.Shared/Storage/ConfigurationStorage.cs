@@ -8,9 +8,10 @@ namespace AzLcm.Shared.Storage;
 
 public class ConfigurationStorage(
     DaemonConfig daemonConfig, 
-    ILogger<ConfigurationStorage> Logger, 
+    ILogger<ConfigurationStorage> logger, 
     AzureCredentialProvider azureCredentialProvider) : StorageBase
 {
+    protected override ILogger Logger => logger;
     protected override AzureCredentialProvider GetAzureCredentialProvider() => azureCredentialProvider;
 
     protected override string GetStorageAccountName() => daemonConfig.StorageAccountName;
@@ -94,7 +95,7 @@ public class ConfigurationStorage(
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to load config from storage");
+            logger.LogError(ex, "Failed to load config from storage");
         }
         var defaultValue = new ServiceHealthConfig
         {
@@ -175,7 +176,7 @@ servicehealthresources
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to load config from storage");
+            logger.LogError(ex, "Failed to load config from storage");
         }
         return defaultValue;            
     }
