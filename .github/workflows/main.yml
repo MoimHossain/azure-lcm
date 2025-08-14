@@ -1,0 +1,17 @@
+name: Resilient Scheduler
+
+on:
+  schedule:
+    # UTC-only cron; adjust as you like
+    - cron: '3,18,33,48 * * * *'
+  workflow_dispatch:  # allows manual or API re-dispatch
+
+jobs:
+  do_stuff:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Your real work here
+        id: work
+        run: |
+          echo "Doing important stuff…"
