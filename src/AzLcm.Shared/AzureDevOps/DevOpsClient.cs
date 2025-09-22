@@ -217,6 +217,8 @@ namespace AzLcm.Shared.AzureDevOps
                     tplValue = tplValue.Replace("{Feed.Title}", feed.Title.Text);
                     tplValue = tplValue.Replace("{Feed.Id}", feed.Id);
                     tplValue = tplValue.Replace("{Feed.Summary}", feed.Summary.Text);
+                    tplValue = tplValue.Replace("{Feed.Content.Text}", feed.Summary.Text);
+                    
                     tplValue = tplValue.Replace("{Feed.PublishDate}", feed.PublishDate.ToString());
 
                     if(feed.Links != null && feed.Links.Any())
@@ -227,6 +229,8 @@ namespace AzLcm.Shared.AzureDevOps
 
                     if(verdict != null)
                     {
+                        tplValue = tplValue.Replace("{Feed.Summary}", verdict.SummaryMarkdown);
+
                         tplValue = tplValue.Replace("{Classification.Kind}", verdict.UpdateKind.ToString());
                         if(verdict.AzureServiceNames != null)
                         {

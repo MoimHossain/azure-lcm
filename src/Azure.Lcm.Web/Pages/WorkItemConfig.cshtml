@@ -4,135 +4,164 @@
     ViewData["Title"] = "Azure DevOps Work item config";
 }
 
+<style>
+    .wi-hero { background:linear-gradient(135deg,#f093fb,#f5576c,#ff9a9e); color:#fff; padding:2rem 2.1rem; border-radius:22px; position:relative; overflow:hidden; box-shadow:0 18px 44px -14px rgba(240,147,251,.5); }
+    .wi-hero:before,.wi-hero:after { content:""; position:absolute; border-radius:50%; filter:blur(40px); opacity:.35; mix-blend-mode:screen; animation: float 16s linear infinite; }
+    .wi-hero:before { width:300px; height:300px; top:-70px; right:-70px; background:radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0)); }
+    .wi-hero:after { width:220px; height:220px; bottom:-60px; left:-40px; background:radial-gradient(circle at 70% 70%, #ffe4f5, rgba(255,255,255,0)); animation-duration:22s; }
+    @@keyframes float {0%{transform:translateY(0);}50%{transform:translateY(20px);}100%{transform:translateY(0);}}
+    .wi-card { background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(250,244,255,.85)); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.4); border-radius:22px; padding:1.5rem 1.3rem 1.7rem; box-shadow:0 12px 34px -10px rgba(0,0,0,.12); transition:.35s; }
+    .wi-card:hover { transform:translateY(-4px); box-shadow:0 18px 48px -12px rgba(0,0,0,.16); }
+    .wi-label { font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.55px; color:#5b224f; margin-bottom:.35rem; }
+    .wi-field { border-radius:14px; padding:.7rem .9rem; border:1px solid rgba(240,147,251,.5); }
+    .wi-field:focus { box-shadow:0 0 0 3px rgba(240,147,251,.35); border-color:#f093fb; }
+    .wi-table-wrapper { border:1px solid rgba(240,147,251,.35); border-radius:18px; overflow:hidden; background:rgba(255,255,255,.75); backdrop-filter:blur(6px); }
+    table.wi-table { width:100%; margin:0; }
+    table.wi-table thead { background:linear-gradient(135deg,#f093fb,#f5576c); color:#fff; }
+    table.wi-table th, table.wi-table td { padding:.6rem .7rem; vertical-align:middle; font-size:.8rem; }
+    table.wi-table tbody tr:nth-child(even){ background:rgba(0,0,0,.025); }
+    .wi-add-btn { margin-top:.7rem; font-weight:600; border-radius:14px; }
+    .wi-save-bar { text-align:right; }
+    .wi-save { font-weight:600; letter-spacing:.5px; padding:.85rem 2rem; border-radius:50px; box-shadow:0 10px 30px -8px rgba(245,87,108,.5); }
+    .wi-save:hover { box-shadow:0 12px 34px -6px rgba(245,87,108,.6); }
+    .wi-grid { display:grid; gap:1.1rem; }
+    @@media (min-width:680px){ .wi-grid { grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); } }
+</style>
+
+<div class="wi-hero mb-4">
+    <h1 class="h5 mb-2 d-flex align-items-center" style="gap:.65rem;">
+        <span style="background:rgba(255,255,255,.2); padding:.45rem .75rem; border-radius:10px; font-size:.75rem; font-weight:600; letter-spacing:.6px;">WORK ITEM TEMPLATES</span>
+        <i class="fas fa-tasks"></i>
+    </h1>
+    <p class="mb-0" style="opacity:.85; max-width:760px;">Define reusable Azure DevOps work item field mappings for each event source (Service Health, Policies, Azure Updates).</p>
+</div>
+
 <form method="post" id="workItemConfigForm">
-    <div class="form-group">
-        <label for="ProjectID">Project ID(Azure DevOps)</label>
-        <input type="text" id="ProjectID" name="ProjectID" class="form-control" value="@Model?.WorkItemTempates?.FeedWorkItemTemplate?.ProjectId" />
-        <small class="form-text text-muted">Azure DevOps project ID.</small>
+    <div class="wi-card mb-4">
+        <div class="wi-grid mb-3">
+            <div>
+                <label for="ProjectID" class="wi-label">Project ID (Azure DevOps)</label>
+                <input type="text" id="ProjectID" name="ProjectID" class="form-control wi-field" value="@Model?.WorkItemTempates?.FeedWorkItemTemplate?.ProjectId" />
+                <small class="text-muted" style="font-size:.65rem;">Azure DevOps project GUID or name.</small>
+            </div>
+            <div>
+                <label for="WIType" class="wi-label">Work Item Type</label>
+                <input type="text" id="WIType" name="WIType" class="form-control wi-field" value="@Model?.WorkItemTempates?.FeedWorkItemTemplate?.Type" />
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="WIType">Work item type</label>
-        <input type="text" id="WIType" name="WIType" class="form-control" value="@Model?.WorkItemTempates?.FeedWorkItemTemplate?.Type" />
+    <!-- Service Health Config -->
+    <div class="wi-card mb-4">
+        <h4 class="mb-3 d-flex align-items-center" style="gap:.5rem; font-weight:600;">
+            <i class="fas fa-heartbeat"></i> Service Health Work Item Config
+        </h4>
+        <div class="wi-table-wrapper">
+            <table id="health-table" class="wi-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Field name (e.g. /fields/System.Title)</th>
+                        <th style="width: 50%;">Value (e.g. {SvcHealthEvent.Title})</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate != null)
+                    {
+                        @for (int i = 0; i < Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate?.Fields?.Count; i++)
+                        {
+                            var fieldInfo = Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate?.Fields[i];
+                            @if(fieldInfo != null)
+                            {
+                                <tr>
+                                    <td><input type="text" asp-for="@fieldInfo.Path" class="form-control wi-field" /></td>
+                                    <td><input type="text" asp-for="@fieldInfo.Value" class="form-control wi-field" /></td>
+                                    <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-outline-secondary wi-add-btn" onclick="addRow('health-table')"><i class="fas fa-plus"></i> Add Row</button>
     </div>
 
-    <h4 class="config-section">Service health work item config</h4>
-    <table id="health-table">
-        <thead>
-            <tr>
-                <th style="width: 400px;">Field name (e.g. /fields/System.Title)</th>
-                <th style="width: 600px;">Value (e.g. {SvcHealthEvent.Title})</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate != null)
-            {
-                @for (int i = 0; i < Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate?.Fields?.Count; i++)
-                {
-                    var fieldInfo = Model?.WorkItemTempates?.ServiceHealthWorkItemTemplate?.Fields[i];
-                    @if(fieldInfo != null)
+    <!-- Policy Config -->
+    <div class="wi-card mb-4">
+        <h4 class="mb-3 d-flex align-items-center" style="gap:.5rem; font-weight:600;">
+            <i class="fas fa-shield-alt"></i> Policy Work Item Config
+        </h4>
+        <div class="wi-table-wrapper">
+            <table id="policy-table" class="wi-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Field name (e.g. /fields/System.Title)</th>
+                        <th style="width: 50%;">Value (e.g. {Policy.DisplayName})</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model?.WorkItemTempates?.PolicyWorkItemTemplate != null)
                     {
-                        <tr>
-                            <td>
-                                <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
-                            </td>
-                            <td>
-                                <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
-                            </td>
-                        </tr>
+                        @for (int i = 0; i < Model?.WorkItemTempates?.PolicyWorkItemTemplate?.Fields?.Count; i++)
+                        {
+                            var fieldInfo = Model?.WorkItemTempates?.PolicyWorkItemTemplate?.Fields[i];
+                            @if (fieldInfo != null)
+                            {
+                                <tr>
+                                    <td><input type="text" asp-for="@fieldInfo.Path" class="form-control wi-field" /></td>
+                                    <td><input type="text" asp-for="@fieldInfo.Value" class="form-control wi-field" /></td>
+                                    <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                </tr>
+                            }
+                        }
                     }
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-outline-secondary wi-add-btn" onclick="addRow('policy-table')"><i class="fas fa-plus"></i> Add Row</button>
+    </div>
 
-                }
-            }
-        </tbody>
-    </table>
-    <button type="button" class="btn btn-secondary config-section" onclick="addRow('health-table')">Add New Row</button>
-
-
-    <p></p>
-
-    <h4 class="config-section">Policy work item config</h4>
-    <table id="policy-table">
-        <thead>
-            <tr>
-                <th style="width: 400px;">Field name (e.g. /fields/System.Title)</th>
-                <th style="width: 600px;">Value (e.g. {Policy.DisplayName})</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model?.WorkItemTempates?.PolicyWorkItemTemplate != null)
-            {
-                @for (int i = 0; i < Model?.WorkItemTempates?.PolicyWorkItemTemplate?.Fields?.Count; i++)
-                {
-                    var fieldInfo = Model?.WorkItemTempates?.PolicyWorkItemTemplate?.Fields[i];
-                    @if (fieldInfo != null)
+    <!-- Feed Config -->
+    <div class="wi-card mb-4">
+        <h4 class="mb-3 d-flex align-items-center" style="gap:.5rem; font-weight:600;">
+            <i class="fas fa-rss"></i> Feed (Azure Updates) Work Item Config
+        </h4>
+        <div class="wi-table-wrapper">
+            <table id="feed-table" class="wi-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Field name (e.g. /fields/System.Title)</th>
+                        <th style="width: 50%;">Value (e.g. {Feed.Title})</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model?.WorkItemTempates?.FeedWorkItemTemplate != null)
                     {
-                        <tr>
-                            <td>
-                                <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
-                            </td>
-                            <td>
-                                <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
-                            </td>
-                        </tr>
+                        @for (int i = 0; i < Model?.WorkItemTempates?.FeedWorkItemTemplate?.Fields?.Count; i++)
+                        {
+                            var fieldInfo = Model?.WorkItemTempates?.FeedWorkItemTemplate?.Fields[i];
+                            @if(fieldInfo != null)
+                            {
+                                <tr>
+                                    <td><input type="text" asp-for="@fieldInfo.Path" class="form-control wi-field" /></td>
+                                    <td><input type="text" asp-for="@fieldInfo.Value" class="form-control wi-field" /></td>
+                                    <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                </tr>
+                            }
+                        }
                     }
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-outline-secondary wi-add-btn" onclick="addRow('feed-table')"><i class="fas fa-plus"></i> Add Row</button>
+    </div>
 
-                }
-            }
-        </tbody>
-    </table>
-    <button type="button" class="btn btn-secondary config-section" onclick="addRow('policy-table')">Add New Row</button>
-
-
-
-    <p></p>
-
-    <h4 class="config-section">Feed (Azure Updates) work item config</h4>
-    <table id="feed-table">
-        <thead>
-            <tr>
-                <th style="width: 400px;">Field name (e.g. /fields/System.Title)</th>
-                <th style="width: 600px;">Value (e.g. {Feed.Title})</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model?.WorkItemTempates?.FeedWorkItemTemplate != null)
-            {
-                @for (int i = 0; i < Model?.WorkItemTempates?.FeedWorkItemTemplate?.Fields?.Count; i++)
-                {
-                    var fieldInfo = Model?.WorkItemTempates?.FeedWorkItemTemplate?.Fields[i];
-                    @if(fieldInfo != null)
-                    {
-                        <tr>
-                            <td>
-                                <input type="text" asp-for="@fieldInfo.Path" class="form-control" />
-                            </td>
-                            <td>
-                                <input type="text" asp-for="@fieldInfo.Value" class="form-control" />
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
-                            </td>
-                        </tr>
-                    }
-                }
-            }
-        </tbody>
-    </table>
-    <button type="button" class="btn btn-secondary config-section" onclick="addRow('feed-table')">Add New Row</button>
-
-    <p>
-        <button type="submit" class="btn btn-primary config-section">Save</button>
-    </p>
+    <div class="wi-save-bar mb-4">
+        <button type="submit" class="btn btn-primary wi-save"><i class="fas fa-save"></i> Save</button>
+    </div>
 </form>
 
 
@@ -177,12 +206,12 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    alert('Configuration saved successfully!');
+                    if(window.showToast) { showToast('Work item templates saved','success'); } else { console.log('Work item templates saved'); }
                     document.location.reload();
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred.');
+                    if(window.showToast) { showToast('Error saving work item templates','error'); } else { console.error('Error saving work item templates'); }
                 });
         });
 

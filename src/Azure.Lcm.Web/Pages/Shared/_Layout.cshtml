@@ -3,55 +3,211 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Azure Lifecycle Management</title>
+    <title>@ViewData["Title"] - Azure Lifecycle Management Portal</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Azure.Lcm.Web.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: var(--primary-gradient) !important;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            border: none !important;
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: #ffffff !important;
+            letter-spacing: .5px;
+            position: relative;
+        }
+
+        /* Optional subtle glow to further increase readability */
+        .navbar-brand::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.35), transparent 70%);
+            opacity: .35;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0 4px;
+            padding: 8px 16px !important;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .container-main {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            padding: 2rem;
+        }
+        
+        .footer {
+            background: var(--dark-gradient);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            margin-top: 3rem;
+            padding: 2rem 0;
+        }
+        
+        .page-header {
+            background: var(--accent-gradient);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+        }
+        
+        .feature-icon {
+            font-size: 1.2rem;
+            margin-right: 8px;
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm  bg-primary bg-body-tertiary border-bottom box-shadow mb-3" data-bs-theme="dark">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" data-bs-theme="dark">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Azure Lifecycle Management</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Azure Lifecycle Management Portal
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        <!-- Settings -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index"><span style="color:aliceblue;">Home</span></a>
+                            <a class="nav-link" asp-area="" asp-page="/GeneralConfig">
+                                <span style="color:white;">
+                                    <i class="fas fa-cog feature-icon"></i> Settings
+                                </span>
+                            </a>
                         </li>
-                        
+                        <!-- Area Paths -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/SvcHealthConfig"><span style="color:aliceblue;">Service Health</span></a>
+                            <a class="nav-link" asp-area="" asp-page="/Config">
+                                <span style="color:white;">
+                                    <i class="fas fa-sitemap feature-icon"></i> Area Paths
+                                </span>
+                            </a>
                         </li>
+                        <!-- Work Items -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/WorkItemConfig"><span style="color:aliceblue;">Work items</span></a>
+                            <a class="nav-link" asp-area="" asp-page="/WorkItemConfig">
+                                <span style="color:white;">
+                                    <i class="fas fa-tasks feature-icon"></i> Work Items
+                                </span>
+                            </a>
                         </li>
+                        <!-- Service Health -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Config"><span style="color:aliceblue;">Area Paths</span></a>
+                            <a class="nav-link" asp-area="" asp-page="/SvcHealthConfig">
+                                <span style="color:white;">
+                                    <i class="fas fa-heartbeat feature-icon"></i> Service Health
+                                </span>
+                            </a>
                         </li>
+                        <!-- APIs -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/GeneralConfig"><span style="color:aliceblue;">Settings</span></a>
+                            <a class="nav-link" href="/swagger/index.html">
+                                <span style="color:white;">
+                                    <i class="fas fa-code feature-icon"></i> APIs
+                                </span>
+                            </a>
                         </li>
+                        <!-- Logs (formerly Home /Index) -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="/swagger/index.html"><span style="color:aliceblue;">APIs</span></a>
+                            <a class="nav-link" asp-area="" asp-page="/Index">
+                                <span style="color:white;">
+                                    <i class="fas fa-file-alt feature-icon"></i> Logs
+                                </span>
+                            </a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+    
     <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+        <div class="page-header">
+            <h1 class="display-4 mb-3">
+                <i class="fas fa-cloud"></i> Welcome to Azure LCM Portal
+            </h1>
+            <p class="lead mb-0">
+                🎯 Your comprehensive solution for Azure Lifecycle Management
+                <br>
+                <small>Streamline operations • Monitor health • Optimize workflows</small>
+            </p>
+        </div>
+        
+        <div class="container-main">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - Azure Lifecycle Management - <a asp-area="" asp-page="/Home">Microsoft</a>
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-cloud"></i> Azure Lifecycle Management Portal
+                    </h5>
+                    <p class="mb-2">
+                        🌟 Empowering teams with intelligent Azure resource management
+                    </p>
+                    <p class="small opacity-75">
+                        &copy; 2024 - Built with ❤️ for Azure Excellence • 
+                        <a href="#" class="text-decoration-none text-light">
+                            <i class="fab fa-microsoft"></i> Powered by Microsoft Azure
+                        </a>
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -59,6 +215,32 @@
     <script src="~/lib/moment/moment.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Global Toast Container -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index:1080;">
+        <div id="globalToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="globalToastBody">Saved</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.showToast = function (message, type) {
+            try {
+                var toastEl = document.getElementById('globalToast');
+                var bodyEl = document.getElementById('globalToastBody');
+                if (!toastEl || !bodyEl) return;
+                var cls = ['text-bg-success','text-bg-danger','text-bg-warning','text-bg-info'];
+                toastEl.classList.remove.apply(toastEl.classList, cls);
+                var map = { success: 'text-bg-success', error: 'text-bg-danger', warning: 'text-bg-warning', info: 'text-bg-info' };
+                toastEl.classList.add(map[type] || 'text-bg-success');
+                bodyEl.textContent = message;
+                var instance = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3200 });
+                instance.show();
+            } catch (e) { console.log(e); }
+        };
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

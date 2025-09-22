@@ -42,7 +42,7 @@ namespace AzLcm.Shared.Storage
         protected virtual TableClient GetTableClientCore()
         {
             try
-            {
+            {                
                 return new(new Uri($"https://{GetStorageAccountName()}.table.core.windows.net"),
                     GetStorageTableName(),
                     GetAzureCredentialProvider().GetStorageCredential());

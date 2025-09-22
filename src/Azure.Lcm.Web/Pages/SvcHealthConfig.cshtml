@@ -6,30 +6,58 @@
 
 
 
+<style>
+    .sh-hero { background:linear-gradient(135deg,#11998e,#38ef7d,#4facfe); color:#fff; padding:1.9rem 2rem; border-radius:20px; position:relative; overflow:hidden; box-shadow:0 16px 40px -12px rgba(56,239,125,.45); }
+    .sh-hero:before,.sh-hero:after { content:""; position:absolute; border-radius:50%; filter:blur(40px); opacity:.35; mix-blend-mode:screen; animation: float 15s linear infinite; }
+    .sh-hero:before{ width:260px; height:260px; top:-70px; right:-70px; background:radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0)); }
+    .sh-hero:after{ width:200px; height:200px; bottom:-60px; left:-50px; background:radial-gradient(circle at 70% 70%, #d1efff, rgba(255,255,255,0)); animation-duration:20s; }
+    @@keyframes float {0%{transform:translateY(0);}50%{transform:translateY(18px);}100%{transform:translateY(0);}}
+    .sh-card { background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(245,247,255,.8)); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.4); border-radius:22px; padding:1.6rem 1.4rem 1.9rem; box-shadow:0 12px 34px -10px rgba(0,0,0,.12); transition:.35s; }
+    .sh-card:hover { transform:translateY(-4px); box-shadow:0 18px 46px -12px rgba(0,0,0,.16); }
+    .sh-label { font-size:.75rem; font-weight:600; text-transform:uppercase; letter-spacing:.55px; color:#256149; margin-bottom:.35rem; }
+    .sh-field { border-radius:14px; padding:.7rem .9rem; border:1px solid rgba(17,153,142,.35); }
+    .sh-field:focus { box-shadow:0 0 0 3px rgba(17,153,142,.25); border-color:#11998e; }
+    .sh-save { font-weight:600; letter-spacing:.5px; padding:.85rem 2rem; border-radius:50px; box-shadow:0 10px 28px -8px rgba(56,239,125,.5); }
+    .sh-save:hover { box-shadow:0 12px 32px -6px rgba(56,239,125,.6); }
+    .sh-grid { display:grid; gap:1.15rem; }
+    @@media (min-width:700px){ .sh-grid { grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); } }
+    .sh-muted { font-size:.7rem; color:#52796f; }
+    .sh-code { font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; background:#0f172a; color:#e2e8f0; border-radius:12px; padding:.9rem 1rem; min-height:160px; }
+</style>
+
+<div class="sh-hero mb-4">
+    <h1 class="h5 mb-2 d-flex align-items-center" style="gap:.6rem;">
+        <span style="background:rgba(255,255,255,.15); padding:.45rem .75rem; border-radius:10px; font-size:.85rem; font-weight:600; letter-spacing:.6px;">SERVICE HEALTH CONFIG</span>
+        <i class="fas fa-heartbeat"></i>
+    </h1>
+    <p class="mb-0" style="opacity:.85; max-width:760px;">Configure how Azure Service Health signals are queried and narrowed for lifecycle automation. Subscriptions & a custom Kusto query drive the filtering scope.</p>
+</div>
+
 <form method="post" id="serviceHealthForm">
     @if (Model != null && Model.ServiceHealthConfig != null)
     {
-        <div class="form-group">
-            <label for="Subscriptions">Subscriptions</label>
-            <input type="text" id="Subscriptions" name="Subscriptions" class="form-control" value="@string.Join(", ", Model.ServiceHealthConfig.Subscriptions ?? new string[0])" />
-            <small class="form-text text-muted">Comma separated list of subscriptions.</small>
+        <div class="sh-card mb-4">
+            <div class="sh-grid mb-3">
+                <div>
+                    <label for="Subscriptions" class="sh-label">Subscriptions</label>
+                    <input type="text" id="Subscriptions" name="Subscriptions" class="form-control sh-field" value="@string.Join(", ", Model.ServiceHealthConfig.Subscriptions ?? new string[0])" />
+                    <small class="sh-muted">Comma separated subscription IDs or names.</small>
+                </div>
+                <div>
+                    <label for="Uri" class="sh-label">URI</label>
+                    <input type="text" id="Uri" name="Uri" class="form-control sh-field" value="@Model.ServiceHealthConfig.Uri" />
+                </div>
+            </div>
+            <div>
+                <label for="KustoQuery" class="sh-label">Kusto Query</label>
+                <textarea id="KustoQuery" name="KustoQuery" class="form-control sh-code">@Model.ServiceHealthConfig.KustoQuery</textarea>
+                <small class="sh-muted">Provide a full KQL statement; it will be sent as-is.</small>
+            </div>
+            <div class="text-end mt-4">
+                <button type="submit" class="btn btn-success sh-save"><i class="fas fa-save"></i> Save</button>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="Uri">URI</label>
-            <input type="text" id="Uri" name="Uri" class="form-control" value="@Model.ServiceHealthConfig.Uri" />
-        </div>
-
-        <div class="form-group">
-            <label for="KustoQuery">Kusto Query</label>
-            <textarea id="KustoQuery" name="KustoQuery" class="form-control">@Model.ServiceHealthConfig.KustoQuery</textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary config-section">Save</button>
     }
-
-
-
 </form>
 
 
@@ -58,11 +86,11 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    alert('Configuration saved successfully!');
+                    if(window.showToast) { showToast('Service health configuration saved','success'); } else { console.log('Service health configuration saved'); }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred.');
+                    if(window.showToast) { showToast('Error saving service health configuration','error'); } else { console.error('Error saving service health configuration'); }
                 });
         });
     </script>

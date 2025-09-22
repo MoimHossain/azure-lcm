@@ -5,40 +5,114 @@
 }
 
 
+<style>
+    /* Page-specific enhancement styling */
+    .gc-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4facfe 100%);
+        color: #fff;
+        padding: 2.2rem 2rem;
+        border-radius: 18px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 40px -10px rgba(103,119,239,.45);
+    }
+    .gc-hero:before, .gc-hero:after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: .35;
+        mix-blend-mode: screen;
+        animation: float 12s linear infinite;
+    }
+    .gc-hero:before { width: 280px; height: 280px; top: -60px; right: -60px; background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0)); }
+    .gc-hero:after { width: 200px; height: 200px; bottom: -40px; left: -30px; background: radial-gradient(circle at 70% 70%, #d1efff, rgba(255,255,255,0)); animation-duration: 16s; }
+    @@keyframes float { 0% { transform: translateY(0);} 50% { transform: translateY(18px);} 100% { transform: translateY(0);} }
+
+    .gc-subtle { opacity: .85; }
+    .gc-card {
+        border: 1px solid rgba(255,255,255,0.3);
+        background: linear-gradient(145deg, rgba(255,255,255,0.85), rgba(245,247,255,0.75));
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 30px -5px rgba(0,0,0,0.1);
+        border-radius: 18px;
+        transition: transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s;
+    }
+    .gc-card:hover { transform: translateY(-6px); box-shadow:0 18px 40px -8px rgba(0,0,0,.15); }
+    .gc-divider { height:1px; background:linear-gradient(90deg, rgba(0,0,0,0), rgba(118,75,162,.4), rgba(0,0,0,0)); margin:1.25rem 0 1.5rem; }
+    .gc-label { font-weight:600; font-size:.9rem; text-transform:uppercase; letter-spacing:.5px; color:#4b5563; }
+    .gc-save-btn { font-weight:600; letter-spacing:.5px; padding:.85rem 2.2rem; border-radius:50px; box-shadow:0 8px 25px -6px rgba(102,126,234,.45); }
+    .gc-save-btn:hover { box-shadow:0 10px 28px -4px rgba(102,126,234,.6); }
+    .gc-help { font-size:.8rem; color:#6b7280; }
+    .gc-badge {
+        display:inline-block; background:linear-gradient(135deg,#4facfe,#00f2fe); color:#063348; font-size:.65rem; font-weight:600; padding:.35rem .6rem; border-radius:30px; letter-spacing:.5px; box-shadow:0 4px 12px -2px rgba(79,172,254,.5);
+    }
+    .gc-form-grid { display:grid; gap:1.25rem; }
+    @@media (min-width: 640px){ .gc-form-grid { grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); } }
+    .gc-toggle-wrapper { display:flex; align-items:center; gap:.6rem; padding:.6rem .85rem; border:1px solid rgba(118,75,162,.25); background:rgba(255,255,255,.65); border-radius:14px; }
+    .gc-toggle-wrapper:hover { background:rgba(255,255,255,.9); }
+    .gc-small-desc { font-size:.72rem; margin:0; color:#5f6470; }
+    .gc-number-input { border-radius:14px; padding:.75rem 1rem; border:1px solid rgba(118,75,162,.3); }
+    .gc-number-input:focus { box-shadow:0 0 0 3px rgba(102,126,234,.25); border-color:#667eea; }
+    .gc-section-title { font-weight:600; letter-spacing:.5px; display:flex; align-items:center; gap:.5rem; font-size:1.05rem; color:#374151; }
+    .gc-pill-accent { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; padding:.35rem .7rem; border-radius:8px; font-size:.65rem; letter-spacing:.5px; }
+    .gc-alert-custom { border:none; border-radius:16px; background:linear-gradient(135deg,#4facfe1a,#00f2fe1a); color:#045473; font-weight:500; backdrop-filter:blur(6px); box-shadow:0 8px 26px -6px rgba(0,0,0,.12); }
+</style>
+
+<div class="gc-hero mb-4">
+    <h1 class="h3 mb-2 d-flex align-items-center" style="gap:.6rem;">
+        <span class="gc-pill-accent"><i class="fas fa-cog"></i></span>
+        Application Settings
+        <span class="gc-badge">LIVE CONFIG</span>
+    </h1>
+    <p class="mb-0 gc-subtle">Tune runtime behavior for lifecycle processing modules. Changes apply to the next scheduling iteration.</p>
+</div>
+
 <form method="post" id="generalConfigForm">
-    <div class="alert alert-primary" role="alert">
+    <div class="alert gc-alert-custom" role="alert">
         Changes affect only the next run of the process loop. Current execution will not be affected.
     </div>
 
-    <h4 class="config-section">Application Settings</h4>   
-
-    <p></p>
-
-
-    <div class="config-section">
-        <label>Delay in Milliseconds: (time to sleep before running the next processing event)</label>
-        <input type="text" asp-for="GeneralConfigObject.DelayMilliseconds" class="form-control" />
+    <div class="gc-card p-4 mb-4">
+        <div class="gc-section-title mb-3"><i class="fas fa-sliders-h"></i> Core Execution</div>
+        <div class="gc-form-grid mb-3">
+            <div>
+                <label class="gc-label">Delay (ms)</label>
+                <input type="text" asp-for="GeneralConfigObject.DelayMilliseconds" class="form-control gc-number-input" />
+                <p class="gc-small-desc mt-1">Sleep interval before next processing event.</p>
+            </div>
+        </div>
+        <div class="gc-divider"></div>
+        <div class="gc-section-title mb-3"><i class="fas fa-plug"></i> Processing Modules</div>
+        <div class="gc-form-grid">
+            <div class="gc-toggle-wrapper">
+                <input type="checkbox" asp-for="ProcessServiceHealth" id="ProcessServiceHealth" />
+                <div>
+                    <label for="ProcessServiceHealth" class="m-0" style="font-weight:600;">Service Health</label>
+                    <p class="gc-small-desc">Enable ingestion of Azure service health events.</p>
+                </div>
+            </div>
+            <div class="gc-toggle-wrapper">
+                <input type="checkbox" asp-for="ProcessFeed" id="ProcessFeed" />
+                <div>
+                    <label for="ProcessFeed" class="m-0" style="font-weight:600;">Azure Updates Feed</label>
+                    <p class="gc-small-desc">Pull latest Azure platform change announcements.</p>
+                </div>
+            </div>
+            <div class="gc-toggle-wrapper">
+                <input type="checkbox" asp-for="ProcessPolicy" id="ProcessPolicy" />
+                <div>
+                    <label for="ProcessPolicy" class="m-0" style="font-weight:600;">Azure Policy</label>
+                    <p class="gc-small-desc">Process policy definition & assignment changes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary gc-save-btn">
+                <i class="fas fa-save"></i> Save Settings
+            </button>
+        </div>
     </div>
-
-    <div class="config-section">
-        <label>Process Service Health:</label>
-        <input type="checkbox" asp-for="ProcessServiceHealth" />
-    </div>
-    <div class="config-section">
-        <label>Process Feed (Azure Updates):</label>
-        <input type="checkbox" asp-for="ProcessFeed" />
-    </div>
-    <div >
-        <label>Process Policy (Azure Policy):</label>
-        <input type="checkbox" asp-for="ProcessPolicy" />
-    </div>
-
-    
-    
-
-    <p>
-        <button type="submit" class="btn btn-primary config-section">Save</button>
-    </p>
 </form>
 
 
@@ -67,12 +141,12 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    alert('Configuration saved successfully!');
+                    if(window.showToast) { showToast('Configuration saved successfully!','success'); } else { console.log('Configuration saved successfully!'); }
                     document.location.reload();
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred.');
+                    if(window.showToast) { showToast('Error saving configuration','error'); } else { console.error('Error saving configuration'); }
                 });
         });
 </script>

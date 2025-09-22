@@ -27,6 +27,9 @@ namespace AzLcm.Shared.Cognition.Models
         public bool AnnouncementRequired { get; set; }
         public bool ActionableViaAzurePolicy { get; set; }
         public string? MitigationInstructionMarkdown { get; set; }
+
+        public string? SummaryMarkdown { get; set; }
+
         public static Verdict? FromJson(
             string rawContent, ILogger logger, JsonSerializerOptions jsonSerializerOptions)
         {

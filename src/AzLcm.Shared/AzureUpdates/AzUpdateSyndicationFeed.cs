@@ -9,7 +9,7 @@ namespace AzLcm.Shared.AzureUpdates
     {
         public async Task<IEnumerable<SyndicationItem>> ReadAsync(CancellationToken stoppingToken)
         {
-            var url = "https://azurecomcdn.azureedge.net/en-us/updates/feed/";
+            var url = "https://www.microsoft.com/releasecommunications/api/v2/azure/rss"; //"https://azurecomcdn.azureedge.net/en-us/updates/feed/";
 
             if (!string.IsNullOrWhiteSpace(daemonConfig.AzureUpdateFeedUri))
             {

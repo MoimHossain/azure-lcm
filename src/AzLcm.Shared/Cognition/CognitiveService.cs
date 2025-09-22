@@ -45,7 +45,7 @@ namespace AzLcm.Shared.Cognition
                 var tags = feedItem.Categories.Select(c => c.Name).ToList();
                 var feedDetails = new StringBuilder();
                 feedDetails.AppendLine($"<Update info BEGIN>");
-                feedDetails.AppendLine($"Title: {feedItem.Title.Text}");
+                feedDetails.AppendLine($"Title: {feedItem.Title?.Text}");
                 feedDetails.AppendLine($"Summary: {feedItem.Summary.Text}");
                 feedDetails.AppendLine($"Tags: {string.Join(", ", tags)}");
                 feedDetails.AppendLine($"</Update info END>");            

@@ -43,9 +43,9 @@ namespace Azure.Lcm.Web
                     {
                         logger.LogInformation("All services are healthy. Processing tasks...");
                         
-                        await ProcessServiceHealthAsync(stoppingToken);
-                        await ProcessPolicyAsync(stoppingToken);
-                        await ProcessFeedAsync(stoppingToken);
+                        //await ProcessServiceHealthAsync(stoppingToken);
+                        //await ProcessPolicyAsync(stoppingToken);
+                        //await ProcessFeedAsync(stoppingToken);
                     }
                     else
                     {
