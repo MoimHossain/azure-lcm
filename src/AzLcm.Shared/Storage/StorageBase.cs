@@ -42,10 +42,16 @@ namespace AzLcm.Shared.Storage
         protected virtual TableClient GetTableClientCore()
         {
             try
-            {                
+            {
+
+                // local test
+                TableClient tc = new TableClient(Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION"), GetStorageTableName());
+                return tc;
+                // local test
+                /*
                 return new(new Uri($"https://{GetStorageAccountName()}.table.core.windows.net"),
                     GetStorageTableName(),
-                    GetAzureCredentialProvider().GetStorageCredential());
+                    GetAzureCredentialProvider().GetStorageCredential());*/
             }
             catch (Exception ex)
             {

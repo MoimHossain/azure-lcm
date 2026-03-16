@@ -167,6 +167,8 @@ You have a map of services to area paths. Your task is to map the service name t
 
         public async Task<(Uri, string, bool)> GetOpenAIConfigFromKeyVaultAsync(CancellationToken cancellationToken)
         {
+            return new(new Uri(Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT")), Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY"), true);
+
             try
             {
                 logger.LogInformation("Reading OpenAI URI and Key from {KeyVaultURI} ", daemonConfig.KeyVaultURI);
