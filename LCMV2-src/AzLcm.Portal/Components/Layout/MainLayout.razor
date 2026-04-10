@@ -1,0 +1,55 @@
+@inherits LayoutComponentBase
+
+<FluentLayout>
+    <FluentHeader>
+        <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+            <FluentIcon Value="@(new Icons.Regular.Size24.ShieldTask())" Color="Color.Custom" CustomColor="#ffffff" />
+            <span style="font-size: 18px; font-weight: 600;">Azure Lifecycle Sentinel</span>
+            <FluentSpacer />
+            <FluentBadge Appearance="Appearance.Accent">v2.0</FluentBadge>
+        </div>
+    </FluentHeader>
+
+    <FluentStack Orientation="Orientation.Horizontal" Style="height: calc(100vh - 50px);">
+        <FluentNavMenu Width="280" Collapsible="true" Title="Navigation" Style="background: var(--neutral-layer-2);">
+            <FluentNavLink Href="/" Match="NavLinkMatch.All"
+                           Icon="@(new Icons.Regular.Size20.Home())"
+                           IconColor="Color.Accent">
+                Dashboard
+            </FluentNavLink>
+            <FluentNavLink Href="/updates"
+                           Icon="@(new Icons.Regular.Size20.ArrowSync())"
+                           IconColor="Color.Accent">
+                Azure Updates
+            </FluentNavLink>
+            <FluentNavLink Href="/timeline"
+                           Icon="@(new Icons.Regular.Size20.Timeline())"
+                           IconColor="Color.Accent">
+                Retirement Timeline
+            </FluentNavLink>
+            <FluentNavLink Href="/about"
+                           Icon="@(new Icons.Regular.Size20.Info())"
+                           IconColor="Color.Accent">
+                About
+            </FluentNavLink>
+        </FluentNavMenu>
+
+        <FluentBodyContent Style="padding: 24px; overflow-y: auto; background: var(--neutral-layer-1);">
+            <FluentMessageBarProvider Section="MESSAGES_TOP" />
+            @Body
+        </FluentBodyContent>
+    </FluentStack>
+
+    <FluentFooter Style="background: var(--neutral-layer-4); padding: 8px 24px; font-size: 12px; color: var(--neutral-foreground-hint);">
+        <div style="display: flex; justify-content: space-between; width: 100%;">
+            <span>Azure Lifecycle Sentinel — Never be blindsided by an Azure change again.</span>
+            <span>© @DateTime.Now.Year Microsoft Azure Platform Team</span>
+        </div>
+    </FluentFooter>
+</FluentLayout>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>

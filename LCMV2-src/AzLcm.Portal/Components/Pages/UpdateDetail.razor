@@ -1,0 +1,181 @@
+@page "/updates/{Id}"
+@rendermode InteractiveServer
+
+<PageTitle>Update Detail — Azure Lifecycle Sentinel</PageTitle>
+
+@if (_loading)
+{
+    <FluentProgress />
+}
+else if (_update is null)
+{
+    <FluentMessageBar Title="Not Found" Intent="MessageIntent.Error">
+        The requested update could not be found.
+    </FluentMessageBar>
+    <FluentAnchor Href="/updates" Appearance="Appearance.Accent" Style="margin-top: 16px;">
+        ← Back to Updates
+    </FluentAnchor>
+}
+else
+{
+    <FluentStack Orientation="Orientation.Vertical" Style="gap: 20px;">
+        @* Breadcrumb *@
+        <FluentBreadcrumb>
+            <FluentBreadcrumbItem Href="/">Dashboard</FluentBreadcrumbItem>
+            <FluentBreadcrumbItem Href="/updates">Updates</FluentBreadcrumbItem>
+            <FluentBreadcrumbItem>Detail</FluentBreadcrumbItem>
+        </FluentBreadcrumb>
+
+        @* Header Card *@
+        <FluentCard Style="padding: 24px;">
+            <FluentStack Orientation="Orientation.Vertical" Style="gap: 12px;">
+                <FluentStack Orientation="Orientation.Horizontal" Style="gap: 8px; flex-wrap: wrap;">
+                    <FluentBadge BackgroundColor="@GetSeverityColor(_update.Severity)" Color="#fff" Style="font-size: 12px; font-weight: 600;">
+                        @GetSeverityLabel(_update.Severity) SEVERITY
+                    </FluentBadge>
+                    <FluentBadge Appearance="Appearance.Outline">@FormatChangeType(_update.ChangeType)</FluentBadge>
+                    <FluentBadge Appearance="Appearance.Outline" Color="Color.Lightweight">@_update.Source</FluentBadge>
+                </FluentStack>
+                <FluentLabel Typo="Typography.PageTitle">@_update.Title</FluentLabel>
+                <FluentLabel Typo="Typography.Body" Color="Color.Lightweight">
+                    Published: @_update.PublishedDate.ToString("MMMM dd, yyyy") •
+                    Ingested: @_update.IngestedAt.ToString("MMMM dd, yyyy HH:mm UTC")
+                </FluentLabel>
+            </FluentStack>
+        </FluentCard>
+
+        <FluentGrid Spacing="3">
+            @* Details *@
+            <FluentGridItem xs="12" md="8">
+                <FluentCard Style="padding: 24px; height: 100%;">
+                    <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 16px;">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.Document())" Style="margin-right: 8px;" />
+                        Description
+                    </FluentLabel>
+                    <div style="line-height: 1.6; color: var(--neutral-foreground-rest);">
+                        @if (!string.IsNullOrWhiteSpace(_update.Description))
+                        {
+                            @((MarkupString)_update.Description)
+                        }
+                        else if (!string.IsNullOrWhiteSpace(_update.Summary))
+                        {
+                            @((MarkupString)_update.Summary)
+                        }
+                        else
+                        {
+                            <FluentLabel Color="Color.Lightweight">No description available.</FluentLabel>
+                        }
+                    </div>
+                </FluentCard>
+            </FluentGridItem>
+
+            @* Metadata sidebar *@
+            <FluentGridItem xs="12" md="4">
+                <FluentCard Style="padding: 24px; height: 100%;">
+                    <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 16px;">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.Info())" Style="margin-right: 8px;" />
+                        Metadata
+                    </FluentLabel>
+                    <FluentStack Orientation="Orientation.Vertical" Style="gap: 16px;">
+                        <div>
+                            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Status</FluentLabel>
+                            <FluentBadge Appearance="Appearance.Accent">@_update.Status</FluentBadge>
+                        </div>
+                        <FluentDivider />
+                        <div>
+                            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Change Type</FluentLabel>
+                            <FluentLabel>@FormatChangeType(_update.ChangeType)</FluentLabel>
+                        </div>
+                        <FluentDivider />
+                        <div>
+                            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Categories</FluentLabel>
+                            @if (_update.Categories.Count > 0)
+                            {
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
+                                    @foreach (var cat in _update.Categories)
+                                    {
+                                        <FluentBadge Appearance="Appearance.Outline">@cat</FluentBadge>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <FluentLabel Color="Color.Lightweight">None</FluentLabel>
+                            }
+                        </div>
+                        <FluentDivider />
+                        @if (!string.IsNullOrWhiteSpace(_update.Link))
+                        {
+                            <div>
+                                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Source</FluentLabel>
+                                <FluentAnchor Href="@_update.Link" Target="_blank" Appearance="Appearance.Hypertext">
+                                    View on Microsoft Learn →
+                                </FluentAnchor>
+                            </div>
+                        }
+                    </FluentStack>
+                </FluentCard>
+            </FluentGridItem>
+        </FluentGrid>
+
+        @* Back button *@
+        <FluentAnchor Href="/updates" Appearance="Appearance.Accent">
+            <FluentIcon Value="@(new Icons.Regular.Size16.ArrowLeft())" Style="margin-right: 4px;" />
+            Back to Updates
+        </FluentAnchor>
+    </FluentStack>
+}
+
+@code {
+    [Parameter] public string Id { get; set; } = string.Empty;
+    [Inject] private UpdatesCacheService CacheService { get; set; } = default!;
+
+    private AzureUpdateEntry? _update;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var decodedId = Uri.UnescapeDataString(Id);
+            _update = await CacheService.GetUpdateByIdAsync(decodedId);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private static string FormatChangeType(ChangeType type) => type switch
+    {
+        ChangeType.Retirement => "Retirement",
+        ChangeType.Deprecation => "Deprecation",
+        ChangeType.BreakingChange => "Breaking Change",
+        ChangeType.SecurityAdvisory => "Security Advisory",
+        ChangeType.NewFeature => "New Feature",
+        ChangeType.MigrationRequired => "Migration Required",
+        ChangeType.Preview => "Preview",
+        ChangeType.GeneralAvailability => "General Availability",
+        ChangeType.PriceChange => "Price Change",
+        ChangeType.RegionExpansion => "Region Expansion",
+        _ => "Other"
+    };
+
+    private static string GetSeverityColor(Severity severity) => severity switch
+    {
+        Severity.Critical => "#d13438",
+        Severity.High => "#ca5010",
+        Severity.Medium => "#986f0b",
+        Severity.Low => "#107c10",
+        _ => "#605e5c"
+    };
+
+    private static string GetSeverityLabel(Severity severity) => severity switch
+    {
+        Severity.Critical => "CRITICAL",
+        Severity.High => "HIGH",
+        Severity.Medium => "MEDIUM",
+        Severity.Low => "LOW",
+        _ => "INFO"
+    };
+}

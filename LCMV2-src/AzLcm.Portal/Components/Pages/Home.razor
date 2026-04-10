@@ -1,0 +1,224 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<PageTitle>Dashboard — Azure Lifecycle Sentinel</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" Style="gap: 24px;">
+
+    @* Header *@
+    <div>
+        <FluentLabel Typo="Typography.PageTitle" Style="margin-bottom: 4px;">
+            <FluentIcon Value="@(new Icons.Regular.Size24.Shield())" Style="margin-right: 8px;" />
+            Lifecycle Dashboard
+        </FluentLabel>
+        <FluentLabel Typo="Typography.Body" Color="Color.Lightweight">
+            Real-time overview of Azure lifecycle changes affecting your organization
+        </FluentLabel>
+    </div>
+
+    @if (_loading)
+    {
+        <FluentProgress />
+    }
+    else if (_stats is not null)
+    {
+        @* Summary Statistics Cards *@
+        <FluentGrid Spacing="3" Justify="JustifyContent.FlexStart">
+            <FluentGridItem xs="12" sm="6" md="3">
+                <FluentCard Style="padding: 20px; text-align: center; background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%); color: white;">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.Document())" Color="Color.Custom" CustomColor="#ffffff" />
+                    <div style="font-size: 36px; font-weight: 700; margin: 8px 0;">@_stats.TotalUpdates</div>
+                    <div style="font-size: 13px; opacity: 0.9;">Total Updates Tracked</div>
+                </FluentCard>
+            </FluentGridItem>
+            <FluentGridItem xs="12" sm="6" md="3">
+                <FluentCard Style="padding: 20px; text-align: center; background: linear-gradient(135deg, #d13438 0%, #a4262c 100%); color: white;">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.Warning())" Color="Color.Custom" CustomColor="#ffffff" />
+                    <div style="font-size: 36px; font-weight: 700; margin: 8px 0;">@_stats.CriticalCount</div>
+                    <div style="font-size: 13px; opacity: 0.9;">Critical Severity</div>
+                </FluentCard>
+            </FluentGridItem>
+            <FluentGridItem xs="12" sm="6" md="3">
+                <FluentCard Style="padding: 20px; text-align: center; background: linear-gradient(135deg, #ca5010 0%, #986f0b 100%); color: white;">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.ArrowUp())" Color="Color.Custom" CustomColor="#ffffff" />
+                    <div style="font-size: 36px; font-weight: 700; margin: 8px 0;">@_stats.HighCount</div>
+                    <div style="font-size: 13px; opacity: 0.9;">High Severity</div>
+                </FluentCard>
+            </FluentGridItem>
+            <FluentGridItem xs="12" sm="6" md="3">
+                <FluentCard Style="padding: 20px; text-align: center; background: linear-gradient(135deg, #107c10 0%, #0b6a0b 100%); color: white;">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.Star())" Color="Color.Custom" CustomColor="#ffffff" />
+                    <div style="font-size: 36px; font-weight: 700; margin: 8px 0;">@_stats.NewThisWeek</div>
+                    <div style="font-size: 13px; opacity: 0.9;">New This Week</div>
+                </FluentCard>
+            </FluentGridItem>
+        </FluentGrid>
+
+        @* Change Type Breakdown *@
+        <FluentGrid Spacing="3">
+            <FluentGridItem xs="12" md="6">
+                <FluentCard Style="padding: 24px; height: 100%;">
+                    <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 16px;">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.DataPie())" Style="margin-right: 8px;" />
+                        Severity Breakdown
+                    </FluentLabel>
+                    <FluentStack Orientation="Orientation.Vertical" Style="gap: 12px;">
+                        <div>
+                            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                                <FluentLabel>🔴 Critical</FluentLabel>
+                                <FluentBadge Appearance="Appearance.Accent" BackgroundColor="#d13438" Color="#fff">@_stats.CriticalCount</FluentBadge>
+                            </FluentStack>
+                            <FluentProgress Value="@GetPercentage(_stats.CriticalCount)" Style="--progress-min-height: 8px;" />
+                        </div>
+                        <div>
+                            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                                <FluentLabel>🟠 High</FluentLabel>
+                                <FluentBadge Appearance="Appearance.Accent" BackgroundColor="#ca5010" Color="#fff">@_stats.HighCount</FluentBadge>
+                            </FluentStack>
+                            <FluentProgress Value="@GetPercentage(_stats.HighCount)" Style="--progress-min-height: 8px;" />
+                        </div>
+                        <div>
+                            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                                <FluentLabel>🟡 Medium</FluentLabel>
+                                <FluentBadge Appearance="Appearance.Accent" BackgroundColor="#986f0b" Color="#fff">@_stats.MediumCount</FluentBadge>
+                            </FluentStack>
+                            <FluentProgress Value="@GetPercentage(_stats.MediumCount)" Style="--progress-min-height: 8px;" />
+                        </div>
+                        <div>
+                            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                                <FluentLabel>🟢 Low</FluentLabel>
+                                <FluentBadge Appearance="Appearance.Accent" BackgroundColor="#107c10" Color="#fff">@_stats.LowCount</FluentBadge>
+                            </FluentStack>
+                            <FluentProgress Value="@GetPercentage(_stats.LowCount)" Style="--progress-min-height: 8px;" />
+                        </div>
+                    </FluentStack>
+                </FluentCard>
+            </FluentGridItem>
+            <FluentGridItem xs="12" md="6">
+                <FluentCard Style="padding: 24px; height: 100%;">
+                    <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 16px;">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.Tag())" Style="margin-right: 8px;" />
+                        Change Type Distribution
+                    </FluentLabel>
+                    <FluentStack Orientation="Orientation.Vertical" Style="gap: 10px;">
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                            <FluentLabel>⛔ Retirements</FluentLabel>
+                            <FluentBadge Appearance="Appearance.Accent">@_stats.RetirementCount</FluentBadge>
+                        </FluentStack>
+                        <FluentDivider />
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                            <FluentLabel>⚠️ Deprecations</FluentLabel>
+                            <FluentBadge Appearance="Appearance.Accent">@_stats.DeprecationCount</FluentBadge>
+                        </FluentStack>
+                        <FluentDivider />
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                            <FluentLabel>💥 Breaking Changes</FluentLabel>
+                            <FluentBadge Appearance="Appearance.Accent">@_stats.BreakingChangeCount</FluentBadge>
+                        </FluentStack>
+                        <FluentDivider />
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                            <FluentLabel>📦 Other Updates</FluentLabel>
+                            <FluentBadge>@(_stats.TotalUpdates - _stats.RetirementCount - _stats.DeprecationCount - _stats.BreakingChangeCount)</FluentBadge>
+                        </FluentStack>
+                    </FluentStack>
+                </FluentCard>
+            </FluentGridItem>
+        </FluentGrid>
+
+        @* Recent Critical Updates *@
+        <FluentCard Style="padding: 24px;">
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Style="margin-bottom: 16px;">
+                <FluentLabel Typo="Typography.Subject">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.AlertUrgent())" Style="margin-right: 8px;" />
+                    Recent High-Priority Updates
+                </FluentLabel>
+                <FluentAnchor Href="/updates" Appearance="Appearance.Hypertext">View all →</FluentAnchor>
+            </FluentStack>
+            @if (_recentCritical.Count == 0)
+            {
+                <FluentMessageBar Title="All clear!" Intent="MessageIntent.Success" Style="margin-top: 8px;">
+                    No critical or high severity updates detected. Your environment looks healthy.
+                </FluentMessageBar>
+            }
+            else
+            {
+                <FluentDataGrid Items="@_recentCritical.AsQueryable()" Style="width: 100%;" GridTemplateColumns="1fr auto auto auto">
+                    <PropertyColumn Property="@(u => u.Title)" Title="Update" Sortable="true" />
+                    <TemplateColumn Title="Severity" Align="Align.Center">
+                        <FluentBadge BackgroundColor="@GetSeverityColor(context.Severity)" Color="#fff">@context.Severity</FluentBadge>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Type" Align="Align.Center">
+                        <FluentBadge Appearance="Appearance.Outline">@FormatChangeType(context.ChangeType)</FluentBadge>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Published">
+                        @context.PublishedDate.ToString("MMM dd, yyyy")
+                    </TemplateColumn>
+                </FluentDataGrid>
+            }
+        </FluentCard>
+
+        @* Last Scan Info *@
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End">
+            <FluentLabel Typo="Typography.Body" Color="Color.Lightweight">
+                Last data refresh: @(_stats.LastScanTime == DateTime.MinValue ? "Never" : _stats.LastScanTime.ToString("MMM dd, yyyy HH:mm UTC"))
+            </FluentLabel>
+        </FluentStack>
+    }
+</FluentStack>
+
+@code {
+    private DashboardStats? _stats;
+    private List<AzureUpdateEntry> _recentCritical = [];
+    private bool _loading = true;
+
+    [Inject] private UpdatesCacheService CacheService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _stats = await CacheService.GetStatsAsync();
+            var updates = await CacheService.GetUpdatesAsync();
+            _recentCritical = updates
+                .Where(u => u.Severity is Severity.Critical or Severity.High)
+                .OrderByDescending(u => u.PublishedDate)
+                .Take(10)
+                .ToList();
+        }
+        catch (Exception)
+        {
+            _stats = new DashboardStats();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private int GetPercentage(int count) =>
+        _stats?.TotalUpdates > 0 ? (int)((double)count / _stats.TotalUpdates * 100) : 0;
+
+    private static string FormatChangeType(ChangeType type) => type switch
+    {
+        ChangeType.Retirement => "Retirement",
+        ChangeType.Deprecation => "Deprecation",
+        ChangeType.BreakingChange => "Breaking Change",
+        ChangeType.SecurityAdvisory => "Security",
+        ChangeType.NewFeature => "New Feature",
+        ChangeType.MigrationRequired => "Migration",
+        ChangeType.Preview => "Preview",
+        ChangeType.GeneralAvailability => "GA",
+        ChangeType.PriceChange => "Price Change",
+        ChangeType.RegionExpansion => "Region",
+        _ => "Other"
+    };
+
+    private static string GetSeverityColor(Severity severity) => severity switch
+    {
+        Severity.Critical => "#d13438",
+        Severity.High => "#ca5010",
+        Severity.Medium => "#986f0b",
+        Severity.Low => "#107c10",
+        _ => "#605e5c"
+    };
+}

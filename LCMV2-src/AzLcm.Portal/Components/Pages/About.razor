@@ -1,0 +1,117 @@
+@page "/about"
+
+<PageTitle>About — Azure Lifecycle Sentinel</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" Style="gap: 24px; max-width: 800px;">
+
+    <FluentCard Style="padding: 32px; text-align: center; background: linear-gradient(135deg, #0078d4 0%, #106ebe 50%, #005a9e 100%); color: white; border-radius: 8px;">
+        <FluentIcon Value="@(new Icons.Regular.Size48.ShieldTask())" Color="Color.Custom" CustomColor="#ffffff" />
+        <h1 style="margin: 16px 0 8px; font-size: 28px; font-weight: 700;">Azure Lifecycle Sentinel</h1>
+        <p style="font-size: 16px; opacity: 0.9; margin: 0;">Never be blindsided by an Azure change again.</p>
+        <FluentBadge Style="margin-top: 12px;" BackgroundColor="rgba(255,255,255,0.2)" Color="#fff">Version 2.0</FluentBadge>
+    </FluentCard>
+
+    <FluentCard Style="padding: 24px;">
+        <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 12px;">
+            <FluentIcon Value="@(new Icons.Regular.Size20.LightbulbFilament())" Style="margin-right: 8px;" />
+            What is Azure Lifecycle Sentinel?
+        </FluentLabel>
+        <p style="line-height: 1.7; color: var(--neutral-foreground-rest);">
+            Azure Lifecycle Sentinel is an AI-powered lifecycle management platform that continuously monitors Azure's 
+            change landscape, maps changes to your organization's deployed resources, and orchestrates the response across 
+            platform and workload teams — turning lifecycle management from a reactive scramble into a proactive, measured, 
+            and auditable process.
+        </p>
+    </FluentCard>
+
+    <FluentGrid Spacing="3">
+        <FluentGridItem xs="12" md="6">
+            <FluentCard Style="padding: 24px; height: 100%;">
+                <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 12px;">
+                    🛰️ Azure Update Radar
+                </FluentLabel>
+                <p style="line-height: 1.6; color: var(--neutral-foreground-rest);">
+                    Multi-source change ingestion from Azure Updates RSS, Service Health, Azure Advisor, 
+                    and more. AI-powered parsing extracts structured metadata from every update.
+                </p>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="12" md="6">
+            <FluentCard Style="padding: 24px; height: 100%;">
+                <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 12px;">
+                    🗺️ Resource Cartographer
+                </FluentLabel>
+                <p style="line-height: 1.6; color: var(--neutral-foreground-rest);">
+                    Live resource inventory across all subscriptions using Azure Resource Graph 
+                    with tag-based ownership resolution and subscription-to-team mapping.
+                </p>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="12" md="6">
+            <FluentCard Style="padding: 24px; height: 100%;">
+                <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 12px;">
+                    💥 Blast Radius Analyzer
+                </FluentLabel>
+                <p style="line-height: 1.6; color: var(--neutral-foreground-rest);">
+                    Computes affected resource counts, subscriptions, teams, dependency cascades, 
+                    geographic distribution, and AI-adjusted severity amplification.
+                </p>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="12" md="6">
+            <FluentCard Style="padding: 24px; height: 100%;">
+                <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 12px;">
+                    📡 Smart Notification Router
+                </FluentLabel>
+                <p style="line-height: 1.6; color: var(--neutral-foreground-rest);">
+                    Ensures the right people see the right things at the right time — via Teams, email, 
+                    PagerDuty, ServiceNow, and Azure DevOps integrations.
+                </p>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+
+    <FluentCard Style="padding: 24px;">
+        <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 12px;">
+            <FluentIcon Value="@(new Icons.Regular.Size20.Wrench())" Style="margin-right: 8px;" />
+            Technology Stack
+        </FluentLabel>
+        <FluentDataGrid Items="@_techStack.AsQueryable()" Style="width: 100%;" GridTemplateColumns="200px 1fr">
+            <PropertyColumn Property="@(t => t.Component)" Title="Component" />
+            <PropertyColumn Property="@(t => t.Technology)" Title="Technology" />
+        </FluentDataGrid>
+    </FluentCard>
+
+    <FluentCard Style="padding: 24px;">
+        <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 12px;">
+            <FluentIcon Value="@(new Icons.Regular.Size20.Code())" Style="margin-right: 8px;" />
+            Architecture
+        </FluentLabel>
+        <p style="line-height: 1.7; color: var(--neutral-foreground-rest);">
+            The solution consists of two containerized applications deployed as Azure Container Apps:
+        </p>
+        <ul style="line-height: 1.8; color: var(--neutral-foreground-rest);">
+            <li><strong>Portal (Blazor Server)</strong> — Interactive web dashboard with Fluent UI components for monitoring, analytics, and self-service.</li>
+            <li><strong>Daemon (Console App)</strong> — Background worker that polls Azure Update RSS feeds, parses entries, and ingests lifecycle change data.</li>
+            <li><strong>Shared Library</strong> — Common models, enums, and services shared between the Portal and Daemon.</li>
+        </ul>
+    </FluentCard>
+</FluentStack>
+
+@code {
+    private readonly List<TechItem> _techStack =
+    [
+        new("Portal", ".NET 8 Blazor Server + Fluent UI"),
+        new("Daemon", ".NET 8 Console App (Generic Host)"),
+        new("RSS Parsing", "System.ServiceModel.Syndication"),
+        new("AI Analysis", "Azure OpenAI (GPT-4o)"),
+        new("Resource Discovery", "Azure Resource Graph"),
+        new("Data Store", "Cosmos DB + Azure SQL"),
+        new("Notifications", "Teams Adaptive Cards + Email"),
+        new("Infrastructure", "Bicep + Azure Container Apps"),
+        new("Authentication", "Entra ID (Managed Identity)"),
+        new("CI/CD", "Azure DevOps Pipelines"),
+    ];
+
+    private record TechItem(string Component, string Technology);
+}

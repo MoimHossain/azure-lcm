@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  portal:
+    build:
+      context: .
+      dockerfile: Dockerfile.Portal
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: unless-stopped
+
+  daemon:
+    build:
+      context: .
+      dockerfile: Dockerfile.Daemon
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+    restart: unless-stopped

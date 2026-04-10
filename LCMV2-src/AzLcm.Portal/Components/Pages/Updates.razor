@@ -1,0 +1,195 @@
+@page "/updates"
+@rendermode InteractiveServer
+
+<PageTitle>Azure Updates — Azure Lifecycle Sentinel</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" Style="gap: 20px;">
+
+    <div>
+        <FluentLabel Typo="Typography.PageTitle" Style="margin-bottom: 4px;">
+            <FluentIcon Value="@(new Icons.Regular.Size24.ArrowSync())" Style="margin-right: 8px;" />
+            Azure Updates Feed
+        </FluentLabel>
+        <FluentLabel Typo="Typography.Body" Color="Color.Lightweight">
+            Latest lifecycle updates from Azure — retirements, deprecations, and breaking changes
+        </FluentLabel>
+    </div>
+
+    @* Filters *@
+    <FluentCard Style="padding: 16px;">
+        <FluentStack Orientation="Orientation.Horizontal" Style="gap: 16px; flex-wrap: wrap; align-items: flex-end;">
+            <div>
+                <FluentLabel Typo="Typography.Body" Style="margin-bottom: 4px;">Search</FluentLabel>
+                <FluentSearch @bind-Value="_searchTerm" @bind-Value:after="ApplyFilters"
+                              Placeholder="Search updates..." Style="min-width: 260px;" />
+            </div>
+            <div>
+                <FluentLabel Typo="Typography.Body" Style="margin-bottom: 4px;">Severity</FluentLabel>
+                <FluentSelect TOption="string" @bind-Value="_selectedSeverity" @bind-Value:after="ApplyFilters" Style="min-width: 150px;">
+                    <FluentOption Value="All">All Severities</FluentOption>
+                    <FluentOption Value="Critical">🔴 Critical</FluentOption>
+                    <FluentOption Value="High">🟠 High</FluentOption>
+                    <FluentOption Value="Medium">🟡 Medium</FluentOption>
+                    <FluentOption Value="Low">🟢 Low</FluentOption>
+                    <FluentOption Value="Informational">ℹ️ Informational</FluentOption>
+                </FluentSelect>
+            </div>
+            <div>
+                <FluentLabel Typo="Typography.Body" Style="margin-bottom: 4px;">Change Type</FluentLabel>
+                <FluentSelect TOption="string" @bind-Value="_selectedChangeType" @bind-Value:after="ApplyFilters" Style="min-width: 180px;">
+                    <FluentOption Value="All">All Types</FluentOption>
+                    <FluentOption Value="Retirement">Retirement</FluentOption>
+                    <FluentOption Value="Deprecation">Deprecation</FluentOption>
+                    <FluentOption Value="BreakingChange">Breaking Change</FluentOption>
+                    <FluentOption Value="SecurityAdvisory">Security Advisory</FluentOption>
+                    <FluentOption Value="NewFeature">New Feature</FluentOption>
+                    <FluentOption Value="GeneralAvailability">General Availability</FluentOption>
+                    <FluentOption Value="Preview">Preview</FluentOption>
+                    <FluentOption Value="MigrationRequired">Migration Required</FluentOption>
+                </FluentSelect>
+            </div>
+            <FluentButton Appearance="Appearance.Accent" OnClick="RefreshData" Style="height: 32px;">
+                <FluentIcon Value="@(new Icons.Regular.Size16.ArrowClockwise())" Style="margin-right: 4px;" />
+                Refresh
+            </FluentButton>
+        </FluentStack>
+    </FluentCard>
+
+    @* Results count *@
+    <FluentLabel Typo="Typography.Body" Color="Color.Lightweight">
+        Showing @_filteredUpdates.Count of @_allUpdates.Count updates
+    </FluentLabel>
+
+    @if (_loading)
+    {
+        <FluentProgress />
+    }
+    else
+    {
+        @* Data Grid *@
+        <FluentCard Style="padding: 0; overflow: hidden;">
+            <FluentDataGrid Items="@_filteredUpdates.AsQueryable()" Style="width: 100%;"
+                            Pagination="@_pagination" GridTemplateColumns="1fr 120px 140px 120px 60px">
+                <TemplateColumn Title="Update Title" Sortable="true" SortBy="@_sortByTitle">
+                    <div style="padding: 4px 0;">
+                        <div style="font-weight: 600; margin-bottom: 2px;">@context.Title</div>
+                        @if (context.Categories.Count > 0)
+                        {
+                            <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                @foreach (var cat in context.Categories.Take(3))
+                                {
+                                    <FluentBadge Appearance="Appearance.Outline" Style="font-size: 11px;">@cat</FluentBadge>
+                                }
+                            </div>
+                        }
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="Severity" Sortable="true" SortBy="@_sortBySeverity" Align="Align.Center">
+                    <FluentBadge BackgroundColor="@GetSeverityColor(context.Severity)" Color="#fff">@context.Severity</FluentBadge>
+                </TemplateColumn>
+                <TemplateColumn Title="Change Type" Align="Align.Center">
+                    <FluentBadge Appearance="Appearance.Outline">@FormatChangeType(context.ChangeType)</FluentBadge>
+                </TemplateColumn>
+                <TemplateColumn Title="Published" Sortable="true" SortBy="@_sortByDate">
+                    <span style="white-space: nowrap;">@context.PublishedDate.ToString("MMM dd, yyyy")</span>
+                </TemplateColumn>
+                <TemplateColumn Title="" Align="Align.Center">
+                    <FluentAnchor Href="@($"/updates/{Uri.EscapeDataString(context.Id)}")" Appearance="Appearance.Stealth" Title="View details">
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Open())" />
+                    </FluentAnchor>
+                </TemplateColumn>
+            </FluentDataGrid>
+        </FluentCard>
+
+        <FluentPaginator State="@_pagination" />
+    }
+</FluentStack>
+
+@code {
+    private List<AzureUpdateEntry> _allUpdates = [];
+    private List<AzureUpdateEntry> _filteredUpdates = [];
+    private bool _loading = true;
+    private string _searchTerm = string.Empty;
+    private string _selectedSeverity = "All";
+    private string _selectedChangeType = "All";
+    private PaginationState _pagination = new() { ItemsPerPage = 20 };
+
+    private GridSort<AzureUpdateEntry> _sortByTitle = GridSort<AzureUpdateEntry>.ByAscending(u => u.Title);
+    private GridSort<AzureUpdateEntry> _sortBySeverity = GridSort<AzureUpdateEntry>.ByAscending(u => u.Severity);
+    private GridSort<AzureUpdateEntry> _sortByDate = GridSort<AzureUpdateEntry>.ByDescending(u => u.PublishedDate);
+
+    [Inject] private UpdatesCacheService CacheService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        try
+        {
+            _allUpdates = await CacheService.GetUpdatesAsync();
+            ApplyFilters();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void ApplyFilters()
+    {
+        var query = _allUpdates.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            var term = _searchTerm.ToLowerInvariant();
+            query = query.Where(u =>
+                u.Title.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                u.Summary.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                u.Categories.Any(c => c.Contains(term, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        if (_selectedSeverity != "All" && Enum.TryParse<Severity>(_selectedSeverity, out var severity))
+            query = query.Where(u => u.Severity == severity);
+
+        if (_selectedChangeType != "All" && Enum.TryParse<ChangeType>(_selectedChangeType, out var changeType))
+            query = query.Where(u => u.ChangeType == changeType);
+
+        _filteredUpdates = query.OrderByDescending(u => u.PublishedDate).ToList();
+    }
+
+    private async Task RefreshData()
+    {
+        _loading = true;
+        StateHasChanged();
+        await CacheService.RefreshAsync();
+        await LoadData();
+    }
+
+    private static string FormatChangeType(ChangeType type) => type switch
+    {
+        ChangeType.Retirement => "Retirement",
+        ChangeType.Deprecation => "Deprecation",
+        ChangeType.BreakingChange => "Breaking Change",
+        ChangeType.SecurityAdvisory => "Security",
+        ChangeType.NewFeature => "New Feature",
+        ChangeType.MigrationRequired => "Migration",
+        ChangeType.Preview => "Preview",
+        ChangeType.GeneralAvailability => "GA",
+        ChangeType.PriceChange => "Price Change",
+        ChangeType.RegionExpansion => "Region",
+        _ => "Other"
+    };
+
+    private static string GetSeverityColor(Severity severity) => severity switch
+    {
+        Severity.Critical => "#d13438",
+        Severity.High => "#ca5010",
+        Severity.Medium => "#986f0b",
+        Severity.Low => "#107c10",
+        _ => "#605e5c"
+    };
+}

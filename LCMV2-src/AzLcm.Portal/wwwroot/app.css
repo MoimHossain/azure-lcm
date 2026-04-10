@@ -1,0 +1,22 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: var(--body-font), 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--neutral-layer-1);
+}
+
+h1:focus {
+    outline: none;
+}
+
+.blazor-error-boundary {
+    background: #b32121;
+    padding: 1rem;
+    color: white;
+    border-radius: 4px;
+}
+
+.blazor-error-boundary::after {
+    content: "An error has occurred."
+}

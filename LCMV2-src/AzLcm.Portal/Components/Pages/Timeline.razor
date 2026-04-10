@@ -1,0 +1,170 @@
+@page "/timeline"
+@rendermode InteractiveServer
+
+<PageTitle>Retirement Timeline — Azure Lifecycle Sentinel</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" Style="gap: 20px;">
+
+    <div>
+        <FluentLabel Typo="Typography.PageTitle" Style="margin-bottom: 4px;">
+            <FluentIcon Value="@(new Icons.Regular.Size24.Timeline())" Style="margin-right: 8px;" />
+            Retirement Timeline
+        </FluentLabel>
+        <FluentLabel Typo="Typography.Body" Color="Color.Lightweight">
+            Upcoming retirements, deprecations, and breaking changes sorted by date
+        </FluentLabel>
+    </div>
+
+    @if (_loading)
+    {
+        <FluentProgress />
+    }
+    else if (_timelineItems.Count == 0)
+    {
+        <FluentMessageBar Title="No Timeline Items" Intent="MessageIntent.Info">
+            No retirement or deprecation updates have been detected. The feed will be checked periodically.
+        </FluentMessageBar>
+    }
+    else
+    {
+        @* Timeline Legend *@
+        <FluentCard Style="padding: 16px;">
+            <FluentStack Orientation="Orientation.Horizontal" Style="gap: 16px; flex-wrap: wrap;">
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="gap: 6px;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #d13438;"></div>
+                    <FluentLabel Typo="Typography.Body">Retirement</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="gap: 6px;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #ca5010;"></div>
+                    <FluentLabel Typo="Typography.Body">Deprecation</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="gap: 6px;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #8764b8;"></div>
+                    <FluentLabel Typo="Typography.Body">Breaking Change</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="gap: 6px;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #0078d4;"></div>
+                    <FluentLabel Typo="Typography.Body">Migration Required</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="gap: 6px;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #e3008c;"></div>
+                    <FluentLabel Typo="Typography.Body">Security Advisory</FluentLabel>
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+
+        @* Timeline Items *@
+        @foreach (var group in GetGroupedItems())
+        {
+            <FluentLabel Typo="Typography.Subject" Style="margin-top: 8px; border-bottom: 2px solid var(--accent-fill-rest); padding-bottom: 4px;">
+                📅 @group.Key
+            </FluentLabel>
+            @foreach (var item in group.OrderByDescending(u => u.PublishedDate))
+            {
+                <FluentCard Style="@($"padding: 16px; border-left: 4px solid {GetDotColor(item.ChangeType)};")">
+                    <FluentStack Orientation="Orientation.Horizontal" Style="gap: 16px; align-items: flex-start;">
+                        <div style="min-width: 90px;">
+                            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                                @item.PublishedDate.ToString("MMM dd")
+                            </FluentLabel>
+                            <FluentLabel Typo="Typography.Body" Color="Color.Lightweight" Style="font-size: 12px;">
+                                @item.PublishedDate.ToString("yyyy")
+                            </FluentLabel>
+                        </div>
+                        <FluentDivider Orientation="Orientation.Vertical" Style="height: 40px;" />
+                        <div style="flex: 1;">
+                            <FluentStack Orientation="Orientation.Horizontal" Style="gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                                <FluentBadge BackgroundColor="@GetSeverityColor(item.Severity)" Color="#fff" Style="font-size: 11px;">@GetSeverityLabel(item.Severity)</FluentBadge>
+                                <FluentBadge Appearance="Appearance.Outline" Style="font-size: 11px;">@FormatChangeType(item.ChangeType)</FluentBadge>
+                            </FluentStack>
+                            <FluentAnchor Href="@($"/updates/{Uri.EscapeDataString(item.Id)}")" Appearance="Appearance.Hypertext" Style="font-weight: 600;">
+                                @item.Title
+                            </FluentAnchor>
+                            @if (!string.IsNullOrWhiteSpace(item.Summary))
+                            {
+                                <FluentLabel Typo="Typography.Body" Color="Color.Lightweight" Style="margin-top: 4px; font-size: 13px;">
+                                    @TruncateText(item.Summary, 200)
+                                </FluentLabel>
+                            }
+                        </div>
+                    </FluentStack>
+                </FluentCard>
+            }
+        }
+    }
+</FluentStack>
+
+@code {
+    private List<AzureUpdateEntry> _timelineItems = [];
+    private bool _loading = true;
+
+    [Inject] private UpdatesCacheService CacheService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var updates = await CacheService.GetUpdatesAsync();
+            _timelineItems = updates
+                .Where(u => u.ChangeType is ChangeType.Retirement
+                    or ChangeType.Deprecation
+                    or ChangeType.BreakingChange
+                    or ChangeType.MigrationRequired
+                    or ChangeType.SecurityAdvisory)
+                .OrderByDescending(u => u.PublishedDate)
+                .ToList();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private static string FormatChangeType(ChangeType type) => type switch
+    {
+        ChangeType.Retirement => "Retirement",
+        ChangeType.Deprecation => "Deprecation",
+        ChangeType.BreakingChange => "Breaking Change",
+        ChangeType.SecurityAdvisory => "Security",
+        ChangeType.MigrationRequired => "Migration",
+        _ => "Other"
+    };
+
+    private IEnumerable<IGrouping<string, AzureUpdateEntry>> GetGroupedItems() =>
+        _timelineItems
+            .GroupBy(u => u.PublishedDate.ToString("MMMM yyyy"))
+            .OrderByDescending(g => g.First().PublishedDate);
+
+    private static string GetDotColor(ChangeType type) => type switch
+    {
+        ChangeType.Retirement => "#d13438",
+        ChangeType.Deprecation => "#ca5010",
+        ChangeType.BreakingChange => "#8764b8",
+        ChangeType.MigrationRequired => "#0078d4",
+        ChangeType.SecurityAdvisory => "#e3008c",
+        _ => "#605e5c"
+    };
+
+    private static string GetSeverityColor(Severity severity) => severity switch
+    {
+        Severity.Critical => "#d13438",
+        Severity.High => "#ca5010",
+        Severity.Medium => "#986f0b",
+        _ => "#605e5c"
+    };
+
+    private static string GetSeverityLabel(Severity severity) => severity switch
+    {
+        Severity.Critical => "Critical",
+        Severity.High => "High",
+        Severity.Medium => "Medium",
+        _ => "Low"
+    };
+
+    private static string TruncateText(string text, int maxLength)
+    {
+        if (string.IsNullOrEmpty(text)) return string.Empty;
+        var plain = System.Text.RegularExpressions.Regex.Replace(text, "<.*?>", " ").Trim();
+        return plain.Length <= maxLength ? plain : plain[..maxLength] + "…";
+    }
+}
