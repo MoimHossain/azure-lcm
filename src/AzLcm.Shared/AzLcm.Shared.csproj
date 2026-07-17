@@ -8,7 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Abot" Version="2.0.70" />
-		<PackageReference Include="AngleSharp" Version="1.1.2" />
+		<PackageReference Include="AngleSharp" Version="1.5.0" />
 
 		<PackageReference Include="Azure.AI.OpenAI" Version="2.1.0-beta.2" />
 		<PackageReference Include="Microsoft.Extensions.AI" Version="9.0.1-preview.1.24570.5" />
